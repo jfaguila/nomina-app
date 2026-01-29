@@ -8,7 +8,7 @@ const DemoMode = ({ onSelectSample }) => {
     const samplePayslips = [
         {
             id: 'correct-transporte',
-            title: '✅ Nómina Correcta - Transporte Sanitario',
+            title: 'Transporte Sanitario',
             description: 'Nómina que cumple completamente con el convenio',
             category: 'tes_conductor',
             convenio: 'transporte_sanitario_andalucia',
@@ -27,7 +27,7 @@ const DemoMode = ({ onSelectSample }) => {
         },
         {
             id: 'error-salario',
-            title: '❌ Nómina con Error - Salario Bajo',
+            title: 'Salario Bajo',
             description: 'Salario base inferior al mínimo del convenio',
             category: 'empleado',
             convenio: 'general',
