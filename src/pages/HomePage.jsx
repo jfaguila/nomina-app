@@ -17,6 +17,7 @@ const HomePage = () => {
     const [loadingMessage, setLoadingMessage] = useState('');
     const [loadingProgress, setLoadingProgress] = useState(null);
     const [announcement, setAnnouncement] = useState('');
+    // eslint-disable-next-line no-unused-vars
     const [showDemo, setShowDemo] = useState(false);
 
     const handleFileSelect = (file) => {
@@ -42,7 +43,7 @@ const HomePage = () => {
 
     const handleManualSubmit = async (formData) => {
 if (!selectedFile) {
-            setError(t('errors.uploadRequired'));
+            setError(t('errorMessages.uploadRequired'));
             return;
         }
 
@@ -69,7 +70,7 @@ if (!selectedFile) {
                 }
             });
 
-            setLoadingMessage(t('processing'));
+            setLoadingMessage(t('processingResults'));
             setLoadingProgress(80);
 
             setResults(response.data);
@@ -94,26 +95,26 @@ if (!selectedFile) {
                 
                 switch (errorCode) {
                     case 'FILE_TOO_LARGE':
-                        setError(t('errors.fileTooLarge'));
+                        setError(t('errorMessages.fileTooLarge'));
                         break;
                     case 'INVALID_FILE_TYPE':
-                        setError(t('errors.invalidFileType'));
+                        setError(t('errorMessages.invalidFileType'));
                         break;
                     case 'TOO_MANY_FILES':
-                        setError(t('errors.tooManyFiles'));
+                        setError(t('errorMessages.tooManyFiles'));
                         break;
                     case 'INVALID_JSON':
-                        setError(t('errors.invalidJSON'));
+                        setError(t('errorMessages.invalidJSON'));
                         break;
                     default:
                         setError(errorMessage);
                 }
             } else if (err.request) {
                 // Error de red o conexión
-                setError(t('errors.connectionError'));
+                setError(t('errorMessages.connectionError'));
             } else {
                 // Error del cliente
-                setError(t('errors.processingError') + ': ' + (err.message || 'Error desconocido'));
+                setError(t('errorMessages.processingError') + ': ' + (err.message || 'Error desconocido'));
             }
             
             setLoading(false);

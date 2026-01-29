@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import ExportResults from './ExportResults';
+import { useLanguage } from '../i18n/LanguageProvider';
 
 const ResultsDisplay = ({ results }) => {
+    const { t } = useLanguage();
+    
     if (!results) return null;
 
     const { isValid, errors, warnings, details } = results;
@@ -55,7 +58,7 @@ const ResultsDisplay = ({ results }) => {
                         <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Errores Detectados
+                        {t('errorDetected')}
                     </h3>
                     <ul className="space-y-3">
                         {errors.map((error, index) => (

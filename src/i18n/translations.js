@@ -31,7 +31,7 @@ export const translations = {
     // Loading
     analyzing: 'Analizando tu nómina...',
     uploading: 'Enviando archivo al servidor...',
-    processing: 'Procesando resultados...',
+    processingResults: 'Procesando resultados...',
     waitMessage: 'Esto puede tardar unos segundos. Por favor, espera...',
     analyzingDocument: 'Analizando documento',
     tip: 'Consejo',
@@ -42,7 +42,7 @@ export const translations = {
     invalidPayroll: '❌ Nómina con Errores',
     validMessage: 'Tu nómina cumple con el convenio aplicable',
     invalidMessage: 'Se han detectado inconsistencias',
-    errors: 'Errores Detectados',
+     errorDetected: 'Errores Detectados',
     warnings: 'Advertencias',
     comparativeTitle: 'Comparativa: Realidad vs Convenio',
     concept: 'Concepto',
@@ -81,7 +81,7 @@ export const translations = {
     },
 
     // Error Messages
-    errors: {
+    errorMessages: {
       fileTooLarge: 'El archivo es demasiado grande. Máximo 10MB.',
       invalidFileType: 'Solo se permiten archivos PDF, JPG y PNG.',
       tooManyFiles: 'Solo puedes subir un archivo a la vez.',
@@ -137,7 +137,7 @@ export const translations = {
     // Loading
     analyzing: 'Analyzing your payroll...',
     uploading: 'Uploading file to server...',
-    processing: 'Processing results...',
+    processingResults: 'Processing results...',
     waitMessage: 'This may take a few seconds. Please wait...',
     analyzingDocument: 'Analyzing document',
     tip: 'Tip',
@@ -148,7 +148,7 @@ export const translations = {
     invalidPayroll: '❌ Invalid Payroll',
     validMessage: 'Your payroll complies with the applicable convention',
     invalidMessage: 'Inconsistencies have been detected',
-    errors: 'Errors Detected',
+     errorDetected: 'Errors Detected',
     warnings: 'Warnings',
     comparativeTitle: 'Comparison: Reality vs Convention',
     concept: 'Concept',
@@ -187,7 +187,7 @@ export const translations = {
     },
 
     // Error Messages
-    errors: {
+    errorMessages: {
       fileTooLarge: 'File too large. Maximum 10MB.',
       invalidFileType: 'Only PDF, JPG and PNG files are allowed.',
       tooManyFiles: 'You can only upload one file at a time.',
