@@ -48,7 +48,9 @@ const HomePage = () => {
             setLoadingMessage(t('uploading'));
             setLoadingProgress(25);
 
-            const response = await axios.post('http://localhost:5987/api/verify-nomina', formDataToSend, {
+            // Usar variable de entorno para la URL de la API, o localhost por defecto
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5987';
+            const response = await axios.post(`${apiUrl}/api/verify-nomina`, formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
