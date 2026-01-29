@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { LanguageProvider } from './i18n/LanguageProvider';
+import SkipLinks from './components/SkipLinks';
+import LanguageSelector from './components/LanguageSelector';
+import HomePage from './pages/HomePage';
+import './index.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <LanguageProvider>
+      <Router>
+        <div className="min-h-screen">
+          <SkipLinks />
+          <LanguageSelector />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+          </Routes>
+        </div>
+      </Router>
+    </LanguageProvider>
   );
 }
 

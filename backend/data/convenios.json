@@ -1,0 +1,157 @@
+{
+    "general": {
+        "nombre": "Convenio General",
+        "salarioMinimo": {
+            "empleado": 1200,
+            "tecnico": 1500,
+            "mando_intermedio": 2000,
+            "directivo": 3000
+        },
+        "horasExtrasMaxMes": 80,
+        "incrementoHoraExtra": 1.75,
+        "dietaMaxDiaria": 53.34,
+        "pagas": 14,
+        "vacaciones": 30,
+        "seguridadSocial": {
+            "contingenciasComunes": 4.70,
+            "desempleo": 1.55,
+            "formacionProfesional": 0.10
+        },
+        "descripcion": "Convenio colectivo general aplicable a la mayoría de sectores"
+    },
+    "hosteleria": {
+        "nombre": "Convenio de Hostelería",
+        "salarioMinimo": {
+            "empleado": 1108.33,
+            "tecnico": 1400,
+            "mando_intermedio": 1800,
+            "directivo": 2500
+        },
+        "horasExtrasMaxMes": 80,
+        "incrementoHoraExtra": 1.75,
+        "dietaMaxDiaria": 53.34,
+        "pagas": 14,
+        "vacaciones": 30,
+        "seguridadSocial": {
+            "contingenciasComunes": 4.70,
+            "desempleo": 1.55,
+            "formacionProfesional": 0.10
+        },
+        "descripcion": "Convenio específico para el sector de hostelería"
+    },
+    "comercio": {
+        "nombre": "Convenio de Comercio",
+        "salarioMinimo": {
+            "empleado": 1166.70,
+            "tecnico": 1450,
+            "mando_intermedio": 1900,
+            "directivo": 2800
+        },
+        "horasExtrasMaxMes": 80,
+        "incrementoHoraExtra": 1.75,
+        "dietaMaxDiaria": 53.34,
+        "pagas": 14,
+        "vacaciones": 30,
+        "seguridadSocial": {
+            "contingenciasComunes": 4.70,
+            "desempleo": 1.55,
+            "formacionProfesional": 0.10
+        },
+        "descripcion": "Convenio específico para el sector del comercio"
+    },
+    "construccion": {
+        "nombre": "Convenio de Construcción",
+        "salarioMinimo": {
+            "empleado": 1323.00,
+            "tecnico": 1650,
+            "mando_intermedio": 2100,
+            "directivo": 3200
+        },
+        "horasExtrasMaxMes": 80,
+        "incrementoHoraExtra": 1.75,
+        "dietaMaxDiaria": 53.34,
+        "pagas": 14,
+        "vacaciones": 30,
+        "seguridadSocial": {
+            "contingenciasComunes": 4.70,
+            "desempleo": 1.55,
+            "formacionProfesional": 0.10
+        },
+        "descripcion": "Convenio específico para el sector de la construcción"
+    },
+    "transporte_sanitario_andalucia": {
+        "nombre": "IV Convenio Colectivo Transporte Sanitario Andalucía",
+        "salarioMinimo": {
+            "tes_conductor": 1405.33,
+            "tes_ayudante_camillero": 1220.43,
+            "tes_camillero": 1145.00,
+            "empleado": 1145.00,
+            "tecnico": 1405.33,
+            "mando_intermedio": 1800,
+            "directivo": 2500
+        },
+        "detallesSalariales": {
+            "tes_conductor": {
+                "salarioBase": 1239.63,
+                "plusConvenio": 165.70,
+                "total": 1405.33
+            },
+            "tes_ayudante_camillero": {
+                "salarioBase": 1080.01,
+                "plusConvenio": 140.42,
+                "total": 1220.43
+            },
+            "tes_camillero": {
+                "salarioBase": 1015.35,
+                "plusConvenio": 129.65,
+                "total": 1145.00
+            }
+        },
+        "horasExtrasMaxMes": 80,
+        "incrementoHoraExtra": 1.75,
+        "dietaMaxDiaria": 53.34,
+        "pagas": 14,
+        "vacaciones": 30,
+        "seguridadSocial": {
+            "contingenciasComunes": 4.70,
+            "desempleo": 1.55,
+            "formacionProfesional": 0.10
+        },
+        "vigencia": {
+            "inicio": "2020-01-01",
+            "fin": "2025-12-31",
+            "ultraactividad": true
+        },
+        "reglasAntiguedad": {
+            "tipo": "quinquenio",
+            "porcentajeBase": 0.05,
+            "descripcion": "5% del salario base por cada 5 años de servicio"
+        },
+        "reglasNocturnidad": {
+            "tipo": "hora_fija",
+            "valorHora": 1.18,
+            "descripcion": "Valor fijo por hora nocturna trabajada"
+        },
+        "incrementos": {
+            "2024": {
+                "porcentaje": 2.75,
+                "provincias": [
+                    "Almería",
+                    "Córdoba",
+                    "Málaga",
+                    "Sevilla"
+                ]
+            },
+            "2025": {
+                "porcentaje": 1.10,
+                "provincias": [
+                    "Todas"
+                ],
+                "aplicacion": "Desde 01/07/2025"
+            }
+        },
+        "descripcion": "IV Convenio Colectivo del Transporte Sanitario de Enfermos y Accidentados en Ambulancias de Andalucía. Vigente desde 2020 hasta 2025 con ultraactividad. Incluye categorías TES (Técnico en Emergencias Sanitarias): Conductor/a, Ayudante Camillero/a y Camillero/a. Código BOJA: 71001075012005",
+        "codigoBOJA": "71001075012005",
+        "publicacion": "BOJA 241 - 16/12/2020"
+    }
+}

@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "5987:5987"
+    environment:
+      - NODE_ENV=production
+      - PORT=5987
+    volumes:
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped
+    networks:
+      - nomina-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - nomina-network
+
+networks:
+  nomina-network:
+    driver: bridge
+
+volumes:
+  uploads:
+    driver: local

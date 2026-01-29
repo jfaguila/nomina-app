@@ -1,0 +1,26 @@
+# Backend Dockerfile
+FROM node:18-alpine
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de package
+COPY backend/package*.json ./
+
+# Instalar dependencias
+RUN npm ci --only=production
+
+# Copiar código fuente
+COPY backend/ .
+
+# Crear directorio de uploads
+RUN mkdir -p uploads && chown -R node:node uploads
+
+# Cambiar a usuario no root
+USER node
+
+# Exponer puerto
+EXPOSE 5987
+
+# Comando para iniciar
+CMD ["npm", "start"]

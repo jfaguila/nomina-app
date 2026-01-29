@@ -1,0 +1,222 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import ExportResults from './ExportResults';
+
+const ResultsDisplay = ({ results }) => {
+    if (!results) return null;
+
+    const { isValid, errors, warnings, details } = results;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6"
+        >
+            {/* Estado General */}
+            <div 
+                className={`glass-card p-8 border-l-8 ${isValid ? 'border-green-500' : 'border-red-500'}`}
+                role="alert"
+                aria-live="polite"
+            >
+                <div className="flex items-center space-x-4">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isValid ? 'bg-gradient-to-br from-green-400 to-emerald-500' : 'bg-gradient-to-br from-red-400 to-rose-500'
+                        }`} aria-hidden="true">
+                        {isValid ? (
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        ) : (
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        )}
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-800">
+                            {isValid ? '✅ Nómina Correcta' : '❌ Nómina con Errores'}
+                        </h2>
+                        <p className="text-gray-600 mt-1">
+                            {isValid ? 'Tu nómina cumple con el convenio aplicable' : 'Se han detectado inconsistencias'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Errores */}
+            {errors && errors.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="glass-card p-6 border-l-4 border-red-500"
+                >
+                    <h3 className="text-xl font-bold text-red-700 mb-4 flex items-center">
+                        <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Errores Detectados
+                    </h3>
+                    <ul className="space-y-3">
+                        {errors.map((error, index) => (
+                            <li key={index} className="flex items-start space-x-3 bg-red-50 p-4 rounded-lg">
+                                <span className="text-red-600 font-bold">•</span>
+                                <span className="text-red-800">{error}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+            )}
+
+            {/* Advertencias */}
+            {warnings && warnings.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="glass-card p-6 border-l-4 border-yellow-500"
+                >
+                    <h3 className="text-xl font-bold text-yellow-700 mb-4 flex items-center">
+                        <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Advertencias
+                    </h3>
+                    <ul className="space-y-3">
+                        {warnings.map((warning, index) => (
+                            <li key={index} className="flex items-start space-x-3 bg-yellow-50 p-4 rounded-lg">
+                                <span className="text-yellow-600 font-bold">•</span>
+                                <span className="text-yellow-800">{warning}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+            )}
+
+            {/* Tabla Comparativa Detallada */}
+            {details && results.comparativa ? (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="glass-card p-6"
+                >
+                    <h3 className="text-2xl font-bold gradient-text mb-6 text-center">
+                        Comparativa: Realidad vs Convenio
+                    </h3>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b-2 border-gray-100">
+                                    <th className="py-3 px-4 font-bold text-gray-600">Concepto</th>
+                                    <th className="py-3 px-4 font-bold text-gray-600 text-right">Tu Nómina (Real)</th>
+                                    <th className="py-3 px-4 font-bold text-gray-600 text-right">Debería Ser (Legal)</th>
+                                    <th className="py-3 px-4 font-bold text-gray-600 text-center">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/* Salario Base */}
+                                {details.salario_base_comparativa && (
+                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                        <td className="py-3 px-4 font-medium text-gray-800">Salario Base</td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.salario_base_comparativa.real?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.salario_base_comparativa.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.salario_base_comparativa.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                }`}>
+                                                {details.salario_base_comparativa.estado}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                )}
+
+                                {/* Plus Convenio */}
+                                {details.plus_convenio && (
+                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                        <td className="py-3 px-4 font-medium text-gray-800">Plus Convenio</td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.plus_convenio.real?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.plus_convenio.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.plus_convenio.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                }`}>
+                                                {details.plus_convenio.estado}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                )}
+
+                                {/* Antigüedad */}
+                                {details.antiguedad && (
+                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                        <td className="py-3 px-4 font-medium text-gray-800">
+                                            Antigüedad
+                                            <span className="block text-xs text-gray-400 font-normal">{details.antiguedad.mensaje}</span>
+                                        </td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.antiguedad.real?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.antiguedad.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.antiguedad.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                }`}>
+                                                {details.antiguedad.estado}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                )}
+
+                                {/* Nocturnidad */}
+                                {details.nocturnidad && (
+                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                        <td className="py-3 px-4 font-medium text-gray-800">
+                                            Nocturnidad
+                                            <span className="block text-xs text-gray-400 font-normal">{details.nocturnidad.mensaje}</span>
+                                        </td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.nocturnidad.real?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{details.nocturnidad.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.nocturnidad.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                }`}>
+                                                {details.nocturnidad.estado}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </motion.div>
+            ) : (
+                /* Vista Clásica (Fallback) */
+                details && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="glass-card p-6"
+                    >
+                        <h3 className="text-xl font-bold gradient-text mb-4">
+                            Detalles de la Verificación
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {Object.entries(details).map(([key, value]) => (
+                                <div key={key} className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl">
+                                    <p className="text-sm text-gray-600 font-medium capitalize">
+                                        {key.replace(/_/g, ' ')}
+                                    </p>
+                                    <p className="text-lg font-bold text-gray-800 mt-1">
+                                        {typeof value === 'number' ? `${value.toFixed(2)} €` : JSON.stringify(value)}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                )
+            )}
+            
+            {/* Export Options */}
+            <ExportResults results={results} />
+        </motion.div>
+    );
+};
+
+export default ResultsDisplay;

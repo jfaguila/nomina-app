@@ -1,70 +1,207 @@
-# Getting Started with Create React App
+# Verificador de Nóminas
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicación web moderna para verificar la validez de nóminas mediante OCR y comparación con convenios laborales.
 
-## Available Scripts
+## 🚀 Características
 
-In the project directory, you can run:
+- **OCR Avanzado**: Extracción automática de datos de PDFs e imágenes usando Tesseract.js
+- **Verificación Completa**: Comparación con convenios laborales oficiales
+- **Interfaz Premium**: Diseño minimalista y moderno con Tailwind CSS
+- **Resultados Instantáneos**: Análisis rápido y detallado
+- **Drag & Drop**: Carga fácil de archivos
+- **Validación Automática**: Detección de errores y advertencias
 
-### `npm start`
+## 📋 Requisitos
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js 14 o superior
+- npm o yarn
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Instalación
 
-### `npm test`
+### 1. Clonar el repositorio
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+cd nomina-app
+```
 
-### `npm run build`
+### 2. Instalar dependencias del frontend
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 3. Instalar dependencias del backend
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+cd backend
+npm install
+cd ..
+```
 
-### `npm run eject`
+## 🎯 Uso
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Iniciar el backend
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+cd backend
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+El servidor estará disponible en `http://localhost:5000`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Iniciar el frontend (en otra terminal)
 
-## Learn More
+```bash
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+La aplicación estará disponible en `http://localhost:3000`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📁 Estructura del Proyecto
 
-### Code Splitting
+```
+nomina-app/
+├── backend/
+│   ├── data/
+│   │   └── convenios.json
+│   ├── services/
+│   │   ├── ocrService.js
+│   │   └── nominaValidator.js
+│   ├── uploads/
+│   ├── server.js
+│   └── package.json
+├── src/
+│   ├── components/
+│   │   ├── FileUpload.jsx
+│   │   ├── ManualInput.jsx
+│   │   └── ResultsDisplay.jsx
+│   ├── pages/
+│   │   └── HomePage.jsx
+│   ├── App.js
+│   └── index.css
+├── tailwind.config.js
+└── package.json
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🎨 Tecnologías Utilizadas
 
-### Analyzing the Bundle Size
+### Frontend
+- React 19 con Hooks y Concurrent Features
+- Tailwind CSS (diseño moderno)
+- Framer Motion (animaciones fluidas)
+- React Router (navegación cliente)
+- React Dropzone (drag & drop)
+- Axios (cliente HTTP)
+- Sistema de Internacionalización (Español/Inglés)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Backend
+- Node.js 18+
+- Express.js (framework web)
+- Tesseract.js (OCR avanzado)
+- Multer (manejo de archivos)
+- pdf-parse (procesamiento de PDFs)
+- Jest (framework de testing)
 
-### Making a Progressive Web App
+### Características Adicionales
+- Docker & Docker Compose para despliegue
+- Testing unitario con Jest
+- Accesibilidad WCAG 2.1 AA
+- Optimización de rendimiento
+- Exportación de datos (JSON, CSV, PDF)
+- Modo demo con ejemplos preconfigurados
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🚀 Características Implementadas
 
-### Advanced Configuration
+### ✅ Funcionalidades Principales
+- **OCR Avanzado**: Extracción automática de datos de PDFs e imágenes
+- **Validación Completa**: Comparación con convenios laborales actualizados
+- **Interfaz Premium**: Diseño moderno y accesible con Tailwind CSS
+- **Resultados Detallados**: Análisis comparativo real vs legal
+- **Drag & Drop**: Carga intuitiva de archivos
+- **Exportación de Datos**: JSON, CSV y PDF
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 🎯 Características Avanzadas
+- **Modo Demo**: Ejemplos preconfigurados para testing
+- **Internacionalización**: Soporte para Español e Inglés
+- **Accesibilidad**: WCAG 2.1 AA compliance
+- **Testing Suite**: Pruebas unitarias automatizadas
+- **Docker Ready**: Despliegue con containers
+- **Performance Monitoring**: Optimización de bundle y carga
 
-### Deployment
+### 📊 Convenios Disponibles
+- General (múltiples sectores)
+- Hostelería
+- Comercio  
+- Construcción
+- Transporte Sanitario Andalucía (detallado con categorías TES)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### 🔍 Validaciones Realizadas
+- Salario base vs convenio
+- Plus convenio (transporte sanitario)
+- Antigüedad (quinquenios)
+- Horas nocturnas
+- Dietas y desplazamientos
+- Cálculos de IRPF y SS
+- Pagas extras y prorrateo
 
-### `npm run build` fails to minify
+## 🔧 Configuración
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Convenios Disponibles
+- General
+- Hostelería
+- Comercio
+- Construcción
+
+Puedes añadir más convenios editando `backend/data/convenios.json`
+
+## 📊 API Endpoints
+
+### POST /api/verify-nomina
+Verifica una nómina
+
+**Body:**
+- `nomina`: Archivo (PDF o imagen)
+- `data`: JSON con datos manuales
+
+**Response:**
+```json
+{
+  "isValid": true,
+  "errors": [],
+  "warnings": [],
+  "details": {
+    "salario_base": 1500,
+    "total_devengado": 1650,
+    "liquido_total": 1250
+  }
+}
+```
+
+### POST /api/test-ocr
+Prueba el OCR en un archivo
+
+**Body:**
+- `file`: Archivo (PDF o imagen)
+
+**Response:**
+```json
+{
+  "text": "Texto extraído..."
+}
+```
+
+## 🎨 Personalización
+
+### Colores
+Edita `tailwind.config.js` para cambiar la paleta de colores.
+
+### Convenios
+Edita `backend/data/convenios.json` para añadir o modificar convenios.
+
+## 📄 Licencia
+
+MIT
+
+## 👨‍💻 Autor
+
+Desarrollado con ❤️ para facilitar la verificación de nóminas
