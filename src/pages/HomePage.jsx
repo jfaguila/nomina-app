@@ -6,7 +6,7 @@ import FileUpload from '../components/FileUpload';
 import ManualInput from '../components/ManualInput';
 import ResultsDisplay from '../components/ResultsDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
-import DemoMode from '../components/DemoMode';
+
 
 const HomePage = () => {
     const { t } = useLanguage();
@@ -17,32 +17,20 @@ const HomePage = () => {
     const [loadingMessage, setLoadingMessage] = useState('');
     const [loadingProgress, setLoadingProgress] = useState(null);
     const [announcement, setAnnouncement] = useState('');
-    // eslint-disable-next-line no-unused-vars
-    const [showDemo, setShowDemo] = useState(false);
+
 
     const handleFileSelect = (file) => {
         setSelectedFile(file);
         setResults(null);
         setError(null);
-        setShowDemo(false);
+
         setAnnouncement(`Archivo ${file.name} seleccionado correctamente`);
     };
 
-    const handleDemoSelect = (file, data, sample) => {
-        setSelectedFile(file);
-        setResults(null);
-        setError(null);
-        setShowDemo(false);
-        setAnnouncement(`Ejemplo seleccionado: ${sample.title}`);
-        
-        // Auto-submit after a short delay for better UX
-        setTimeout(() => {
-            handleManualSubmit(data);
-        }, 1000);
-    };
+
 
     const handleManualSubmit = async (formData) => {
-if (!selectedFile) {
+        if (!selectedFile) {
             setError(t('errorMessages.uploadRequired'));
             return;
         }
@@ -75,24 +63,24 @@ if (!selectedFile) {
 
             setResults(response.data);
             setLoadingProgress(100);
-            
+
             // Pequeña pausa para mostrar 100% antes de cambiar vista
             setTimeout(() => {
                 setLoading(false);
                 setLoadingProgress(null);
                 setLoadingMessage('');
             }, 500);
-            
+
         } catch (err) {
             console.error('Error completo:', err);
-            
+
             // Manejo mejorado de errores
             if (err.response) {
                 // Error de respuesta del servidor
                 const errorData = err.response.data;
                 const errorMessage = errorData.error || 'Error del servidor';
                 const errorCode = errorData.code || 'SERVER_ERROR';
-                
+
                 switch (errorCode) {
                     case 'FILE_TOO_LARGE':
                         setError(t('errorMessages.fileTooLarge'));
@@ -116,7 +104,7 @@ if (!selectedFile) {
                 // Error del cliente
                 setError(t('errorMessages.processingError') + ': ' + (err.message || 'Error desconocido'));
             }
-            
+
             setLoading(false);
             setLoadingProgress(null);
             setLoadingMessage('');
@@ -125,18 +113,17 @@ if (!selectedFile) {
 
     return (
         <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-                 <div className="max-w-6xl mx-auto" id="main-content">
-                    {/* Screen reader announcements */}
-                    <div 
-                        aria-live="polite" 
-                        aria-atomic="true" 
-                        className="sr-only"
-                    >
-                        {announcement}
-                    </div>
+            <div className="max-w-6xl mx-auto" id="main-content">
+                {/* Screen reader announcements */}
+                <div
+                    aria-live="polite"
+                    aria-atomic="true"
+                    className="sr-only"
+                >
+                    {announcement}
+                </div>
 
-                    {/* Demo Mode */}
-                    <DemoMode onSelectSample={handleDemoSelect} />
+
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -151,7 +138,7 @@ if (!selectedFile) {
                     </p>
                 </motion.div>
 
-                 {/* Error Message */}
+                {/* Error Message */}
                 {error && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -192,9 +179,9 @@ if (!selectedFile) {
                 {/* Loading State */}
                 <AnimatePresence>
                     {loading && (
-                        <LoadingSpinner 
-                            message={loadingMessage} 
-                            progress={loadingProgress} 
+                        <LoadingSpinner
+                            message={loadingMessage}
+                            progress={loadingProgress}
                         />
                     )}
                 </AnimatePresence>
