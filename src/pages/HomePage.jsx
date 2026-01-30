@@ -21,6 +21,12 @@ const HomePage = () => {
     const [announcement, setAnnouncement] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
 
+    // New state for pre-analysis options
+    const [uploadData, setUploadData] = useState({
+        convenio: 'general',
+        categoria: 'empleado'
+    });
+
 
     const handleFileSelect = (file) => {
         setSelectedFile(file);
@@ -39,7 +45,7 @@ const HomePage = () => {
 
         const formDataToSend = new FormData();
         formDataToSend.append('nomina', selectedFile);
-        // If there's manual data mixed in, we could append it here, but for now it's separate flows.
+        formDataToSend.append('data', JSON.stringify(uploadData)); // Send user selected choices
 
         try {
             setLoadingMessage(t('uploading'));
@@ -297,8 +303,68 @@ const HomePage = () => {
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="mt-4"
+                                        className="mt-4 space-y-4"
                                     >
+                                        <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 font-medium">
+                                                (Opcional) Ayuda al sistema indicando el contexto:
+                                            </p>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-gray-500 mb-1">
+                                                        Convenio
+                                                    </label>
+                                                    <select
+                                                        value={uploadData.convenio}
+                                                        onChange={(e) => setUploadData(prev => ({ ...prev, convenio: e.target.value }))}
+                                                        className="input-field text-sm py-2"
+                                                    >
+                                                        <option value="general">Convenio General</option>
+                                                        <option value="hosteleria">Hostelería</option>
+                                                        <option value="comercio">Comercio</option>
+                                                        <option value="construccion">Construcción</option>
+                                                        <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía</option>
+                                                        <option value="mercadona">Mercadona (2024-2028)</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-gray-500 mb-1">
+                                                        Categoría
+                                                    </label>
+                                                    <select
+                                                        value={uploadData.categoria}
+                                                        onChange={(e) => setUploadData(prev => ({ ...prev, categoria: e.target.value }))}
+                                                        className="input-field text-sm py-2"
+                                                    >
+                                                        {uploadData.convenio === 'transporte_sanitario_andalucia' ? (
+                                                            <>
+                                                                <option value="tes_conductor">TES Conductor/a</option>
+                                                                <option value="tes_ayudante_camillero">TES Ayudante Camillero/a</option>
+                                                                <option value="tes_camillero">TES Camillero/a</option>
+                                                                <option value="mando_intermedio">Mando Intermedio</option>
+                                                                <option value="directivo">Directivo</option>
+                                                            </>
+                                                        ) : uploadData.convenio === 'mercadona' ? (
+                                                            <>
+                                                                <option value="personal_base">Personal Base</option>
+                                                                <option value="gerente_a">Gerente A</option>
+                                                                <option value="gerente_b">Gerente B</option>
+                                                                <option value="gerente_c">Gerente C</option>
+                                                                <option value="coordinador">Coordinador</option>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <option value="empleado">Empleado</option>
+                                                                <option value="tecnico">Técnico</option>
+                                                                <option value="mando_intermedio">Mando Intermedio</option>
+                                                                <option value="directivo">Directivo</option>
+                                                            </>
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div className="flex flex-col gap-3">
                                             <div className="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg flex items-center gap-3 border border-green-200 dark:border-green-800">
                                                 <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -397,7 +463,7 @@ const HomePage = () => {
                 </motion.div>
 
                 <div className="text-center mt-12 text-gray-400 text-xs">
-                    NominaApp v1.1 - Production Release
+                    NominaApp v1.3.4 - Production Release
                 </div>
             </div>
         </div>
