@@ -26,8 +26,88 @@ const HomePage = () => {
         setSelectedFile(file);
         setResults(null);
         setError(null);
+        setAnnouncement(`Archivo ${file.name} seleccionado. Pulsa analizar para continuar.`);
+    };
 
-        setAnnouncement(`Archivo ${file.name} seleccionado correctamente`);
+    const handleAnalyze = async () => {
+        if (!selectedFile) return;
+
+        setLoading(true);
+        setError(null);
+        setLoadingMessage(t('analyzing'));
+        setLoadingProgress(0);
+
+        const formDataToSend = new FormData();
+        formDataToSend.append('nomina', selectedFile);
+        // If there's manual data mixed in, we could append it here, but for now it's separate flows.
+
+        try {
+            setLoadingMessage(t('uploading'));
+            setLoadingProgress(25);
+
+            // Usar variable de entorno para la URL de la API, o la URL de producción si estamos en Vercel
+            let apiUrl = process.env.REACT_APP_API_URL;
+
+            // Fallback inteligente
+            if (!apiUrl) {
+                if (window.location.hostname.includes('vercel.app')) {
+                    apiUrl = 'https://nomina-app-production.up.railway.app';
+                } else {
+                    apiUrl = 'http://localhost:5987';
+                }
+            }
+
+            console.log('Connecting to API:', apiUrl);
+
+            const response = await axios.post(`${apiUrl}/api/verify-nomina`, formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setLoadingProgress(25 + (percentCompleted * 0.3));
+                }
+            });
+
+            setLoadingMessage(t('processingResults'));
+            setLoadingProgress(80);
+
+            setResults(response.data);
+            setLoadingProgress(100);
+
+            setTimeout(() => {
+                setLoading(false);
+                setLoadingProgress(null);
+                setLoadingMessage('');
+            }, 500);
+
+        } catch (err) {
+            console.error('Error completo:', err);
+            // ... (keep existing error handling mainly, simplified for brevity here if possible, or copy existing)
+
+            // Manejo mejorado de errores (COPIED FROM EXISTING)
+            if (err.response) {
+                const errorData = err.response.data;
+                const errorMessage = errorData.error || 'Error del servidor';
+                const errorCode = errorData.code || 'SERVER_ERROR';
+
+                switch (errorCode) {
+                    case 'FILE_TOO_LARGE': setError(t('errorMessages.fileTooLarge')); break;
+                    case 'INVALID_FILE_TYPE': setError(t('errorMessages.invalidFileType')); break;
+                    case 'TOO_MANY_FILES': setError(t('errorMessages.tooManyFiles')); break;
+                    case 'INVALID_JSON': setError(t('errorMessages.invalidJSON')); break;
+                    default: setError(errorMessage);
+                }
+            } else if (err.request) {
+                setError(t('errorMessages.connectionError'));
+            } else {
+                setError(t('errorMessages.processingError') + ': ' + (err.message || 'Error desconocido'));
+            }
+
+            setLoading(false);
+            setLoadingProgress(null);
+            setLoadingMessage('');
+        }
     };
 
 
@@ -213,7 +293,35 @@ const HomePage = () => {
                                     Sube tu Nómina
                                 </h2>
                                 <FileUpload onFileSelect={handleFileSelect} />
-                                <p className="text-sm text-gray-500 italic">
+                                {selectedFile && !results && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="mt-4"
+                                    >
+                                        <div className="flex flex-col gap-3">
+                                            <div className="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg flex items-center gap-3 border border-green-200 dark:border-green-800">
+                                                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                                                    Archivo seleccionado: {selectedFile.name}
+                                                </span>
+                                            </div>
+
+                                            <button
+                                                onClick={handleAnalyze}
+                                                className="w-full btn-primary py-3 text-lg font-bold shadow-lg shadow-primary-500/20 flex justify-center items-center gap-2"
+                                            >
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                                </svg>
+                                                Analizar Nómina
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                                <p className="text-sm text-gray-500 italic mt-2">
                                     El sistema intentará leer los datos automáticamente.
                                 </p>
                             </div>
