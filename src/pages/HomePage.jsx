@@ -168,10 +168,22 @@ const HomePage = () => {
                             exit={{ opacity: 0, y: -20 }}
                             className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8"
                         >
-                            <div id="file-upload">
+                            <div id="file-upload" className="space-y-4">
+                                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                    <span className="bg-primary-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">1</span>
+                                    Sube tu Nómina
+                                </h2>
                                 <FileUpload onFileSelect={handleFileSelect} />
+                                <p className="text-sm text-gray-500 italic">
+                                    El sistema intentará leer los datos automáticamente.
+                                </p>
                             </div>
-                            <div id="manual-input">
+
+                            <div id="manual-input" className="space-y-4">
+                                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                    <span className="bg-secondary-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">2</span>
+                                    Verifica y Analiza
+                                </h2>
                                 <ManualInput onSubmit={handleManualSubmit} disabled={!selectedFile} />
                             </div>
                         </motion.div>

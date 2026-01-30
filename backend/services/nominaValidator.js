@@ -158,32 +158,33 @@ class NominaValidator {
         // pero aquí buscamos línea por línea indirectamente con las regex.
 
         const patterns = {
-            salarioBase: /(?:salario\s*base|base)[^0-9]*(\d+[.,]\d+)/i,
-            plusConvenio: /(?:plus\s*convenio)[^0-9]*(\d+[.,]\d+)/i,
-            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9]*(\d+[.,]\d+)(?!.*\%)/i, // Asegurar que no cogemos el porcentaje
-            nocturnidad: /(?:nocturnidad)[^0-9]*(\d+[.,]\d+)/i,
-            horasExtras: /(?:horas?\s*extras?|h\.?\s*extras?|p\.?\s*p\.?\s*extras?)[^0-9]*(\d+[.,]\d+)/i, // A veces P.P.Extras se confunde, ajustar si necesario
-            dietas: /dietas?[^0-9]*(\d+[.,]\d+)/i,
-            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado)[^0-9]*(\d+[.,]\d+)/i,
-            liquidoTotal: /(?:l[ií]quido\s*total|l[ií]quido\s*a\s*percibir|total\s*percibir)[^0-9]*(\d+[.,]\d+)/i,
+            salarioBase: /(?:salario\s*base|base)[^0-9]*(\d+(?:[.,]\d+)*)/i,
+            plusConvenio: /(?:plus\s*convenio)[^0-9]*(\d+(?:[.,]\d+)*)/i,
+            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9]*(\d+(?:[.,]\d+)*)(?!.*\%)/i,
+            nocturnidad: /(?:nocturnidad)[^0-9]*(\d+(?:[.,]\d+)*)/i,
+            horasExtras: /(?:horas?\s*extras?|h\.?\s*extras?|p\.?\s*p\.?\s*extras?)[^0-9]*(\d+(?:[.,]\d+)*)/i,
+            dietas: /dietas?[^0-9]*(\d+(?:[.,]\d+)*)/i,
+            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado)[^0-9]*(\d+(?:[.,]\d+)*)/i,
+            liquidoTotal: /(?:l[ií]quido\s*total|l[ií]quido\s*a\s*percibir|total\s*percibir)[^0-9]*(\d+(?:[.,]\d+)*)/i,
         };
 
         for (const [key, pattern] of Object.entries(patterns)) {
             const match = text.match(pattern);
             if (match) {
-                // Asumimos que el primer grupo de captura es el valor
-                // Reemplazamos coma por punto para parsear
-                let val = match[1].replace(',', '.').replace(/\./g, (m, idx, full) => full.indexOf('.') === idx ? '.' : ''); // Simple clean si hay miles
-                // Corrección simple: si hay varios puntos y una coma al final (formato europeo 1.000,00), 
-                // replace ',' -> '.' y quitar los otros puntos.
-                // Mejor estrategia: borrar puntos de miles, cambiar coma decimal a punto.
-                val = match[1].replace(/\./g, '').replace(',', '.');
-                data[key] = val;
+                // Limpiar el valor:
+                // 1. Eliminar puntos de miles (asumiendo formato europeo: 1.200,50)
+                // 2. Reemplazar coma decimal por punto
+                let val = match[1].replace(/\./g, '').replace(',', '.');
 
-                // Mapeo especial para coincidir con nombres internos
-                if (key === 'antiguedad') data.valorAntiguedad = val;
-                if (key === 'nocturnidad') data.valorNocturnidad = val;
-                if (key === 'plusConvenio') data.plusConvenio = val;
+                // Si después de limpiar queda algo que no es número (por si acaso), lo validamos
+                if (!isNaN(parseFloat(val))) {
+                    data[key] = val;
+
+                    // Mapeo especial para coincidir con nombres internos
+                    if (key === 'antiguedad') data.valorAntiguedad = val;
+                    if (key === 'nocturnidad') data.valorNocturnidad = val;
+                    if (key === 'plusConvenio') data.plusConvenio = val;
+                }
             }
         }
 
