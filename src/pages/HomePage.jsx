@@ -248,6 +248,10 @@ const HomePage = () => {
                         </p>
                     </div>
                 </motion.div>
+
+                <div className="text-center mt-12 text-gray-400 text-xs">
+                    NominaApp v1.1 - Production Release
+                </div>
             </div>
         </div>
     );
