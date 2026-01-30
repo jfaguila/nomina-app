@@ -20,6 +20,7 @@ Hoy hemos transformado la aplicación de un proceso simple de OCR a un **Flujo P
 - **Backend Fix**: Se reparó `server.js` que presentaba rutas anidadas incorrectamente, impidiendo el arranque del servidor.
 - **Frontend Fix**: Se realizó una limpieza profunda de `HomePage.jsx` tras detectar funciones duplicadas y errores de sintaxis que bloqueaban la compilación en Vercel.
 - **Conectividad**: Se restauraron los servicios locales (Puerto 5987 para backend, 3000 para frontend).
+- **Precisión OCR**: Se ha implementado un parche crítico ("Sanity Check") para evitar concatenaciones de números (como el error de los 125 millones). Ahora el sistema ignora valores absurdos y es mucho más estricto con los espacios.
 
 ## 🔧 Estado Técnico Actual
 - **Repositorio**: Todos los cambios están en la rama `main` de GitHub.

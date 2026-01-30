@@ -172,11 +172,11 @@ class NominaValidator {
         console.log("--- OCR EXTRACTED TEXT END ---");
 
         const patterns = {
-            // Refined regex: Removing \s from segments to prevent matching across spaces (e.g. 1250 2020)
-            salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*?(\d+(?:[.,]\d{3})*(?:[.,]\d{2})?)/i,
-            plusConvenio: /(?:plus\s*convenio)[^0-9\n]*?(\d+(?:[.,]\d{3})*(?:[.,]\d{2})?)/i,
-            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
-            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*?(\d+(?:[.,]\d{3})*(?:[.,]\d{2})?)/i,
+            // Balanced regex: Use [^0-9\n]{0,20} to limit the gap and permit spaces \s as thousand separators (\d{3}).
+            salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]{0,20}?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            plusConvenio: /(?:plus\s*convenio)[^0-9\n]{0,20}?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]{0,20}?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]{0,20}?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
         };
 
         for (const [key, pattern] of Object.entries(patterns)) {
@@ -188,10 +188,6 @@ class NominaValidator {
 
                 let rawVal = match[1].trim();
 
-                // Heuristic: If it has both dot and comma
-                // 1.200,50 -> Remove dot, replace comma
-                // 1,200.50 -> Remove comma, keep dot (US) - Unlikely in Spain but possible
-
                 let cleanVal = rawVal;
 
                 // Spanish/European format assumption: dot is thousand separator, comma is decimal
@@ -201,7 +197,7 @@ class NominaValidator {
                     // Only comma? 1200,50 -> 1200.50
                     cleanVal = cleanVal.replace(',', '.');
                 } else if (cleanVal.includes('.')) {
-                    // Only dot? Could be "1.200" (1200) or "12.50" (12.5)
+                    // Single dot. "1.200" vs "10.55"
                     // If multiple dots -> thousands -> remove
                     if ((cleanVal.match(/\./g) || []).length > 1) {
                         cleanVal = cleanVal.replace(/\./g, '');
@@ -214,11 +210,9 @@ class NominaValidator {
                     }
                 }
 
-                // Remove spaces (1 200 -> 1200) - BUT only if they are thousand separators
-                // Actually, if we reach here, we've already matched. If there's a space, let's check it.
+                // Handle heuristic for spaces (1 250 -> 1250 while preventing 1250 2020)
                 if (cleanVal.includes(' ')) {
                     // If the space is followed by exactly 3 digits and then nothing or decimal, it's a thousand separator
-                    // If not, it's likely a concatenation from a greedy regex (e.g. 1250 2020)
                     if (!/\s\d{3}(?:[.,]\d{2})?$/.test(cleanVal)) {
                         // Discard the part after the space
                         cleanVal = cleanVal.split(' ')[0];
@@ -230,7 +224,7 @@ class NominaValidator {
                 if (!isNaN(parsedVal)) {
                     // SANITY CHECK: Max monthly salary limit (20.000€)
                     // If it's higher, it's likely an error (like 12502020)
-                    if (parsedVal > 20000 && key === 'salarioBase') {
+                    if (parsedVal > 20000 && (key === 'salarioBase' || key === 'totalDevengado')) {
                         console.log(`[WARN] Discarding absurd value for ${key}: ${parsedVal}`);
                         continue;
                     }
