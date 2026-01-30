@@ -87,7 +87,9 @@ export const translations = {
       invalidFileType: 'Solo se permiten archivos PDF, JPG y PNG.',
       tooManyFiles: 'Solo puedes subir un archivo a la vez.',
       invalidJSON: 'Error en el formato de los datos.',
-      connectionError: 'No se puede conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:5987',
+      invalidJSON: 'Error en el formato de los datos.',
+      connectionError: 'No se puede conectar con el servidor. Verifica tu conexión o intenta más tarde.',
+      processingError: 'Error al procesar la nómina',
       processingError: 'Error al procesar la nómina',
       uploadRequired: 'Por favor, sube un archivo de nómina primero'
     },

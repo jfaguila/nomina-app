@@ -51,8 +51,20 @@ const HomePage = () => {
             setLoadingMessage(t('uploading'));
             setLoadingProgress(25);
 
-            // Usar variable de entorno para la URL de la API, o localhost por defecto
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5987';
+            // Usar variable de entorno para la URL de la API, o la URL de producción si estamos en Vercel
+            let apiUrl = process.env.REACT_APP_API_URL;
+
+            // Fallback inteligente: si no hay variable de entorno y estamos en una URL de vercel, usar Railway
+            if (!apiUrl) {
+                if (window.location.hostname.includes('vercel.app')) {
+                    apiUrl = 'https://nomina-app-production.up.railway.app';
+                } else {
+                    apiUrl = 'http://localhost:5987';
+                }
+            }
+
+            console.log('Connecting to API:', apiUrl); // Debug log
+
             const response = await axios.post(`${apiUrl}/api/verify-nomina`, formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
