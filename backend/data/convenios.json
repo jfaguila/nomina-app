@@ -187,5 +187,31 @@
         "reglasNocturnidad": {
             "valorHora": 2.25
         }
+    },
+    "leroy_merlin": {
+        "nombre": "Convenio Grandes Almacenes (Leroy Merlin)",
+        "salarioMinimo": {
+            "profesional": 1277.25,
+            "coordinador": 1450.00,
+            "tecnico": 1600.00
+        },
+        "detallesSalariales": {
+            "profesional": {
+                "salarioBase": 1277.25,
+                "plusConvenio": 0
+            }
+        },
+        "incentivos": {
+            "nombre": "Prima de Progreso",
+            "descripcion": "Trimestral, ligada a resultados colectivos de tienda/sección."
+        },
+        "pagasExtras": {
+            "regla": "prorrateo_obligatorio",
+            "cantidad": 4
+        },
+        "reglasAntiguedad": {
+            "tipo": "cuatrienio",
+            "porcentajeBase": 0.03
+        }
     }
 }

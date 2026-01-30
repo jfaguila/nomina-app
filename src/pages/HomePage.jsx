@@ -325,6 +325,7 @@ const HomePage = () => {
                                                         <option value="construccion">Construcción</option>
                                                         <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía</option>
                                                         <option value="mercadona">Mercadona (2024-2028)</option>
+                                                        <option value="leroy_merlin">Leroy Merlin (Grandes Almacenes)</option>
                                                     </select>
                                                 </div>
                                                 <div>
@@ -351,6 +352,12 @@ const HomePage = () => {
                                                                 <option value="gerente_b">Gerente B</option>
                                                                 <option value="gerente_c">Gerente C</option>
                                                                 <option value="coordinador">Coordinador</option>
+                                                            </>
+                                                        ) : uploadData.convenio === 'leroy_merlin' ? (
+                                                            <>
+                                                                <option value="profesional">Profesional</option>
+                                                                <option value="coordinador">Coordinador</option>
+                                                                <option value="tecnico">Técnico</option>
                                                             </>
                                                         ) : (
                                                             <>

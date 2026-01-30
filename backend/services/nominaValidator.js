@@ -110,6 +110,31 @@ if (nominaData.dietas) {
     };
 }
 
+// 5. CÁLCULOS ESPECÍFICOS LEROY MERLIN (PRIMA DE PROGRESO)
+if (convenioKey === 'leroy_merlin') {
+    // Regex flexible para encontrar la prima
+    const incentivoPattern = /(?:prima\s*progreso|incentivo\s*ventas|prima\s*trimestral|participacion\s*beneficios)/i;
+    const match = extractedText.match(incentivoPattern);
+
+    // Buscar valor si existe en el texto, aunque sea aproximado
+    // (Simplificado: asumimos que si no está en 'manualData' y no lo autodetectamos, es 0)
+    const incentivoReal = parseFloat(nominaData.incentivos) || 0; // Asumiendo que el campo autodetectado se mapee aquí o sea 0
+
+    // Regla de negocio: La prima de progreso no es garantizada
+    details.incentivos = {
+        real: incentivoReal,
+        teorico: 0, // No es obligatoria por ley fija, depende de objetivos
+        estado: incentivoReal > 0 ? 'CORRECTO' : '¿REVISAR?',
+        mensaje: incentivoReal > 0
+            ? '¡Genial! Has cobrado la prima de progreso.'
+            : 'ATENCIÓN: La "Prima de Progreso" depende de objetivos COLECTIVOS de tu tienda/sección, no solo de tus ventas individuales. Si la tienda falla, no se cobra.'
+    };
+
+    if (incentivoReal === 0) {
+        warnings.push('No se detecta "Prima de Progreso". Recuerda que este plus depende de que TODA la sección cumpla objetivos, no solo tú.');
+    }
+}
+
 // 5. CÁLCULOS GENERALES (Deducciones, Totales)
 const totalDevengadoReal = parseFloat(nominaData.totalDevengado) || (salarioBaseReal + (parseFloat(nominaData.plusConvenio) || 0) + (parseFloat(nominaData.valorAntiguedad) || 0) + (parseFloat(nominaData.valorNocturnidad) || 0));
 const seguridadSocial = totalDevengadoReal * 0.0635;
