@@ -5,7 +5,7 @@ import { useLanguage } from '../i18n/LanguageProvider';
 
 const ResultsDisplay = ({ results }) => {
     const { t } = useLanguage();
-    
+
     if (!results) return null;
 
     const { isValid, errors, warnings, details } = results;
@@ -18,7 +18,7 @@ const ResultsDisplay = ({ results }) => {
             className="space-y-6"
         >
             {/* Estado General */}
-            <div 
+            <div
                 className={`glass-card p-8 border-l-8 ${isValid ? 'border-green-500' : 'border-red-500'}`}
                 role="alert"
                 aria-live="polite"
@@ -215,7 +215,27 @@ const ResultsDisplay = ({ results }) => {
                     </motion.div>
                 )
             )}
-            
+
+            {/* Debug Info */}
+            {results.debugText && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="glass-card p-4 mt-8"
+                >
+                    <details className="cursor-pointer">
+                        <summary className="text-sm font-semibold text-gray-500 hover:text-primary-600 outline-none">
+                            🛠️ Ver Texto Detectado (Debug)
+                        </summary>
+                        <div className="mt-4 p-4 bg-gray-100 dark:bg-slate-900 rounded-lg overflow-x-auto">
+                            <pre className="text-xs text-gray-700 dark:text-gray-300 font-mono whitespace-pre-wrap">
+                                {results.debugText}
+                            </pre>
+                        </div>
+                    </details>
+                </motion.div>
+            )}
+
             {/* Export Options */}
             <ExportResults results={results} />
         </motion.div>

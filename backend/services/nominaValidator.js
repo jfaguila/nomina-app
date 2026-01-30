@@ -143,74 +143,106 @@ class NominaValidator {
             warnings,
             details,
             convenioAplicado: convenio.nombre,
-            comparativa: true
-        };
-    }
-
-    /**
-     * Extrae datos relevantes del texto de la nómina
-     */
-    extractDataFromText(text) {
-        const data = {};
-
-        // Normalizar texto para facilitar regex
-        // Reemplazar saltos de línea con espacios para búsquedas más flexibles si fuera necesario, 
-        // pero aquí buscamos línea por línea indirectamente con las regex.
-
-        const patterns = {
-            salarioBase: /(?:salario\s*base|base)[^0-9]*(\d+(?:[.,]\d+)*)/i,
-            plusConvenio: /(?:plus\s*convenio)[^0-9]*(\d+(?:[.,]\d+)*)/i,
-            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9]*(\d+(?:[.,]\d+)*)(?!.*\%)/i,
-            nocturnidad: /(?:nocturnidad)[^0-9]*(\d+(?:[.,]\d+)*)/i,
-            horasExtras: /(?:horas?\s*extras?|h\.?\s*extras?|p\.?\s*p\.?\s*extras?)[^0-9]*(\d+(?:[.,]\d+)*)/i,
-            dietas: /dietas?[^0-9]*(\d+(?:[.,]\d+)*)/i,
-            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado)[^0-9]*(\d+(?:[.,]\d+)*)/i,
-            liquidoTotal: /(?:l[ií]quido\s*total|l[ií]quido\s*a\s*percibir|total\s*percibir)[^0-9]*(\d+(?:[.,]\d+)*)/i,
-        };
-
-        for (const [key, pattern] of Object.entries(patterns)) {
-            const match = text.match(pattern);
-            if (match) {
-                // Limpiar el valor:
-                // 1. Eliminar puntos de miles (asumiendo formato europeo: 1.200,50)
-                // 2. Reemplazar coma decimal por punto
-                let val = match[1].replace(/\./g, '').replace(',', '.');
-
-                // Si después de limpiar queda algo que no es número (por si acaso), lo validamos
-                if (!isNaN(parseFloat(val))) {
-                    data[key] = val;
-
-                    // Mapeo especial para coincidir con nombres internos
-                    if (key === 'antiguedad') data.valorAntiguedad = val;
-                    if (key === 'nocturnidad') data.valorNocturnidad = val;
-                    if (key === 'plusConvenio') data.plusConvenio = val;
-                }
-            }
+            return {
+                isValid,
+                errors,
+                warnings,
+                details,
+                convenioAplicado: convenio.nombre,
+                comparativa: true,
+                debugText: extractedText // Return raw text for troubleshooting
+            };
         }
 
-        return data;
-    }
+        /**
+         * Extrae datos relevantes del texto de la nómina
+         */
+        extractDataFromText(text) {
+            const data = {};
 
-    /**
-     * Calcula el valor de una hora extra
-     */
-    calcularValorHoraExtra(salarioBase, convenio) {
-        const horasMes = 160; // Aproximado para jornada completa
-        const valorHoraNormal = salarioBase / horasMes;
-        return valorHoraNormal * convenio.incrementoHoraExtra;
-    }
+            // Debug Log
+            console.log("--- OCR EXTRACTED TEXT START ---");
+            console.log(text);
+            console.log("--- OCR EXTRACTED TEXT END ---");
 
-    /**
-     * Calcula el IRPF estimado (simplificado)
-     */
-    calcularIRPF(totalDevengado) {
-        // Tabla simplificada de IRPF
-        if (totalDevengado < 12450) return totalDevengado * 0.19;
-        if (totalDevengado < 20200) return totalDevengado * 0.24;
-        if (totalDevengado < 35200) return totalDevengado * 0.30;
-        if (totalDevengado < 60000) return totalDevengado * 0.37;
-        return totalDevengado * 0.45;
+            const patterns = {
+                // More permissive pattern: allows spaces between digits, handles various separators
+                salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*([\d\s.,]+)/i,
+                plusConvenio: /(?:plus\s*convenio)[^0-9\n]*([\d\s.,]+)/i,
+                antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]*([\d\s.,]+)/i,
+                totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*([\d\s.,]+)/i,
+            };
+
+            for (const [key, pattern] of Object.entries(patterns)) {
+                const match = text.match(pattern);
+                if (match) {
+                    // Cleanup: remove dots (thousands), remove spaces, replace comma with dot
+                    // Example: "1.200,50" -> "1200.50"
+                    // Example: "1 200,50" -> "1200.50"
+
+                    let rawVal = match[1].trim();
+
+                    // Heuristic: If it has both dot and comma
+                    // 1.200,50 -> Remove dot, replace comma
+                    // 1,200.50 -> Remove comma, keep dot (US) - Unlikely in Spain but possible
+
+                    let cleanVal = rawVal;
+
+                    // Spanish/European format assumption: dot is thousand separator, comma is decimal
+                    if (cleanVal.includes(',') && cleanVal.includes('.')) {
+                        cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
+                    } else if (cleanVal.includes(',')) {
+                        // Only comma? 1200,50 -> 1200.50
+                        cleanVal = cleanVal.replace(',', '.');
+                    } else if (cleanVal.includes('.')) {
+                        // Only dot? Could be "1.200" (1200) or "12.50" (12.5)
+                        // If multiple dots -> thousands -> remove
+                        if ((cleanVal.match(/\./g) || []).length > 1) {
+                            cleanVal = cleanVal.replace(/\./g, '');
+                        } else {
+                            // Single dot. "1.200" vs "10.55"
+                            // If 3 digits after dot -> thousand separator
+                            if (/\.\d{3}$/.test(cleanVal)) {
+                                cleanVal = cleanVal.replace(/\./g, '');
+                            }
+                        }
+                    }
+
+                    // Remove spaces (1 200 -> 1200)
+                    cleanVal = cleanVal.replace(/\s/g, '');
+
+                    if (!isNaN(parseFloat(cleanVal))) {
+                        data[key] = cleanVal;
+                        // Mapeos adicionales
+                        if (key === 'antiguedad') data.valorAntiguedad = cleanVal;
+                        if (key === 'plusConvenio') data.plusConvenio = cleanVal;
+                        console.log(`[DEBUG] Found ${key}: ${rawVal} -> ${cleanVal}`);
+                    }
+                }
+            }
+
+            return data;
+        }
+
+        /**
+         * Calcula el valor de una hora extra
+         */
+        calcularValorHoraExtra(salarioBase, convenio) {
+            const horasMes = 160; // Aproximado para jornada completa
+            const valorHoraNormal = salarioBase / horasMes;
+            return valorHoraNormal * convenio.incrementoHoraExtra;
+        }
+
+        /**
+         * Calcula el IRPF estimado (simplificado)
+         */
+        calcularIRPF(totalDevengado) {
+            if (totalDevengado < 12450) return totalDevengado * 0.19;
+            if (totalDevengado < 20200) return totalDevengado * 0.24;
+            if (totalDevengado < 35200) return totalDevengado * 0.30;
+            if (totalDevengado < 60000) return totalDevengado * 0.37;
+            return totalDevengado * 0.45;
+        }
     }
-}
 
 module.exports = new NominaValidator();
