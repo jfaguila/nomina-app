@@ -172,11 +172,11 @@ class NominaValidator {
         console.log("--- OCR EXTRACTED TEXT END ---");
 
         const patterns = {
-            // Updated regex: \d+ instead of \d{1,3} to capture 1253 without needing a separator
-            salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
-            plusConvenio: /(?:plus\s*convenio)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            // Refined regex: Removing \s from segments to prevent matching across spaces (e.g. 1250 2020)
+            salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*?(\d+(?:[.,]\d{3})*(?:[.,]\d{2})?)/i,
+            plusConvenio: /(?:plus\s*convenio)[^0-9\n]*?(\d+(?:[.,]\d{3})*(?:[.,]\d{2})?)/i,
             antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
-            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*?(\d+(?:[.,]\d{3})*(?:[.,]\d{2})?)/i,
         };
 
         for (const [key, pattern] of Object.entries(patterns)) {
@@ -214,10 +214,27 @@ class NominaValidator {
                     }
                 }
 
-                // Remove spaces (1 200 -> 1200)
+                // Remove spaces (1 200 -> 1200) - BUT only if they are thousand separators
+                // Actually, if we reach here, we've already matched. If there's a space, let's check it.
+                if (cleanVal.includes(' ')) {
+                    // If the space is followed by exactly 3 digits and then nothing or decimal, it's a thousand separator
+                    // If not, it's likely a concatenation from a greedy regex (e.g. 1250 2020)
+                    if (!/\s\d{3}(?:[.,]\d{2})?$/.test(cleanVal)) {
+                        // Discard the part after the space
+                        cleanVal = cleanVal.split(' ')[0];
+                    }
+                }
                 cleanVal = cleanVal.replace(/\s/g, '');
 
-                if (!isNaN(parseFloat(cleanVal))) {
+                const parsedVal = parseFloat(cleanVal);
+                if (!isNaN(parsedVal)) {
+                    // SANITY CHECK: Max monthly salary limit (20.000€)
+                    // If it's higher, it's likely an error (like 12502020)
+                    if (parsedVal > 20000 && key === 'salarioBase') {
+                        console.log(`[WARN] Discarding absurd value for ${key}: ${parsedVal}`);
+                        continue;
+                    }
+
                     data[key] = cleanVal;
                     // Mapeos adicionales
                     if (key === 'antiguedad') data.valorAntiguedad = cleanVal;
