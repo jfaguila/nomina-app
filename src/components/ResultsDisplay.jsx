@@ -111,20 +111,20 @@ const ResultsDisplay = ({ results }) => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b-2 border-gray-100">
-                                    <th className="py-3 px-4 font-bold text-gray-600">Concepto</th>
-                                    <th className="py-3 px-4 font-bold text-gray-600 text-right">Tu Nómina (Real)</th>
-                                    <th className="py-3 px-4 font-bold text-gray-600 text-right">Debería Ser (Legal)</th>
-                                    <th className="py-3 px-4 font-bold text-gray-600 text-center">Estado</th>
+                                <tr className="border-b-2 border-gray-100 dark:border-gray-700">
+                                    <th className="py-3 px-4 font-bold text-gray-600 dark:text-gray-400">Concepto</th>
+                                    <th className="py-3 px-4 font-bold text-gray-600 dark:text-gray-400 text-right">Tu Nómina (Real)</th>
+                                    <th className="py-3 px-4 font-bold text-gray-600 dark:text-gray-400 text-right">Debería Ser (Legal)</th>
+                                    <th className="py-3 px-4 font-bold text-gray-600 dark:text-gray-400 text-center">Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {/* Salario Base */}
                                 {details.salario_base_comparativa && (
-                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                                        <td className="py-3 px-4 font-medium text-gray-800">Salario Base</td>
-                                        <td className="py-3 px-4 text-right text-gray-700">{details.salario_base_comparativa.real?.toFixed(2)} €</td>
-                                        <td className="py-3 px-4 text-right text-gray-700">{details.salario_base_comparativa.teorico?.toFixed(2)} €</td>
+                                    <tr className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+                                        <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">Salario Base</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.salario_base_comparativa.real?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.salario_base_comparativa.teorico?.toFixed(2)} €</td>
                                         <td className="py-3 px-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.salario_base_comparativa.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                 }`}>
@@ -136,10 +136,10 @@ const ResultsDisplay = ({ results }) => {
 
                                 {/* Plus Convenio */}
                                 {details.plus_convenio && (
-                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                                        <td className="py-3 px-4 font-medium text-gray-800">Plus Convenio</td>
-                                        <td className="py-3 px-4 text-right text-gray-700">{details.plus_convenio.real?.toFixed(2)} €</td>
-                                        <td className="py-3 px-4 text-right text-gray-700">{details.plus_convenio.teorico?.toFixed(2)} €</td>
+                                    <tr className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+                                        <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">Plus Convenio</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.plus_convenio.real?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.plus_convenio.teorico?.toFixed(2)} €</td>
                                         <td className="py-3 px-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.plus_convenio.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                 }`}>
@@ -151,13 +151,13 @@ const ResultsDisplay = ({ results }) => {
 
                                 {/* Antigüedad */}
                                 {details.antiguedad && (
-                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                                        <td className="py-3 px-4 font-medium text-gray-800">
+                                    <tr className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
+                                        <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">
                                             Antigüedad
                                             <span className="block text-xs text-gray-400 font-normal">{details.antiguedad.mensaje}</span>
                                         </td>
-                                        <td className="py-3 px-4 text-right text-gray-700">{details.antiguedad.real?.toFixed(2)} €</td>
-                                        <td className="py-3 px-4 text-right text-gray-700">{details.antiguedad.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.antiguedad.real?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.antiguedad.teorico?.toFixed(2)} €</td>
                                         <td className="py-3 px-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.antiguedad.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                 }`}>
