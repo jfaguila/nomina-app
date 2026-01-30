@@ -1,4 +1,4 @@
-# Plan de Proyecto: NominaApp (v1.3.8)
+# Plan de Proyecto: NominIA (v1.3.9)
 
 ## 1. Estado Actual y Configuración Técnica
 

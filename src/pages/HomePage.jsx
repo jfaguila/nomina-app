@@ -258,7 +258,7 @@ const HomePage = () => {
                     className="text-center mb-12"
                 >
                     <h1 className="text-5xl md:text-6xl font-bold font-display mb-4">
-                        <span className="gradient-text">{t('title')}</span>
+                        <span className="gradient-text">NominIA</span>
                     </h1>
                     <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                         {t('subtitle')}
