@@ -172,13 +172,11 @@ class NominaValidator {
         console.log("--- OCR EXTRACTED TEXT END ---");
 
         const patterns = {
-            // Strict regex: finds key term, then optionally non-digits, then capture number.
-            // \d{1,3}(?:[.,]\d{3})* -> matches 1.200 or 1,200 (thousands)
-            // (?:[.,]\d{2})? -> matches optional decimals like ,50 or .50
-            salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*?(\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
-            plusConvenio: /(?:plus\s*convenio)[^0-9\n]*?(\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
-            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]*?(\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
-            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*?(\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            // Updated regex: \d+ instead of \d{1,3} to capture 1253 without needing a separator
+            salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            plusConvenio: /(?:plus\s*convenio)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
+            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i,
         };
 
         for (const [key, pattern] of Object.entries(patterns)) {
