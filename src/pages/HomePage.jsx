@@ -327,6 +327,9 @@ const HomePage = () => {
                                                         <option value="mercadona">Mercadona (2024-2028)</option>
                                                         <option value="leroy_merlin">Leroy Merlin (Grandes Almacenes)</option>
                                                     </select>
+                                                    <p className="text-xs text-gray-400 mt-1 ml-1">
+                                                        ¿No está tu convenio? Escríbenos a <a href="mailto:info@asistencia.io" className="text-blue-500 hover:text-blue-600 hover:underline">info@asistencia.io</a>
+                                                    </p>
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-semibold text-gray-500 mb-1">
