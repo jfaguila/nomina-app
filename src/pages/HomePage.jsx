@@ -51,6 +51,15 @@ const HomePage = () => {
         return apiUrl;
     };
 
+    // Helper function to safely extract numeric values
+    const safeNumericValue = (value) => {
+        if (value === null || value === undefined || value === '') {
+            return 0;
+        }
+        const parsed = parseFloat(value);
+        return isNaN(parsed) ? 0 : parsed;
+    };
+
     // Step 1 -> Step 2: Upload and initial OCR
     const handleAnalyze = async () => {
         if (!selectedFile) return;
@@ -81,13 +90,20 @@ const HomePage = () => {
 
             const details = response.data.details || {};
             const rawData = response.data.rawExtractedData || {};
-            
-            // DEBUG: Log completo para debugging
-            console.log('🔍 DEBUG - Response completa:', response.data);
-            console.log('🔍 DEBUG - Details:', details);
-            console.log('🔍 DEBUG - RawData:', rawData);
-            console.log('🔍 DEBUG - UploadData:', uploadData);
-            
+
+            // DEBUG SUPER AGRESIVO - Log completo para debugging
+            console.log('🚨 DEBUG - Response completa:', JSON.stringify(response.data, null, 2));
+            console.log('🚨 DEBUG - Details:', JSON.stringify(details, null, 2));
+            console.log('🚨 DEBUG - RawData:', JSON.stringify(rawData, null, 2));
+            console.log('🚨 DEBUG - UploadData:', JSON.stringify(uploadData, null, 2));
+
+            // VERIFICACIÓN MANUAL de cada campo
+            console.log('🔍 VERIFICACIÓN:');
+            console.log('  - rawData.salarioBase:', rawData.salarioBase);
+            console.log('  - details.salario_base_comparativa?.real:', details.salario_base_comparativa?.real);
+            console.log('  - rawData.plusConvenio:', rawData.plusConvenio);
+            console.log('  - details.plus_convenio?.real:', details.plus_convenio?.real);
+
             // Defensive validation - ensure all data exists and is valid
             const prefilledData = {
                 convenio: uploadData.convenio || 'general',
@@ -101,8 +117,8 @@ const HomePage = () => {
                 dietas: safeNumericValue(details.dietas?.real) || safeNumericValue(rawData.dietas),
                 totalDevengado: safeNumericValue(details.calculos_finales?.total_devengado) || safeNumericValue(rawData.totalDevengado)
             };
-            
-            console.log('🔍 DEBUG - PrefilledData final:', prefilledData);
+
+            console.log('🚨 DEBUG - PrefilledData final:', JSON.stringify(prefilledData, null, 2));
 
             setReviewData(prefilledData);
             setExtractedText(response.data.debugText || '');
@@ -151,23 +167,15 @@ const HomePage = () => {
         }
     };
 
-    // Helper function to safely extract numeric values
-    const safeNumericValue = (value) => {
-        if (value === null || value === undefined || value === '') {
-            return 0;
-        }
-        const parsed = parseFloat(value);
-        return isNaN(parsed) ? 0 : parsed;
-    };
 
     const handleError = (err) => {
         console.error('Error completo:', err);
-        
+
         // Reset all states to prevent inconsistent UI
         setReviewData(null);
         setExtractedText('');
         setResults(null);
-        
+
         if (err.response) {
             const errorData = err.response.data;
             const errorMessage = errorData.error || 'Error del servidor';
