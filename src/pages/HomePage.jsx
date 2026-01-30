@@ -80,29 +80,42 @@ const HomePage = () => {
             });
 
             const details = response.data.details || {};
+            const rawData = response.data.rawExtractedData || {};
+            
+            // DEBUG: Log completo para debugging
+            console.log('🔍 DEBUG - Response completa:', response.data);
+            console.log('🔍 DEBUG - Details:', details);
+            console.log('🔍 DEBUG - RawData:', rawData);
+            console.log('🔍 DEBUG - UploadData:', uploadData);
+            
+            // Defensive validation - ensure all data exists and is valid
             const prefilledData = {
-                convenio: uploadData.convenio,
-                categoria: uploadData.categoria,
-                salarioBase: details.salario_base_comparativa?.real || 0,
-                plusConvenio: details.plus_convenio?.real || 0,
-                antiguedad: response.data.rawExtractedData?.antiguedad || "",
-                valorAntiguedad: details.antiguedad?.real || 0,
-                horasNocturnas: details.nocturnidad?.horas || 0,
-                valorNocturnidad: details.nocturnidad?.real || 0,
-                dietas: details.dietas?.real || 0,
-                totalDevengado: details.calculos_finales?.total_devengado || 0
+                convenio: uploadData.convenio || 'general',
+                categoria: uploadData.categoria || 'empleado',
+                salarioBase: safeNumericValue(details.salario_base_comparativa?.real) || safeNumericValue(rawData.salarioBase),
+                plusConvenio: safeNumericValue(details.plus_convenio?.real) || safeNumericValue(rawData.plusConvenio),
+                antiguedad: rawData.antiguedad || "",
+                valorAntiguedad: safeNumericValue(details.antiguedad?.real) || safeNumericValue(rawData.valorAntiguedad),
+                horasNocturnas: safeNumericValue(details.nocturnidad?.horas),
+                valorNocturnidad: safeNumericValue(details.nocturnidad?.real),
+                dietas: safeNumericValue(details.dietas?.real) || safeNumericValue(rawData.dietas),
+                totalDevengado: safeNumericValue(details.calculos_finales?.total_devengado) || safeNumericValue(rawData.totalDevengado)
             };
+            
+            console.log('🔍 DEBUG - PrefilledData final:', prefilledData);
 
             setReviewData(prefilledData);
             setExtractedText(response.data.debugText || '');
             setLoadingProgress(100);
 
+            // Use immediate state update with a small delay for smooth transition
             setTimeout(() => {
                 setLoading(false);
                 setLoadingProgress(null);
                 setLoadingMessage('');
+                // Immediate step change to prevent race conditions
                 setStep(2);
-            }, 500);
+            }, 300);
 
         } catch (err) {
             handleError(err);
@@ -131,15 +144,30 @@ const HomePage = () => {
                 setLoadingProgress(null);
                 setLoadingMessage('');
                 setStep(3);
-            }, 500);
+            }, 300);
 
         } catch (err) {
             handleError(err);
         }
     };
 
+    // Helper function to safely extract numeric values
+    const safeNumericValue = (value) => {
+        if (value === null || value === undefined || value === '') {
+            return 0;
+        }
+        const parsed = parseFloat(value);
+        return isNaN(parsed) ? 0 : parsed;
+    };
+
     const handleError = (err) => {
         console.error('Error completo:', err);
+        
+        // Reset all states to prevent inconsistent UI
+        setReviewData(null);
+        setExtractedText('');
+        setResults(null);
+        
         if (err.response) {
             const errorData = err.response.data;
             const errorMessage = errorData.error || 'Error del servidor';
@@ -160,6 +188,7 @@ const HomePage = () => {
         setLoading(false);
         setLoadingProgress(null);
         setLoadingMessage('');
+        setStep(1); // Reset to first step on error
     };
 
     return (
@@ -291,7 +320,7 @@ const HomePage = () => {
 
                                         <button
                                             onClick={handleAnalyze}
-                                            disabled={!selectedFile}
+                                            disabled={!selectedFile || loading}
                                             className="w-full py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-lg shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-3"
                                         >
                                             <span>Analizar Nómina</span>

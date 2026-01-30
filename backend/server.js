@@ -73,11 +73,23 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
         // Validar nómina
         const validationResults = nominaValidator.validate(extractedText, manualData);
 
+        // Extraer datos crudos del OCR para el paso de revisión
+        const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
+
+        // DEBUG: Log completo para debugging
+        console.log('🔍 DEBUG BACKEND - Extracted Text length:', extractedText.length);
+        console.log('🔍 DEBUG BACKEND - RawExtractedData:', rawExtractedData);
+        console.log('🔍 DEBUG BACKEND - ValidationResults details:', validationResults.details);
+
         // Limpiar archivo temporal
         const fs = require('fs');
         fs.unlinkSync(filePath);
 
-        res.json(validationResults);
+        // Enviar resultados completos incluyendo datos crudos del OCR
+        res.json({
+            ...validationResults,
+            rawExtractedData
+        });
 
     } catch (error) {
         console.error('Error en /api/verify-nomina:', error);
