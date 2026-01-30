@@ -3,6 +3,7 @@ export const translations = {
     // Header
     title: 'Verificador de Nóminas',
     subtitle: 'Verifica si tu nómina está correctamente elaborada según el convenio aplicable',
+    howItWorks: '¿Cómo funciona?',
     demoButton: '🎯 Probar con Ejemplos',
     demoDescription: 'Explora la funcionalidad con ejemplos preconfigurados',
 
@@ -42,7 +43,7 @@ export const translations = {
     invalidPayroll: '❌ Nómina con Errores',
     validMessage: 'Tu nómina cumple con el convenio aplicable',
     invalidMessage: 'Se han detectado inconsistencias',
-     errorDetected: 'Errores Detectados',
+    errorDetected: 'Errores Detectados',
     warnings: 'Advertencias',
     comparativeTitle: 'Comparativa: Realidad vs Convenio',
     concept: 'Concepto',
@@ -101,14 +102,15 @@ export const translations = {
 
     // Skip Links (Accessibility)
     skipToMain: 'Saltar al contenido principal',
-      skipToFileUpload: 'Saltar a subida de archivo',
-      skipToForm: 'Saltar a formulario de datos'
+    skipToFileUpload: 'Saltar a subida de archivo',
+    skipToForm: 'Saltar a formulario de datos'
   },
 
   en: {
     // Header
     title: 'Payroll Verifier',
     subtitle: 'Verify if your payroll is correctly prepared according to the applicable convention',
+    howItWorks: 'How it works?',
     demoButton: '🎯 Try Examples',
     demoDescription: 'Explore functionality with pre-configured examples',
 
@@ -148,7 +150,7 @@ export const translations = {
     invalidPayroll: '❌ Invalid Payroll',
     validMessage: 'Your payroll complies with the applicable convention',
     invalidMessage: 'Inconsistencies have been detected',
-     errorDetected: 'Errors Detected',
+    errorDetected: 'Errors Detected',
     warnings: 'Warnings',
     comparativeTitle: 'Comparison: Reality vs Convention',
     concept: 'Concept',
