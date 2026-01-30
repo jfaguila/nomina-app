@@ -143,106 +143,100 @@ class NominaValidator {
             warnings,
             details,
             convenioAplicado: convenio.nombre,
-            return {
-                isValid,
-                errors,
-                warnings,
-                details,
-                convenioAplicado: convenio.nombre,
-                comparativa: true,
-                debugText: extractedText // Return raw text for troubleshooting
-            };
-        }
+            comparativa: true,
+            debugText: extractedText // Return raw text for troubleshooting
+        };
+    }
 
-        /**
-         * Extrae datos relevantes del texto de la nómina
-         */
-        extractDataFromText(text) {
-            const data = {};
+    /**
+     * Extrae datos relevantes del texto de la nómina
+     */
+    extractDataFromText(text) {
+        const data = {};
 
-            // Debug Log
-            console.log("--- OCR EXTRACTED TEXT START ---");
-            console.log(text);
-            console.log("--- OCR EXTRACTED TEXT END ---");
+        // Debug Log
+        console.log("--- OCR EXTRACTED TEXT START ---");
+        console.log(text);
+        console.log("--- OCR EXTRACTED TEXT END ---");
 
-            const patterns = {
-                // More permissive pattern: allows spaces between digits, handles various separators
-                salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*([\d\s.,]+)/i,
-                plusConvenio: /(?:plus\s*convenio)[^0-9\n]*([\d\s.,]+)/i,
-                antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]*([\d\s.,]+)/i,
-                totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*([\d\s.,]+)/i,
-            };
+        const patterns = {
+            // More permissive pattern: allows spaces between digits, handles various separators
+            salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]*([\d\s.,]+)/i,
+            plusConvenio: /(?:plus\s*convenio)[^0-9\n]*([\d\s.,]+)/i,
+            antiguedad: /(?:antiguedad|anti\.|antig)[^0-9\n]*([\d\s.,]+)/i,
+            totalDevengado: /(?:total\s*devengado|devengos?|t\.\s*devengado|total)[^0-9\n]*([\d\s.,]+)/i,
+        };
 
-            for (const [key, pattern] of Object.entries(patterns)) {
-                const match = text.match(pattern);
-                if (match) {
-                    // Cleanup: remove dots (thousands), remove spaces, replace comma with dot
-                    // Example: "1.200,50" -> "1200.50"
-                    // Example: "1 200,50" -> "1200.50"
+        for (const [key, pattern] of Object.entries(patterns)) {
+            const match = text.match(pattern);
+            if (match) {
+                // Cleanup: remove dots (thousands), remove spaces, replace comma with dot
+                // Example: "1.200,50" -> "1200.50"
+                // Example: "1 200,50" -> "1200.50"
 
-                    let rawVal = match[1].trim();
+                let rawVal = match[1].trim();
 
-                    // Heuristic: If it has both dot and comma
-                    // 1.200,50 -> Remove dot, replace comma
-                    // 1,200.50 -> Remove comma, keep dot (US) - Unlikely in Spain but possible
+                // Heuristic: If it has both dot and comma
+                // 1.200,50 -> Remove dot, replace comma
+                // 1,200.50 -> Remove comma, keep dot (US) - Unlikely in Spain but possible
 
-                    let cleanVal = rawVal;
+                let cleanVal = rawVal;
 
-                    // Spanish/European format assumption: dot is thousand separator, comma is decimal
-                    if (cleanVal.includes(',') && cleanVal.includes('.')) {
-                        cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
-                    } else if (cleanVal.includes(',')) {
-                        // Only comma? 1200,50 -> 1200.50
-                        cleanVal = cleanVal.replace(',', '.');
-                    } else if (cleanVal.includes('.')) {
-                        // Only dot? Could be "1.200" (1200) or "12.50" (12.5)
-                        // If multiple dots -> thousands -> remove
-                        if ((cleanVal.match(/\./g) || []).length > 1) {
+                // Spanish/European format assumption: dot is thousand separator, comma is decimal
+                if (cleanVal.includes(',') && cleanVal.includes('.')) {
+                    cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
+                } else if (cleanVal.includes(',')) {
+                    // Only comma? 1200,50 -> 1200.50
+                    cleanVal = cleanVal.replace(',', '.');
+                } else if (cleanVal.includes('.')) {
+                    // Only dot? Could be "1.200" (1200) or "12.50" (12.5)
+                    // If multiple dots -> thousands -> remove
+                    if ((cleanVal.match(/\./g) || []).length > 1) {
+                        cleanVal = cleanVal.replace(/\./g, '');
+                    } else {
+                        // Single dot. "1.200" vs "10.55"
+                        // If 3 digits after dot -> thousand separator
+                        if (/\.\d{3}$/.test(cleanVal)) {
                             cleanVal = cleanVal.replace(/\./g, '');
-                        } else {
-                            // Single dot. "1.200" vs "10.55"
-                            // If 3 digits after dot -> thousand separator
-                            if (/\.\d{3}$/.test(cleanVal)) {
-                                cleanVal = cleanVal.replace(/\./g, '');
-                            }
                         }
                     }
+                }
 
-                    // Remove spaces (1 200 -> 1200)
-                    cleanVal = cleanVal.replace(/\s/g, '');
+                // Remove spaces (1 200 -> 1200)
+                cleanVal = cleanVal.replace(/\s/g, '');
 
-                    if (!isNaN(parseFloat(cleanVal))) {
-                        data[key] = cleanVal;
-                        // Mapeos adicionales
-                        if (key === 'antiguedad') data.valorAntiguedad = cleanVal;
-                        if (key === 'plusConvenio') data.plusConvenio = cleanVal;
-                        console.log(`[DEBUG] Found ${key}: ${rawVal} -> ${cleanVal}`);
-                    }
+                if (!isNaN(parseFloat(cleanVal))) {
+                    data[key] = cleanVal;
+                    // Mapeos adicionales
+                    if (key === 'antiguedad') data.valorAntiguedad = cleanVal;
+                    if (key === 'plusConvenio') data.plusConvenio = cleanVal;
+                    console.log(`[DEBUG] Found ${key}: ${rawVal} -> ${cleanVal}`);
                 }
             }
-
-            return data;
         }
 
-        /**
-         * Calcula el valor de una hora extra
-         */
-        calcularValorHoraExtra(salarioBase, convenio) {
-            const horasMes = 160; // Aproximado para jornada completa
-            const valorHoraNormal = salarioBase / horasMes;
-            return valorHoraNormal * convenio.incrementoHoraExtra;
-        }
-
-        /**
-         * Calcula el IRPF estimado (simplificado)
-         */
-        calcularIRPF(totalDevengado) {
-            if (totalDevengado < 12450) return totalDevengado * 0.19;
-            if (totalDevengado < 20200) return totalDevengado * 0.24;
-            if (totalDevengado < 35200) return totalDevengado * 0.30;
-            if (totalDevengado < 60000) return totalDevengado * 0.37;
-            return totalDevengado * 0.45;
-        }
+        return data;
     }
+
+    /**
+     * Calcula el valor de una hora extra
+     */
+    calcularValorHoraExtra(salarioBase, convenio) {
+        const horasMes = 160; // Aproximado para jornada completa
+        const valorHoraNormal = salarioBase / horasMes;
+        return valorHoraNormal * convenio.incrementoHoraExtra;
+    }
+
+    /**
+     * Calcula el IRPF estimado (simplificado)
+     */
+    calcularIRPF(totalDevengado) {
+        if (totalDevengado < 12450) return totalDevengado * 0.19;
+        if (totalDevengado < 20200) return totalDevengado * 0.24;
+        if (totalDevengado < 35200) return totalDevengado * 0.30;
+        if (totalDevengado < 60000) return totalDevengado * 0.37;
+        return totalDevengado * 0.45;
+    }
+}
 
 module.exports = new NominaValidator();
