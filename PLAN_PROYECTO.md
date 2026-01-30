@@ -27,6 +27,12 @@
     - Modo Oscuro nativo y completo.
     - Feedback visual inmediato (Tablas comparativas con colores semánticos).
 
+### Phase 4: UX Refactor (Wizard Flow)
+- [x] Refactor HomePage to Multi-step Wizard <!-- id: 19 -->
+- [x] Implement "Échale un ojo" Verification View <!-- id: 20 -->
+- [x] Auto-populate Form from OCR results <!-- id: 21 -->
+- [x] Connect Final "Verificar Nómina" button <!-- id: 22 -->
+
 ## 2. Estrategia de Producto y Precios (A Definir)
 
 ### Propuesta de Valor

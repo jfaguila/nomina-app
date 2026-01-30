@@ -86,107 +86,110 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
             details: error.message
         });
     }
-    // Endpoint para validar datos manuales o corregidos (sin OCR)
-    app.post('/api/validate-data', (req, res) => {
-        try {
-            const { extractedText, manualData } = req.body;
+});
 
-            console.log('Validando datos corregidos:', manualData);
+// Endpoint para validar datos manuales o corregidos (sin OCR)
+app.post('/api/validate-data', (req, res) => {
+    try {
+        const { extractedText, manualData } = req.body;
 
-            // El texto extraído puede estar vacío si es puramente manual
-            const results = nominaValidator.validate(extractedText || '', manualData);
+        console.log('Validando datos corregidos:', manualData);
 
-            res.json(results);
-        } catch (error) {
-            console.error('Error en /api/validate-data:', error);
-            res.status(500).json({ error: error.message });
-        }
-    });
+        // El texto extraído puede estar vacío si es puramente manual
+        const results = nominaValidator.validate(extractedText || '', manualData);
 
-    // Servir archivos estáticos del frontend (React build)
-    app.use(express.static(path.join(__dirname, '../build')));
+        res.json(results);
+    } catch (error) {
+        console.error('Error en /api/validate-data:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
-    // Endpoint de prueba para OCR
-    app.post('/api/test-ocr', upload.single('file'), async (req, res) => {
-        try {
-            if (!req.file) {
-                return res.status(400).json({ error: 'No se ha subido ningún archivo' });
-            }
+// Servir archivos estáticos del frontend (React build)
+app.use(express.static(path.join(__dirname, '../build')));
 
-            const text = await ocrService.extractText(req.file.path, req.file.mimetype);
-
-            const fs = require('fs');
-            fs.unlinkSync(req.file.path);
-
-            res.json({ text });
-        } catch (error) {
-            console.error('Error en test-ocr:', error);
-            res.status(500).json({ error: error.message });
-        }
-    });
-
-    // Manejo de errores mejorado
-    app.use((error, req, res, next) => {
-        console.error('Error global:', error);
-
-        // Error específico de Multer (tamaño de archivo, tipo no permitido)
-        if (error.code === 'LIMIT_FILE_SIZE') {
-            return res.status(413).json({
-                error: 'El archivo es demasiado grande. Tamaño máximo: 10MB',
-                code: 'FILE_TOO_LARGE'
-            });
+// Endpoint de prueba para OCR
+app.post('/api/test-ocr', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se ha subido ningún archivo' });
         }
 
-        if (error.code === 'LIMIT_FILE_COUNT') {
-            return res.status(400).json({
-                error: 'Solo se permite un archivo a la vez',
-                code: 'TOO_MANY_FILES'
-            });
-        }
+        const text = await ocrService.extractText(req.file.path, req.file.mimetype);
 
-        if (error.message.includes('Solo se permiten archivos')) {
-            return res.status(400).json({
-                error: error.message,
-                code: 'INVALID_FILE_TYPE'
-            });
-        }
+        const fs = require('fs');
+        fs.unlinkSync(req.file.path);
 
-        // Error de JSON malformado
-        if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
-            return res.status(400).json({
-                error: 'JSON inválido en los datos enviados',
-                code: 'INVALID_JSON'
-            });
-        }
+        res.json({ text });
+    } catch (error) {
+        console.error('Error en test-ocr:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
-        // Error por defecto
-        res.status(500).json({
-            error: process.env.NODE_ENV === 'production'
-                ? 'Error interno del servidor'
-                : error.message,
-            code: 'INTERNAL_ERROR'
+// Manejo de errores mejorado
+app.use((error, req, res, next) => {
+    console.error('Error global:', error);
+
+    // Error específico de Multer (tamaño de archivo, tipo no permitido)
+    if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({
+            error: 'El archivo es demasiado grande. Tamaño máximo: 10MB',
+            code: 'FILE_TOO_LARGE'
         });
-    });
+    }
 
-    // Manejo de rutas no encontradas (SPA fallback)
-    app.get('*', (req, res) => {
-        // Si es una petición a la API, devolver 404
-        if (req.path.startsWith('/api')) {
-            return res.status(404).json({
-                error: 'Ruta de API no encontrada',
-                code: 'NOT_FOUND',
-                availableRoutes: [
-                    'GET /',
-                    'POST /api/verify-nomina',
-                    'POST /api/test-ocr'
-                ]
-            });
-        }
-        // Para cualquier otra ruta, servir el index.html del frontend
-        res.sendFile(path.join(__dirname, '../build', 'index.html'));
-    });
+    if (error.code === 'LIMIT_FILE_COUNT') {
+        return res.status(400).json({
+            error: 'Solo se permite un archivo a la vez',
+            code: 'TOO_MANY_FILES'
+        });
+    }
 
-    app.listen(PORT, () => {
-        console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-        console.log(`📁 Directorio de uploads: ${path.join(__dirname, 'uploads')}`);
+    if (error.message.includes('Solo se permiten archivos')) {
+        return res.status(400).json({
+            error: error.message,
+            code: 'INVALID_FILE_TYPE'
+        });
+    }
+
+    // Error de JSON malformado
+    if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
+        return res.status(400).json({
+            error: 'JSON inválido en los datos enviados',
+            code: 'INVALID_JSON'
+        });
+    }
+
+    // Error por defecto
+    res.status(500).json({
+        error: process.env.NODE_ENV === 'production'
+            ? 'Error interno del servidor'
+            : error.message,
+        code: 'INTERNAL_ERROR'
     });
+});
+
+// Manejo de rutas no encontradas (SPA fallback)
+app.get('*', (req, res) => {
+    // Si es una petición a la API, devolver 404
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({
+            error: 'Ruta de API no encontrada',
+            code: 'NOT_FOUND',
+            availableRoutes: [
+                'GET /',
+                'POST /api/verify-nomina',
+                'POST /api/test-ocr',
+                'POST /api/validate-data'
+            ]
+        });
+    }
+    // Para cualquier otra ruta, servir el index.html del frontend
+    res.sendFile(path.join(__dirname, '../build', 'index.html'));
+});
+
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`📁 Directorio de uploads: ${path.join(__dirname, 'uploads')}`);
+});
