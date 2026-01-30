@@ -252,8 +252,6 @@ calcularIRPF(totalDevengado) {
     if (totalDevengado < 60000) return totalDevengado * 0.37;
     return totalDevengado * 0.45;
 }
-}
-
 /**
  * Helper para comparar valores y generar explicación
  */
