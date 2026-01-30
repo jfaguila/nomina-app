@@ -167,6 +167,7 @@ const ManualInput = ({ onSubmit, disabled = false }) => {
                             <option value="comercio">Comercio</option>
                             <option value="construccion">Construcción</option>
                             <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía</option>
+                            <option value="mercadona">Mercadona (2024-2028)</option>
                         </select>
                     </div>
 
@@ -188,6 +189,14 @@ const ManualInput = ({ onSubmit, disabled = false }) => {
                                     <option value="mando_intermedio">Mando Intermedio</option>
                                     <option value="directivo">Directivo</option>
                                 </>
+                            ) : formData.convenio === 'mercadona' ? (
+                                <>
+                                    <option value="personal_base">Personal Base</option>
+                                    <option value="gerente_a">Gerente A</option>
+                                    <option value="gerente_b">Gerente B</option>
+                                    <option value="gerente_c">Gerente C</option>
+                                    <option value="coordinador">Coordinador</option>
+                                </>
                             ) : (
                                 <>
                                     <option value="empleado">Empleado</option>
@@ -204,9 +213,8 @@ const ManualInput = ({ onSubmit, disabled = false }) => {
                     <button
                         type="submit"
                         disabled={disabled}
-                        className={`btn-primary flex items-center space-x-2 ${
-                            disabled ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
+                        className={`btn-primary flex items-center space-x-2 ${disabled ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
                     >
                         <span>Verificar Nómina</span>
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
