@@ -6,6 +6,8 @@ import FileUpload from '../components/FileUpload';
 import ManualInput from '../components/ManualInput';
 import ResultsDisplay from '../components/ResultsDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
+import DarkModeToggle from '../components/DarkModeToggle';
+import InstructionsModal from '../components/InstructionsModal';
 
 
 const HomePage = () => {
@@ -17,6 +19,7 @@ const HomePage = () => {
     const [loadingMessage, setLoadingMessage] = useState('');
     const [loadingProgress, setLoadingProgress] = useState(null);
     const [announcement, setAnnouncement] = useState('');
+    const [showInstructions, setShowInstructions] = useState(false);
 
 
     const handleFileSelect = (file) => {
@@ -114,8 +117,32 @@ const HomePage = () => {
     };
 
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+            <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
+
             <div className="max-w-6xl mx-auto" id="main-content">
+                <header className="flex justify-between items-center mb-12">
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        {/* Title is handled below, this wrapper is for layout if needed */}
+                    </motion.div>
+
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setShowInstructions(true)}
+                            className="hidden md:flex items-center gap-2 text-gray-600 dark:text-gray-300 font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {t('howItWorks') || '¿Cómo funciona?'}
+                        </button>
+                        <DarkModeToggle />
+                    </div>
+                </header>
+
                 {/* Screen reader announcements */}
                 <div
                     aria-live="polite"

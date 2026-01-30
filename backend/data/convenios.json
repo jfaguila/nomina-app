@@ -153,5 +153,39 @@
         "descripcion": "IV Convenio Colectivo del Transporte Sanitario de Enfermos y Accidentados en Ambulancias de Andalucía. Vigente desde 2020 hasta 2025 con ultraactividad. Incluye categorías TES (Técnico en Emergencias Sanitarias): Conductor/a, Ayudante Camillero/a y Camillero/a. Código BOJA: 71001075012005",
         "codigoBOJA": "71001075012005",
         "publicacion": "BOJA 241 - 16/12/2020"
+    },
+    "mercadona": {
+        "nombre": "Convenio Colectivo Mercadona (2024-2028)",
+        "salarioMinimo": {
+            "gerente_a": 1553,
+            "gerente_b": 1700,
+            "gerente_c": 1900,
+            "coordinador": 2100,
+            "base": 1368
+        },
+        "detallesSalariales": {
+            "gerente_a": {
+                "salarioBase": 1368,
+                "plusConvenio": 185
+            },
+            "personal_base": {
+                "salarioBase": 1368,
+                "plusConvenio": 0
+            }
+        },
+        "pagasExtras": {
+            "regla": "prorrateo_opcional",
+            "cantidad": 3
+        },
+        "horasExtra": {
+            "tipo": "variable"
+        },
+        "reglasAntiguedad": {
+            "tipo": "cuatrienio",
+            "porcentajeBase": 0.05
+        },
+        "reglasNocturnidad": {
+            "valorHora": 2.25
+        }
     }
 }
