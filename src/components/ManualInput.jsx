@@ -1,21 +1,43 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 
-const ManualInput = ({ onSubmit, disabled = false }) => {
+const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false }) => {
     const [formData, setFormData] = useState({
         horasExtras: '',
         dietas: '',
         salarioBase: '',
+        plusConvenio: '',
+        valorAntiguedad: '',
+        valorNocturnidad: '',
+        horasNocturnas: '',
+        antiguedad: '',
         pagas: '14',
+        prorrateo: false,
         categoria: 'empleado',
         convenio: 'general'
     });
 
+    // Sincronizar con datos del OCR cuando lleguen
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prev => ({
+                ...prev,
+                ...initialData,
+                salarioBase: initialData.salarioBase || '',
+                plusConvenio: initialData.plusConvenio || '',
+                valorAntiguedad: initialData.valorAntiguedad || '',
+                valorNocturnidad: initialData.valorNocturnidad || '',
+                horasNocturnas: initialData.horasNocturnas || '',
+                dietas: initialData.dietas || '',
+                antiguedad: initialData.antiguedad || ''
+            }));
+        }
+    }, [initialData]);
+
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
         }));
     };
 
@@ -25,205 +47,147 @@ const ManualInput = ({ onSubmit, disabled = false }) => {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className={`glass-card p-8 ${disabled ? 'opacity-60 pointer-events-none' : ''}`}
-        >
-            <h3 className="text-2xl font-bold gradient-text mb-6">
-                Datos Adicionales
-                {disabled && (
-                    <span className="block text-sm font-normal text-gray-500 mt-1">
-                        Sube primero una nómina para activar este formulario
-                    </span>
-                )}
-            </h3>
+        <div className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {/* Conceptos Salariales */}
+                    <div className="space-y-6">
+                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-gray-800 pb-2">Conceptos Salariales</h4>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label htmlFor="salarioBase" className="block text-sm font-semibold text-gray-700 mb-2">
-                            Salario Base Mensual (€)
-                        </label>
-                        <input
-                            id="salarioBase"
-                            type="number"
-                            name="salarioBase"
-                            value={formData.salarioBase}
-                            onChange={handleChange}
-                            placeholder="1500.00"
-                            className="input-field"
-                            step="0.01"
-                            aria-describedby="salarioBase-help"
-                        />
-                        <span id="salarioBase-help" className="text-xs text-gray-500 mt-1">
-                            Ingresa tu salario bruto mensual
-                        </span>
-                    </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Salario Base (€)</label>
+                            <input
+                                type="number"
+                                name="salarioBase"
+                                value={formData.salarioBase}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                step="0.01"
+                            />
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Horas Extras
-                        </label>
-                        <input
-                            type="number"
-                            name="horasExtras"
-                            value={formData.horasExtras}
-                            onChange={handleChange}
-                            placeholder="0"
-                            className="input-field"
-                        />
-                    </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Plus Convenio (€)</label>
+                            <input
+                                type="number"
+                                name="plusConvenio"
+                                value={formData.plusConvenio}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                step="0.01"
+                            />
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Dietas (€)
-                        </label>
-                        <input
-                            type="number"
-                            name="dietas"
-                            value={formData.dietas}
-                            onChange={handleChange}
-                            placeholder="0.00"
-                            className="input-field"
-                            step="0.01"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Horas Nocturnas
-                        </label>
-                        <input
-                            type="number"
-                            name="horasNocturnas"
-                            value={formData.horasNocturnas}
-                            onChange={handleChange}
-                            placeholder="0"
-                            className="input-field"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Antigüedad (Fecha Inicio)
-                        </label>
-                        <input
-                            type="date"
-                            name="antiguedad"
-                            value={formData.antiguedad}
-                            onChange={handleChange}
-                            className="input-field"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Pagas Extras
-                        </label>
-                        <div className="flex items-center space-x-4 mt-2">
-                            <label className="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
-                                    name="prorrateo"
-                                    checked={formData.prorrateo}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, prorrateo: e.target.checked }))}
-                                    className="rounded text-primary-600 focus:ring-primary-500"
-                                />
-                                <span className="text-sm text-gray-600">Prorrateadas</span>
-                            </label>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Plus Antigüedad (€)</label>
+                            <input
+                                type="number"
+                                name="valorAntiguedad"
+                                value={formData.valorAntiguedad}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                step="0.01"
+                            />
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Pagas Anuales
-                        </label>
-                        <select
-                            name="pagas"
-                            value={formData.pagas}
-                            onChange={handleChange}
-                            className="input-field"
-                        >
-                            <option value="12">12 pagas</option>
-                            <option value="14">14 pagas</option>
-                            <option value="15">15 pagas</option>
-                        </select>
-                    </div>
+                    {/* Variables y Extras */}
+                    <div className="space-y-6">
+                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 dark:border-gray-800 pb-2">Variables y Extras</h4>
 
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Convenio Aplicable
-                        </label>
-                        <select
-                            name="convenio"
-                            value={formData.convenio}
-                            onChange={handleChange}
-                            className="input-field"
-                        >
-                            <option value="general">Convenio General</option>
-                            <option value="hosteleria">Hostelería</option>
-                            <option value="comercio">Comercio</option>
-                            <option value="construccion">Construcción</option>
-                            <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía</option>
-                            <option value="mercadona">Mercadona (2024-2028)</option>
-                        </select>
-                    </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Horas Nocturnas</label>
+                                <input
+                                    type="number"
+                                    name="horasNocturnas"
+                                    value={formData.horasNocturnas}
+                                    onChange={handleChange}
+                                    placeholder="0"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Valor Noct. (€)</label>
+                                <input
+                                    type="number"
+                                    name="valorNocturnidad"
+                                    value={formData.valorNocturnidad}
+                                    onChange={handleChange}
+                                    placeholder="0.00"
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                    step="0.01"
+                                />
+                            </div>
+                        </div>
 
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Categoría Profesional
-                        </label>
-                        <select
-                            name="categoria"
-                            value={formData.categoria}
-                            onChange={handleChange}
-                            className="input-field"
-                        >
-                            {formData.convenio === 'transporte_sanitario_andalucia' ? (
-                                <>
-                                    <option value="tes_conductor">TES Conductor/a</option>
-                                    <option value="tes_ayudante_camillero">TES Ayudante Camillero/a</option>
-                                    <option value="tes_camillero">TES Camillero/a</option>
-                                    <option value="mando_intermedio">Mando Intermedio</option>
-                                    <option value="directivo">Directivo</option>
-                                </>
-                            ) : formData.convenio === 'mercadona' ? (
-                                <>
-                                    <option value="personal_base">Personal Base</option>
-                                    <option value="gerente_a">Gerente A</option>
-                                    <option value="gerente_b">Gerente B</option>
-                                    <option value="gerente_c">Gerente C</option>
-                                    <option value="coordinador">Coordinador</option>
-                                </>
-                            ) : (
-                                <>
-                                    <option value="empleado">Empleado</option>
-                                    <option value="tecnico">Técnico</option>
-                                    <option value="mando_intermedio">Mando Intermedio</option>
-                                    <option value="directivo">Directivo</option>
-                                </>
-                            )}
-                        </select>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Dietas y Otros (€)</label>
+                            <input
+                                type="number"
+                                name="dietas"
+                                value={formData.dietas}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                step="0.01"
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-6 p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100/50 dark:border-blue-900/30">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="prorrateo"
+                                    name="prorrateo"
+                                    checked={formData.prorrateo}
+                                    onChange={handleChange}
+                                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <label htmlFor="prorrateo" className="text-sm font-medium text-gray-700 dark:text-gray-300">Pagas prorrateadas</label>
+                            </div>
+                            <div className="flex-1">
+                                <select
+                                    name="pagas"
+                                    value={formData.pagas}
+                                    onChange={handleChange}
+                                    className="w-full bg-transparent text-sm font-bold text-blue-700 dark:text-blue-400 outline-none cursor-pointer"
+                                >
+                                    <option value="12">12 pagas</option>
+                                    <option value="14">14 pagas</option>
+                                    <option value="15">15 pagas</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex justify-end pt-4">
+                <div className="pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-col md:flex-row gap-4">
+                    <button
+                        type="button"
+                        onClick={onBack}
+                        disabled={disabled}
+                        className="flex-1 py-4 px-6 rounded-2xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver a subir archivo
+                    </button>
                     <button
                         type="submit"
                         disabled={disabled}
-                        className={`btn-primary flex items-center space-x-2 ${disabled ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
+                        className="flex-[2] py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-3"
                     >
                         <span>Verificar Nómina</span>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </button>
                 </div>
             </form>
-        </motion.div>
+        </div>
     );
 };
 
