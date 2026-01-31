@@ -140,36 +140,36 @@ class NominaValidator {
 
         // 5. CÁLCULOS GENERALES (SOLO CON DATOS EXISTENTES) - MODO ESTRICTO
         console.log('🔧 CÁLCULOS DE VERIFICACIÓN - DATOS REALES:', nominaData);
-        
+
         // SOLO usar datos que realmente existen - SIN INVENTAR NADA
-        const totalDevengadoReal = nominaData.totalDevengado ? parseFloat(nominaData.totalDevengado) : null;
-        const salarioBaseReal = nominaData.salarioBase ? parseFloat(nominaData.salarioBase) : null;
-        const plusConvenioReal = nominaData.plusConvenio ? parseFloat(nominaData.plusConvenio) : null;
-        const valorAntiguedadReal = nominaData.valorAntiguedad ? parseFloat(nominaData.valorAntiguedad) : null;
-        const valorNocturnidadReal = nominaData.valorNocturnidad ? parseFloat(nominaData.valorNocturnidad) : null;
-        const dietasReales = nominaData.dietas ? parseFloat(nominaData.dietas) : null;
-        
+        const checkTotalDevengado = nominaData.totalDevengado ? parseFloat(nominaData.totalDevengado) : null;
+        const checkSalarioBase = nominaData.salarioBase ? parseFloat(nominaData.salarioBase) : null;
+        const checkPlusConvenio = nominaData.plusConvenio ? parseFloat(nominaData.plusConvenio) : null;
+        const checkAntiguedad = nominaData.valorAntiguedad ? parseFloat(nominaData.valorAntiguedad) : null;
+        const checkNocturnidad = nominaData.valorNocturnidad ? parseFloat(nominaData.valorNocturnidad) : null;
+        const checkDietas = nominaData.dietas ? parseFloat(nominaData.dietas) : null;
+
         console.log('📊 VALORES REALES EXTRAÍDOS:');
-        console.log('- Total Devengado:', totalDevengadoReal);
-        console.log('- Salario Base:', salarioBaseReal);
-        console.log('- Plus Convenio:', plusConvenioReal);
-        console.log('- Antigüedad:', valorAntiguedadReal);
-        console.log('- Nocturnidad:', valorNocturnidadReal);
-        console.log('- Dietas:', dietasReales);
-        
+        console.log('- Total Devengado:', checkTotalDevengado);
+        console.log('- Salario Base:', checkSalarioBase);
+        console.log('- Plus Convenio:', checkPlusConvenio);
+        console.log('- Antigüedad:', checkAntiguedad);
+        console.log('- Nocturnidad:', checkNocturnidad);
+        console.log('- Dietas:', checkDietas);
+
         // Calcular total esperado para validación
         const totalDevengadoCalculado = salarioBaseReal + plusConvenioReal + valorAntiguedadReal + valorNocturnidadReal + dietasReales;
-        
+
         // 🔥 ELIMINADO: NO SE CALCULAN VALORES INVENTADOS
         console.log('🚫 MODO ESTRICTO: SOLO VERIFICAR DATOS EXISTENTES');
-        
+
         // Solo procesar si hay datos reales
         let seguridadSocial = null;
         let irpf = null;
         let totalDeducciones = null;
         let liquidoTotal = null;
         let totalDevengadoCalculado = null;
-        
+
         if (totalDevengadoReal && totalDevengadoReal > 0) {
             seguridadSocial = totalDevengadoReal * 0.0635;
             irpf = this.calcularIRPF(totalDevengadoReal);
@@ -179,7 +179,7 @@ class NominaValidator {
 
         // SOLO incluir cálculos si hay datos reales
         const calculosFinales = {};
-        
+
         if (totalDevengadoReal) {
             calculosFinales.total_devengado = parseFloat(totalDevengadoReal.toFixed(2));
         }
@@ -195,7 +195,7 @@ class NominaValidator {
         if (liquidoTotal) {
             calculosFinales.liquido_estimado = parseFloat(liquidoTotal.toFixed(2));
         }
-        
+
         details.calculos_finales = calculosFinales;
 
         const isValid = errors.length === 0;
@@ -222,13 +222,13 @@ class NominaValidator {
 
         // === DETECCIÓN DE CATEGORÍA PROFESIONAL ===
         data.categoria = this.detectarCategoriaDesdeTexto(text);
-        
+
         // === MODO ESTRICTO POR EMPRESA - SOLO DATOS REALES ===
-        
+
         // MERCADONA - EXTRAER SOLO LO QUE ESTÁ EN EL TEXTO
         if (text.includes('MERCADONA') || text.includes('Mercadona')) {
             console.log("🛒 MODO MERCADONA - EXTRAER DATOS REALES");
-            
+
             // BUSCAR PATRONES ESPECÍFICOS MERCADONA
             const patternsMercadona = {
                 salarioBase: [
@@ -249,7 +249,7 @@ class NominaValidator {
                     /Convenio.*?(\d+[,.]\d{2})/i
                 ]
             };
-            
+
             // EXTRAER USANDO PATRONES ESPECÍFICOS
             for (const [key, patterns] of Object.entries(patternsMercadona)) {
                 if (!data[key]) {
@@ -267,20 +267,20 @@ class NominaValidator {
                     }
                 }
             }
-            
+
             // NO FORZAR VALORES - solo categoría si se detectó
             if (!data.categoria) {
                 data.categoria = this.detectarCategoriaDesdeTexto(text) || 'gerente';
             }
-            
+
             console.log('✅ MERCADONA: Solo datos reales extraídos');
             return data;
         }
-        
+
         // AMBULANCIAS - EXTRAER SOLO DATOS REALES
         if (text.includes('AMBULANCIAS') || text.includes('TRANSPORTE SANITARIO')) {
             console.log("🚑 MODO AMBULANCIAS - EXTRAER DATOS REALES");
-            
+
             const patternsAmbulancias = {
                 salarioBase: [
                     /Salario\s*Base.*?(\d+[,.]\d{2})/i,
@@ -293,7 +293,7 @@ class NominaValidator {
                     /L[ií]quido.*?(\d+[,.]\d{2})/i
                 ]
             };
-            
+
             for (const [key, patterns] of Object.entries(patternsAmbulancias)) {
                 if (!data[key]) {
                     for (const pattern of patterns) {
@@ -310,17 +310,17 @@ class NominaValidator {
                     }
                 }
             }
-            
+
             if (!data.categoria) {
                 data.categoria = this.detectarCategoriaDesdeTexto(text) || 'tes_conductor';
             }
-            
+
             return data;
         }
-        
+
         // === MODO GENERAL - EXTRACCIÓN 100% INFALIBLE ===
         console.log("🔍 MODO GENERAL - EXTRACCIÓN INFALIBLE");
-        
+
         // PATRONES COMPLETOS PARA TODOS LOS CAMPOS DE NÓMINA
         const universalPatterns = {
             // === DEVENGOS ===
@@ -380,7 +380,7 @@ class NominaValidator {
                 /Nocturnas?[:\s]*(\d+)/i,
                 /Horas\s*Nocturnas.*?(\d+)/i
             ],
-            
+
             // === DEDUCCIONES ===
             totalDeducciones: [
                 /Total\s*Deducciones?[:\s]*(\d+[,.]\d{2})/i,
@@ -426,23 +426,23 @@ class NominaValidator {
 
         // EXTRAER USANDO PATRONES EXACTOS - CON DEBUG COMPLETO
         console.log("🔍 INICIANDO BÚSQUEDA EXHAUSTIVA DE CAMPOS...");
-        
+
         for (const [key, patterns] of Object.entries(universalPatterns)) {
             if (!data[key]) {
                 console.log(`\n🔎 Buscando ${key} con ${patterns.length} patrones:`);
-                
+
                 for (let i = 0; i < patterns.length; i++) {
                     const pattern = patterns[i];
                     const match = text.match(pattern);
-                    
+
                     if (match) {
                         const original = match[1];
                         const cleaned = this.limpiarNumero(original);
                         const value = parseFloat(cleaned);
-                        
-                        console.log(`  🎯 Patrón ${i+1}: ${pattern}`);
+
+                        console.log(`  🎯 Patrón ${i + 1}: ${pattern}`);
                         console.log(`  📝 Match: "${original}" -> "${cleaned}" -> ${value}`);
-                        
+
                         // VALIDACIÓN SIN FILTROS EXCESIVOS
                         if (!isNaN(value) && value >= 0) {
                             data[key] = cleaned;
@@ -452,10 +452,10 @@ class NominaValidator {
                             console.log(`  ❌ ${key}: valor inválido "${original}"`);
                         }
                     } else {
-                        console.log(`  ➖ Patrón ${i+1}: SIN MATCH`);
+                        console.log(`  ➖ Patrón ${i + 1}: SIN MATCH`);
                     }
                 }
-                
+
                 if (!data[key]) {
                     console.log(`  ⚠️ ${key}: NO ENCONTRADO con ningún patrón`);
                 }
@@ -463,7 +463,7 @@ class NominaValidator {
                 console.log(`✅ ${key}: ya existe (${data[key]})`);
             }
         }
-        
+
         console.log("\n📋 DATOS EXTRAÍDOS DESPUÉS DE BÚSQUEDA:");
         Object.entries(data).forEach(([key, value]) => {
             if (value) console.log(`  - ${key}: ${value}`);
@@ -475,7 +475,7 @@ class NominaValidator {
         // 🔥 ELIMINADO: NO SE INVENTAN MÁS NÚMEROS
         // Solo extraemos lo que ESTÁ en la nómina, nada de estimaciones
         console.log("🚫 MODO ESTRICTO: SOLO EXTRAER DATOS EXISTENTES");
-        
+
         // LOGGING DETALLADO PARA DEBUG
         console.log('📋 DATOS FINALES EXTRAÍDOS:', data);
         console.log("🎯 DETALLE DE VALORES EXTRAÍDOS:");
@@ -494,31 +494,31 @@ class NominaValidator {
             console.log('⚠️ limpiarNumero: entrada vacía, retornando 0');
             return '0';
         }
-        
+
         const original = numeroSucio.toString();
         console.log(`🧹 limpiarNumero: ORIGINAL="${original}"`);
-        
+
         let limpio = original.trim();
-        
+
         // Paso 1: Eliminar caracteres NO numéricos excepto . y ,
         limpio = limpio.replace(/[^\d.,]/g, '');
         console.log(`🧹 Paso 1 (solo números): "${limpio}"`);
-        
+
         // Paso 2: Manejar formato español 1.253,26 -> 1253.26
         if (limpio.includes(',') && limpio.includes('.')) {
             // Tiene ambos: probablemente formato español
             const antesComa = limpio.split(',')[0];
             const despuesComa = limpio.split(',')[1];
-            
+
             // Quitar puntos de la parte entera
             const parteEntera = antesComa.replace(/\./g, '');
-            
+
             // Usar solo 2 decimales
             const parteDecimal = despuesComa.substring(0, 2);
-            
+
             limpio = parteEntera + '.' + parteDecimal;
             console.log(`🧹 Paso 2 (español): "${original}" -> "${limpio}"`);
-            
+
         } else if (limpio.includes(',')) {
             // Solo coma: formato decimal 1253,26 -> 1253.26
             const partes = limpio.split(',');
@@ -526,7 +526,7 @@ class NominaValidator {
             const parteDecimal = partes[1] ? partes[1].substring(0, 2) : '00';
             limpio = parteEntera + '.' + parteDecimal;
             console.log(`🧹 Paso 2 (coma decimal): "${original}" -> "${limpio}"`);
-            
+
         } else if (limpio.includes('.')) {
             // Solo puntos: podría ser miles o decimal
             const partes = limpio.split('.');
@@ -545,136 +545,136 @@ class NominaValidator {
                 console.log(`🧹 Paso 2 (punto miles): "${original}" -> "${limpio}"`);
             }
         }
-        
+
         // Paso 3: Validar que sea un número válido
         const valor = parseFloat(limpio);
         if (isNaN(valor)) {
             console.log(`⚠️ limpiarNumero: "${original}" -> INVÁLIDO -> 0`);
             return '0';
         }
-        
+
         console.log(`✅ limpiarNumero: "${original}" -> "${valor}"`);
         return valor.toString();
     }
-            }
+}
         } else if (limpio.includes('.')) {
-            // Si solo tiene punto, determinar si es decimal o separador
-            const partes = limpio.split('.');
-            if (partes.length === 2) {
-                if (partes[1].length === 2) {
-                    // Es decimal, mantenerlo
-                    // limpio = limpio;
-                } else if (partes[1].length === 3) {
-                    // Podría ser separador de miles
-                    if (partes[0].length > 3) {
-                        // Probablemente separador de miles: 1.234 -> 1234
-                        limpio = limpio.replace(/\./g, '');
-                    }
-                    // else mantener como decimal
-                }
+    // Si solo tiene punto, determinar si es decimal o separador
+    const partes = limpio.split('.');
+    if (partes.length === 2) {
+        if (partes[1].length === 2) {
+            // Es decimal, mantenerlo
+            // limpio = limpio;
+        } else if (partes[1].length === 3) {
+            // Podría ser separador de miles
+            if (partes[0].length > 3) {
+                // Probablemente separador de miles: 1.234 -> 1234
+                limpio = limpio.replace(/\./g, '');
             }
+            // else mantener como decimal
         }
-        
-        // Quitar espacios y otros caracteres no numéricos excepto punto
-        limpio = limpio.replace(/[^\d.]/g, '');
-        
-        // Validar que sea un número válido
-        const valor = parseFloat(limpio);
-        if (isNaN(valor)) return '0';
-        
-        return valor.toString();
+    }
+}
+
+// Quitar espacios y otros caracteres no numéricos excepto punto
+limpio = limpio.replace(/[^\d.]/g, '');
+
+// Validar que sea un número válido
+const valor = parseFloat(limpio);
+if (isNaN(valor)) return '0';
+
+return valor.toString();
     }
 
-    /**
-     * Calcula el valor de una hora extra
-     */
-    calcularValorHoraExtra(salarioBase, convenio) {
-        const horasMes = 160; // Aproximado para jornada completa
-        const valorHoraNormal = salarioBase / horasMes;
-        return valorHoraNormal * convenio.incrementoHoraExtra;
+/**
+ * Calcula el valor de una hora extra
+ */
+calcularValorHoraExtra(salarioBase, convenio) {
+    const horasMes = 160; // Aproximado para jornada completa
+    const valorHoraNormal = salarioBase / horasMes;
+    return valorHoraNormal * convenio.incrementoHoraExtra;
+}
+
+/**
+ * Calcula el IRPF estimado (simplificado)
+ */
+calcularIRPF(totalDevengado) {
+    if (totalDevengado < 12450) return totalDevengado * 0.19;
+    if (totalDevengado < 20200) return totalDevengado * 0.24;
+    if (totalDevengado < 35200) return totalDevengado * 0.30;
+    if (totalDevengado < 60000) return totalDevengado * 0.37;
+    return totalDevengado * 0.45;
+}
+
+/**
+ * Helper para comparar valores y generar explicación - CORREGIDO
+ */
+compararValores(nombre, real, teorico) {
+    console.log(`🔍 compararValores(${nombre}): real=${real}, teorico=${teorico}`);
+
+    // Asegurar que ambos son números
+    const realNum = parseFloat(real) || 0;
+    const teoricoNum = parseFloat(teorico) || 0;
+
+    console.log(`🔍 compararValores(${nombre}): realNum=${realNum}, teoricoNum=${teoricoNum}`);
+
+    const diff = parseFloat((realNum - teoricoNum).toFixed(2));
+    const estado = Math.abs(diff) < 1 ? 'CORRECTO' : (diff > 0 ? 'CORRECTO' : 'REVISAR');
+
+    let mensaje = '';
+    if (Math.abs(diff) < 1) {
+        mensaje = `Coincide con lo estipulado en el convenio.`;
+    } else if (diff > 0) {
+        mensaje = `¡Bien! Cobras ${diff}€ más de lo mínimo exigido.`;
+    } else {
+        mensaje = `Atención: Cobras ${Math.abs(diff)}€ menos de lo que deberías.`;
     }
 
-    /**
-     * Calcula el IRPF estimado (simplificado)
-     */
-    calcularIRPF(totalDevengado) {
-        if (totalDevengado < 12450) return totalDevengado * 0.19;
-        if (totalDevengado < 20200) return totalDevengado * 0.24;
-        if (totalDevengado < 35200) return totalDevengado * 0.30;
-        if (totalDevengado < 60000) return totalDevengado * 0.37;
-        return totalDevengado * 0.45;
+    const resultado = {
+        real: realNum,
+        teorico: teoricoNum,
+        diferencia: diff,
+        estado,
+        mensaje
+    };
+
+    console.log(`✅ compararValores(${nombre}):`, resultado);
+    return resultado;
+}
+
+return {
+    real: realNum,
+    teorico: teoricoNum,
+    diferencia: diff,
+    estado,
+    mensaje
+};
     }
 
-    /**
-     * Helper para comparar valores y generar explicación - CORREGIDO
-     */
-    compararValores(nombre, real, teorico) {
-        console.log(`🔍 compararValores(${nombre}): real=${real}, teorico=${teorico}`);
-        
-        // Asegurar que ambos son números
-        const realNum = parseFloat(real) || 0;
-        const teoricoNum = parseFloat(teorico) || 0;
-        
-        console.log(`🔍 compararValores(${nombre}): realNum=${realNum}, teoricoNum=${teoricoNum}`);
-        
-        const diff = parseFloat((realNum - teoricoNum).toFixed(2));
-        const estado = Math.abs(diff) < 1 ? 'CORRECTO' : (diff > 0 ? 'CORRECTO' : 'REVISAR');
+/**
+ * Detecta categoría profesional desde el texto
+ */
+detectarCategoriaDesdeTexto(text) {
+    const categoriaPatterns = [
+        { pattern: /GERENTE/i, categoria: 'gerente' },
+        { pattern: /ENCARGADO/i, categoria: 'mando_intermedio' },
+        { pattern: /SUPERVISOR/i, categoria: 'mando_intermedio' },
+        { pattern: /JEFE/i, categoria: 'mando_intermedio' },
+        { pattern: /TECNICO/i, categoria: 'tecnico' },
+        { pattern: /ADMINISTRATIVO/i, categoria: 'empleado' },
+        { pattern: /AUXILIAR/i, categoria: 'empleado' },
+        { pattern: /CONDUCTOR/i, categoria: 'empleado' },
+        { pattern: /OPERARIO/i, categoria: 'empleado' }
+    ];
 
-        let mensaje = '';
-        if (Math.abs(diff) < 1) {
-            mensaje = `Coincide con lo estipulado en el convenio.`;
-        } else if (diff > 0) {
-            mensaje = `¡Bien! Cobras ${diff}€ más de lo mínimo exigido.`;
-        } else {
-            mensaje = `Atención: Cobras ${Math.abs(diff)}€ menos de lo que deberías.`;
+    for (const { pattern, categoria } of categoriaPatterns) {
+        if (text.match(pattern)) {
+            console.log(`✅ CATEGORÍA DETECTADA: ${categoria}`);
+            return categoria;
         }
-
-        const resultado = {
-            real: realNum,
-            teorico: teoricoNum,
-            diferencia: diff,
-            estado,
-            mensaje
-        };
-        
-        console.log(`✅ compararValores(${nombre}):`, resultado);
-        return resultado;
     }
 
-        return {
-            real: realNum,
-            teorico: teoricoNum,
-            diferencia: diff,
-            estado,
-            mensaje
-        };
-    }
-
-    /**
-     * Detecta categoría profesional desde el texto
-     */
-    detectarCategoriaDesdeTexto(text) {
-        const categoriaPatterns = [
-            { pattern: /GERENTE/i, categoria: 'gerente' },
-            { pattern: /ENCARGADO/i, categoria: 'mando_intermedio' },
-            { pattern: /SUPERVISOR/i, categoria: 'mando_intermedio' },
-            { pattern: /JEFE/i, categoria: 'mando_intermedio' },
-            { pattern: /TECNICO/i, categoria: 'tecnico' },
-            { pattern: /ADMINISTRATIVO/i, categoria: 'empleado' },
-            { pattern: /AUXILIAR/i, categoria: 'empleado' },
-            { pattern: /CONDUCTOR/i, categoria: 'empleado' },
-            { pattern: /OPERARIO/i, categoria: 'empleado' }
-        ];
-        
-        for (const { pattern, categoria } of categoriaPatterns) {
-            if (text.match(pattern)) {
-                console.log(`✅ CATEGORÍA DETECTADA: ${categoria}`);
-                return categoria;
-            }
-        }
-        
-        return null; // NO inventar categoría si no se detecta
-    }
+    return null; // NO inventar categoría si no se detecta
+}
 }
 }
 
