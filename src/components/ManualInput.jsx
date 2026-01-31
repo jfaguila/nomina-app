@@ -17,22 +17,70 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
         convenio: 'general'
     });
 
-    // Sincronizar con datos del OCR cuando lleguen
+    const [detectedFields, setDetectedFields] = useState({
+        salarioBase: false,
+        horasExtras: false,
+        dietas: false,
+        totalDevengado: false,
+        categoria: false
+    });
+
+    // Sincronizar con datos del OCR cuando lleguen - AUDITORIA COMPLETA
     useEffect(() => {
         if (initialData) {
-            setFormData(prev => ({
-                ...prev,
+            console.log('\n🚨 === AUDITORIA ManualInput useEffect ===');
+            console.log('📥 INITIAL DATA RECIBIDO EN ManualInput:');
+            console.log(JSON.stringify(initialData, null, 2));
+            
+            // Marcar qué campos fueron detectados automáticamente
+            const detected = {
+                salarioBase: !!initialData.salarioBase,
+                horasExtras: !!initialData.horasExtras,
+                dietas: !!initialData.dietas,
+                totalDevengado: !!initialData.totalDevengado,
+                categoria: !!initialData.categoria
+            };
+            setDetectedFields(detected);
+            
+            console.log('🎯 DETECTED FIELDS:');
+            console.log(JSON.stringify(detected, null, 2));
+            
+            const newFormData = {
+                ...formData,
                 ...initialData
-            }));
+            };
+            
+            console.log('📋 FORM DATA ANTES DE SETEAR:');
+            console.log(JSON.stringify(formData, null, 2));
+            
+            console.log('📋 NEW FORM DATA (formData + initialData):');
+            console.log(JSON.stringify(newFormData, null, 2));
+            
+            setFormData(newFormData);
+            console.log('=== FIN AUDITORIA ManualInput ===\n');
         }
     }, [initialData]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+        
+        console.log(`\n🔄 === ManualInput handleChange ===`);
+        console.log(`📝 Input change - name: "${name}", value: "${value}", type: "${type}"`);
+        console.log(`📋 Form data ANTES:`);
+        console.log(JSON.stringify(formData, null, 2));
+        
+        setFormData(prev => {
+            const newFormData = {
+                ...prev,
+                [name]: type === 'checkbox' ? checked : value
+            };
+            
+            console.log(`📋 Form data DESPUÉS:`);
+            console.log(JSON.stringify(newFormData, null, 2));
+            console.log(`=== FIN ManualInput handleChange ===\n`);
+            
+            return newFormData;
+        });
     };
 
     const handleSubmit = (e) => {
@@ -71,13 +119,24 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 <option value="leroy_merlin">Leroy Merlin (Grandes Almacenes)</option>
                             </select>
                         </div>
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Categoría</label>
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                Categoría
+                                {detectedFields.categoria && (
+                                    <span className="ml-2 text-xs text-green-600 dark:text-green-400 font-normal">
+                                        ✓ Detectada automáticamente
+                                    </span>
+                                )}
+                            </label>
                             <select
                                 name="categoria"
                                 value={formData.categoria}
                                 onChange={handleChange}
-                                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
+                                className={`w-full rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${
+                                    detectedFields.categoria
+                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700 dark:bg-gray-800'
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                }`}
                             >
                                 {formData.convenio === 'transporte_sanitario_andalucia' ? (
                                     <>
@@ -108,6 +167,18 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                     </>
                                 )}
                             </select>
+                            {detectedFields.categoria && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setDetectedFields(prev => ({ ...prev, categoria: false }));
+                                        document.querySelector('[name="categoria"]').focus();
+                                    }}
+                                    className="absolute right-2 top-8 text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                >
+                                    Editar
+                                </button>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -121,17 +192,39 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                         </h4>
 
                         <div className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Salario Base Mensual (€)</label>
+                            <div className="relative">
+                                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                    Salario Base Mensual (€)
+                                    {detectedFields.salarioBase && (
+                                        <span className="ml-2 text-xs text-green-600 dark:text-green-400 font-normal">
+                                            ✓ Detectado automáticamente
+                                        </span>
+                                    )}
+                                </label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     name="salarioBase"
-                                    value={formData.salarioBase}
+                                    value={formData.salarioBase || ''}
                                     onChange={handleChange}
                                     placeholder="0.00"
-                                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
-                                    step="0.01"
+                                    className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${
+                                        detectedFields.salarioBase 
+                                            ? 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10' 
+                                            : 'border-gray-200 dark:border-gray-700'
+                                    }`}
                                 />
+                                {detectedFields.salarioBase && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setDetectedFields(prev => ({ ...prev, salarioBase: false }));
+                                            document.querySelector('[name="salarioBase"]').focus();
+                                        }}
+                                        className="absolute right-2 top-8 text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        Editar
+                                    </button>
+                                )}
                             </div>
 
                             <div>
@@ -195,17 +288,40 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Dietas y Complementos (€)</label>
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                Dietas y Complementos (€)
+                                {detectedFields.dietas && (
+                                    <span className="ml-2 text-xs text-green-600 dark:text-green-400 font-normal">
+                                        ✓ Detectado automáticamente
+                                    </span>
+                                )}
+                            </label>
                             <input
                                 type="number"
                                 name="dietas"
                                 value={formData.dietas}
                                 onChange={handleChange}
                                 placeholder="0.00"
-                                className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
+                                className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${
+                                    detectedFields.dietas 
+                                        ? 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10' 
+                                        : 'border-gray-200 dark:border-gray-700'
+                                }`}
                                 step="0.01"
                             />
+                            {detectedFields.dietas && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setDetectedFields(prev => ({ ...prev, dietas: false }));
+                                        document.querySelector('[name="dietas"]').focus();
+                                    }}
+                                    className="absolute right-2 top-8 text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                >
+                                    Editar
+                                </button>
+                            )}
                         </div>
 
                         <div className="flex items-center gap-6 p-4 bg-blue-50/30 dark:bg-blue-900/10 rounded-2xl border border-blue-100/50 dark:border-blue-900/30">
@@ -235,6 +351,47 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                         </div>
                     </div>
                 </div>
+
+                {/* Resumen de datos detectados */}
+                {(detectedFields.salarioBase || detectedFields.categoria || detectedFields.dietas) && (
+                    <div className="bg-green-50/50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded-2xl p-4">
+                        <h5 className="text-sm font-bold text-green-800 dark:text-green-200 mb-3 flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Datos detectados automáticamente
+                        </h5>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            {detectedFields.salarioBase && (
+                                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                                    <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Salario Base
+                                </div>
+                            )}
+                            {detectedFields.categoria && (
+                                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                                    <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Categoría Profesional
+                                </div>
+                            )}
+                            {detectedFields.dietas && (
+                                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                                    <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Dietas
+                                </div>
+                            )}
+                        </div>
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-3 italic">
+                            Puedes hacer clic en "Editar" junto a cualquier campo para modificarlo
+                        </p>
+                    </div>
+                )}
 
                 <div className="pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-col md:flex-row gap-4">
                     <button

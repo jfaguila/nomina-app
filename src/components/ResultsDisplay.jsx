@@ -128,8 +128,18 @@ const ResultsDisplay = ({ results }) => {
                                                 {details.salario_base_comparativa.mensaje}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.salario_base_comparativa.real?.toFixed(2)} €</td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.salario_base_comparativa.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.salario_base_comparativa.real === 'number' 
+                                                ? details.salario_base_comparativa.real.toFixed(2) 
+                                                : parseFloat(details.salario_base_comparativa.real || 0).toFixed(2)
+                                            } €
+                                        </td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.salario_base_comparativa.teorico === 'number' 
+                                                ? details.salario_base_comparativa.teorico.toFixed(2) 
+                                                : parseFloat(details.salario_base_comparativa.teorico || 0).toFixed(2)
+                                            } €
+                                        </td>
                                         <td className="py-3 px-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.salario_base_comparativa.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                 }`}>
@@ -148,8 +158,18 @@ const ResultsDisplay = ({ results }) => {
                                                 {details.plus_convenio.mensaje}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.plus_convenio.real?.toFixed(2)} €</td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.plus_convenio.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.plus_convenio.real === 'number' 
+                                                ? details.plus_convenio.real.toFixed(2) 
+                                                : parseFloat(details.plus_convenio.real || 0).toFixed(2)
+                                            } €
+                                        </td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.plus_convenio.teorico === 'number' 
+                                                ? details.plus_convenio.teorico.toFixed(2) 
+                                                : parseFloat(details.plus_convenio.teorico || 0).toFixed(2)
+                                            } €
+                                        </td>
                                         <td className="py-3 px-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.plus_convenio.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                 }`}>
@@ -171,8 +191,18 @@ const ResultsDisplay = ({ results }) => {
                                                 {details.antiguedad.mensaje}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.antiguedad.real?.toFixed(2)} €</td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.antiguedad.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.antiguedad.real === 'number' 
+                                                ? details.antiguedad.real.toFixed(2) 
+                                                : parseFloat(details.antiguedad.real || 0).toFixed(2)
+                                            } €
+                                        </td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.antiguedad.teorico === 'number' 
+                                                ? details.antiguedad.teorico.toFixed(2) 
+                                                : parseFloat(details.antiguedad.teorico || 0).toFixed(2)
+                                            } €
+                                        </td>
                                         <td className="py-3 px-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.antiguedad.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                 }`}>
@@ -194,8 +224,18 @@ const ResultsDisplay = ({ results }) => {
                                                 {details.nocturnidad.mensaje}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.nocturnidad.real?.toFixed(2)} €</td>
-                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">{details.nocturnidad.teorico?.toFixed(2)} €</td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.nocturnidad.real === 'number' 
+                                                ? details.nocturnidad.real.toFixed(2) 
+                                                : parseFloat(details.nocturnidad.real || 0).toFixed(2)
+                                            } €
+                                        </td>
+                                        <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                                            {typeof details.nocturnidad.teorico === 'number' 
+                                                ? details.nocturnidad.teorico.toFixed(2) 
+                                                : parseFloat(details.nocturnidad.teorico || 0).toFixed(2)
+                                            } €
+                                        </td>
                                         <td className="py-3 px-4 text-center">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${details.nocturnidad.estado === 'CORRECTO' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                 }`}>
@@ -221,16 +261,62 @@ const ResultsDisplay = ({ results }) => {
                             Detalles de la Verificación
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {Object.entries(details).map(([key, value]) => (
-                                <div key={key} className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl">
-                                    <p className="text-sm text-gray-600 font-medium capitalize">
-                                        {key.replace(/_/g, ' ')}
-                                    </p>
-                                    <p className="text-lg font-bold text-gray-800 mt-1">
-                                        {typeof value === 'number' ? `${value.toFixed(2)} €` : JSON.stringify(value)}
-                                    </p>
-                                </div>
-                            ))}
+                            {Object.entries(details).map(([key, value]) => {
+                                // Manejar objetos de comparación especializados
+                                if (value && typeof value === 'object' && value.real !== undefined) {
+                                    return (
+                                        <div key={key} className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl">
+                                            <p className="text-sm text-gray-600 font-medium capitalize">
+                                                {key.replace(/_/g, ' ')}
+                                            </p>
+                                            <div className="text-sm font-semibold text-gray-800 mt-1 space-y-1">
+                                                <div>Real: <span className="font-bold">{typeof value.real === 'number' ? value.real.toFixed(2) : parseFloat(value.real || 0).toFixed(2)}€</span></div>
+                                                <div>Teórico: <span className="font-bold">{typeof value.teorico === 'number' ? value.teorico.toFixed(2) : parseFloat(value.teorico || 0).toFixed(2)}€</span></div>
+                                                <div>Diferencia: <span className="font-bold">{typeof value.diferencia === 'number' ? value.diferencia.toFixed(2) : parseFloat(value.diferencia || 0).toFixed(2)}€</span></div>
+                                                <div>Estado: <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                                    value.estado === 'CORRECTO' 
+                                                        ? 'bg-green-100 text-green-700' 
+                                                        : 'bg-red-100 text-red-700'
+                                                }`}>{value.estado}</span></div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                
+                                // Manejar otros objetos
+                                if (value && typeof value === 'object') {
+                                    return (
+                                        <div key={key} className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl">
+                                            <p className="text-sm text-gray-600 font-medium capitalize">
+                                                {key.replace(/_/g, ' ')}
+                                            </p>
+                                            <div className="text-sm text-gray-800 mt-1">
+                                                {Object.entries(value).map(([subKey, subValue]) => (
+                                                    <div key={subKey} className="py-1">
+                                                        <span className="font-medium">{subKey.replace(/_/g, ' ')}:</span>{' '}
+                                                        <span className="font-bold">
+                                                            {typeof subValue === 'number' ? `${subValue.toFixed(2)}€` : 
+                                                             (typeof subValue === 'string' && !isNaN(parseFloat(subValue)) ? `${parseFloat(subValue).toFixed(2)}€` : subValue)}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                
+                                // Manejar números y strings
+                                return (
+                                    <div key={key} className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl">
+                                        <p className="text-sm text-gray-600 font-medium capitalize">
+                                            {key.replace(/_/g, ' ')}
+                                        </p>
+                                        <p className="text-lg font-bold text-gray-800 mt-1">
+                                            {typeof value === 'number' ? `${value.toFixed(2)} €` : value}
+                                        </p>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </motion.div>
                 )

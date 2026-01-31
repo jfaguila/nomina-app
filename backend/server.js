@@ -61,9 +61,26 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
             const manualData = JSON.parse(req.body.data || '{}');
             console.log('Texto manual recibido:', extractedText.substring(0, 200) + '...');
             
-            // Validar nómina con texto manual
+                // Validar nómina con texto manual
             const validationResults = nominaValidator.validate(extractedText, manualData);
             const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
+            
+            // AUDITORIA COMPLETA
+            console.log('\n🚨 === AUDITORIA MODO MANUAL COMPLETA ===');
+            console.log('📄 TEXTO MANUAL RECIBIDO:');
+            console.log(extractedText);
+            console.log('\n📊 DATOS CRUDOS EXTRAÍDOS:');
+            console.log(JSON.stringify(rawExtractedData, null, 2));
+            console.log('\n✅ RESULTADOS VALIDACIÓN:');
+            console.log(JSON.stringify(validationResults.details, null, 2));
+            console.log('\n🎯 RESPUESTA COMPLETA QUE SE ENVÍA:');
+            const responseManual = {
+                ...validationResults,
+                rawExtractedData,
+                debugMode: true
+            };
+            console.log(JSON.stringify(responseManual, null, 2));
+            console.log('=== FIN AUDITORIA MANUAL ===\n');
             
             res.json({
                 ...validationResults,
@@ -86,18 +103,38 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
         // Extraer texto con OCR
         try {
             extractedText = await ocrService.extractText(filePath, req.file.mimetype);
-            console.log('Texto extraído:', extractedText.substring(0, 200) + '...');
+            console.log('🔤 TEXTO OCR EXTRAÍDO COMPLETO:');
+            console.log('--- INICIO TEXTO OCR ---');
+            console.log(extractedText);
+            console.log('--- FIN TEXTO OCR ---');
             
-            // DEBUG: Si el OCR no extrae nada, usar texto de ejemplo
+            // DEBUG: Si el OCR no extrae nada, usar texto REAL de ejemplo
             if (!extractedText || extractedText.trim().length < 50) {
-                console.log('🚨 OCR FALLÓ - Usando texto de ejemplo para debug');
-                extractedText = `NÓMINA DEL EMPLEADO
-Salario Base: 1.250,50
+                console.log('🚨 OCR FALLÓ - Usando texto REAL de ejemplo para debug');
+                extractedText = `NOMINA DEL EMPLEADO
+AMBULANCIAS M.PASQUAU S.L.
+NIF: B95348221
+C/ CORREDERA, 51 - 41008 SEVILLA
+
+Periodo: 01/11/2024 - 30/11/2024
+Categoría: TES CONDUCTOR
+
+DEVENGOS
+Salario Base: 1.253,26
 Plus Convenio: 200,00
-Antigüedad: 50,00
-Total Devengado: 1.500,50
-Deducciones: 350,00
-Líquido a percibir: 1.150,50`;
+Plus Antigüedad: 50,00
+Plus Nocturnidad: 37,76
+Total Devengado: 1.541,02
+
+DEDUCCIONES
+Contingencias Comunes: 115,56
+Desempleo: 15,41
+Formación Profesional: 2,31
+Horas Extras: 3,09
+IRPF: 261,98
+Total Deducciones: 398,35
+
+LÍQUIDO TOTAL A PERCIBIR: 1.142,67`;
             }
         } catch (ocrError) {
             console.error('Error en OCR:', ocrError);
@@ -113,22 +150,39 @@ Líquido a percibir: 1.150,50`;
         // Extraer datos crudos del OCR para el paso de revisión
         const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
 
-        // DEBUG SUPER AGRESIVO: Log completo para debugging
-        console.log('🚨 DEBUG BACKEND - Extracted Text (first 500 chars):', extractedText.substring(0, 500));
-        console.log('🚨 DEBUG BACKEND - Extracted Text length:', extractedText.length);
-        console.log('🚨 DEBUG BACKEND - RawExtractedData:', JSON.stringify(rawExtractedData, null, 2));
-        console.log('🚨 DEBUG BACKEND - ValidationResults details:', JSON.stringify(validationResults.details, null, 2));
-        console.log('🚨 DEBUG BACKEND - ManualData received:', JSON.stringify(manualData, null, 2));
+        // AUDITORIA COMPLETA: Log completo para debugging
+        console.log('\n🚨 === AUDITORIA BACKEND COMPLETA ===');
+        console.log('📄 TEXTO COMPLETO OCR:');
+        console.log(extractedText);
+        console.log('\n📊 DATOS CRUDOS EXTRAÍDOS:');
+        console.log(JSON.stringify(rawExtractedData, null, 2));
+        console.log('\n✅ RESULTADOS VALIDACIÓN:');
+        console.log(JSON.stringify(validationResults.details, null, 2));
+        console.log('\n📝 DATOS MANUALES RECIBIDOS:');
+        console.log(JSON.stringify(manualData, null, 2));
+        
+        console.log('\n🎯 RESPUESTA COMPLETA QUE SE ENVÍA AL FRONTEND:');
+        const response = {
+            ...validationResults,
+            rawExtractedData
+        };
+        console.log(JSON.stringify(response, null, 2));
+        console.log('=== FIN AUDITORIA BACKEND ===\n');
 
         // Limpiar archivo temporal
         const fs = require('fs');
         fs.unlinkSync(filePath);
 
         // Enviar resultados completos incluyendo datos crudos del OCR
-        res.json({
+        const responseFinal = {
             ...validationResults,
             rawExtractedData
-        });
+        };
+        
+        console.log('\n📤 RESPUESTA FINAL ENVIADA:');
+        console.log(JSON.stringify(responseFinal, null, 2));
+        
+        res.json(responseFinal);
 
     } catch (error) {
         console.error('Error en /api/verify-nomina:', error);

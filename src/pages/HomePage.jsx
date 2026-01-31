@@ -51,13 +51,32 @@ const HomePage = () => {
         return apiUrl;
     };
 
-    // Helper function to safely extract numeric values
+    // Helper function to safely extract numeric values - DEBUG VERSION
     const safeNumericValue = (value) => {
+        console.log(`🔢 safeNumericValue: entrada="${value}" (${typeof value})`);
+        
         if (value === null || value === undefined || value === '') {
-            return 0;
+            console.log(`🔢 safeNumericValue: vacío -> 0`);
+            return '';
         }
+        
+        // Si ya es string, devolverlo tal cual
+        if (typeof value === 'string') {
+            console.log(`🔢 safeNumericValue: string -> "${value}"`);
+            return value;
+        }
+        
+        // Si es número, convertir a string exacto
+        if (typeof value === 'number') {
+            const result = value.toString();
+            console.log(`🔢 safeNumericValue: número -> "${result}"`);
+            return result;
+        }
+        
         const parsed = parseFloat(value);
-        return isNaN(parsed) ? 0 : parsed;
+        const result = isNaN(parsed) ? '' : parsed.toString();
+        console.log(`🔢 safeNumericValue: procesado -> "${result}"`);
+        return result;
     };
 
     // Step 1 -> Step 2: Upload and initial OCR
@@ -91,34 +110,57 @@ const HomePage = () => {
             const details = response.data.details || {};
             const rawData = response.data.rawExtractedData || {};
 
-            // DEBUG SUPER AGRESIVO - Log completo para debugging
-            console.log('🚨 DEBUG - Response completa:', JSON.stringify(response.data, null, 2));
-            console.log('🚨 DEBUG - Details:', JSON.stringify(details, null, 2));
-            console.log('🚨 DEBUG - RawData:', JSON.stringify(rawData, null, 2));
-            console.log('🚨 DEBUG - UploadData:', JSON.stringify(uploadData, null, 2));
+            // AUDITORIA COMPLETA - Log completo para debugging
+            console.log('\n🚨 === AUDITORIA FRONTEND RESPUESTA ===');
+            console.log('📥 RESPONSE COMPLETA RECIBIDA:');
+            console.log(JSON.stringify(response.data, null, 2));
+            console.log('\n📊 DETAILS SEPARADO:');
+            console.log(JSON.stringify(details, null, 2));
+            console.log('\n📊 RAW DATA SEPARADO:');
+            console.log(JSON.stringify(rawData, null, 2));
+            console.log('\n📊 UPLOAD DATA ORIGINAL:');
+            console.log(JSON.stringify(uploadData, null, 2));
 
-            // VERIFICACIÓN MANUAL de cada campo
-            console.log('🔍 VERIFICACIÓN:');
-            console.log('  - rawData.salarioBase:', rawData.salarioBase);
-            console.log('  - details.salario_base_comparativa?.real:', details.salario_base_comparativa?.real);
-            console.log('  - rawData.plusConvenio:', rawData.plusConvenio);
-            console.log('  - details.plus_convenio?.real:', details.plus_convenio?.real);
+            // DEBUG COMPLETO - Verificar cada fuente de datos
+            console.log('\n🔍 === DEBUG COMPLETO HOME PAGE ===');
+            console.log('📊 RAW DATA (extracción directa):');
+            console.log(JSON.stringify(rawData, null, 2));
+            console.log('✅ DETAILS (procesados):');
+            console.log(JSON.stringify(details, null, 2));
+            
+            console.log('\n🎯 VERIFICACIÓN CAMPO POR CAMPO:');
+            console.log(`  Salario Base:`);
+            console.log(`    - rawData.salarioBase: "${rawData.salarioBase}" (${typeof rawData.salarioBase})`);
+            console.log(`    - details.salario_base_comparativa?.real: "${details.salario_base_comparativa?.real}" (${typeof details.salario_base_comparativa?.real})`);
+            console.log(`  Plus Convenio:`);
+            console.log(`    - rawData.plusConvenio: "${rawData.plusConvenio}" (${typeof rawData.plusConvenio})`);
+            console.log(`    - details.plus_convenio?.real: "${details.plus_convenio?.real}" (${typeof details.plus_convenio?.real})`);
 
-            // Defensive validation - ensure all data exists and is valid
+            // CONSTRUCCIÓN EXPLÍCITA sin conversión automática
             const prefilledData = {
                 convenio: uploadData.convenio || 'general',
                 categoria: uploadData.categoria || 'empleado',
-                salarioBase: safeNumericValue(details.salario_base_comparativa?.real) || safeNumericValue(rawData.salarioBase),
-                plusConvenio: safeNumericValue(details.plus_convenio?.real) || safeNumericValue(rawData.plusConvenio),
+                
+                // Salario Base: usar rawData directamente SIN procesar
+                salarioBase: rawData.salarioBase || details.salario_base_comparativa?.real || '',
+                
+                // Plus Convenio: mismo approach
+                plusConvenio: rawData.plusConvenio || details.plus_convenio?.real || '',
+                
                 antiguedad: rawData.antiguedad || "",
-                valorAntiguedad: safeNumericValue(details.antiguedad?.real) || safeNumericValue(rawData.valorAntiguedad),
-                horasNocturnas: safeNumericValue(details.nocturnidad?.horas),
-                valorNocturnidad: safeNumericValue(details.nocturnidad?.real),
-                dietas: safeNumericValue(details.dietas?.real) || safeNumericValue(rawData.dietas),
-                totalDevengado: safeNumericValue(details.calculos_finales?.total_devengado) || safeNumericValue(rawData.totalDevengado)
+                valorAntiguedad: rawData.valorAntiguedad || details.antiguedad?.real || '',
+                horasNocturnas: rawData.horasNocturnas || details.nocturnidad?.horas || '',
+                valorNocturnidad: rawData.valorNocturnidad || details.nocturnidad?.real || '',
+                dietas: rawData.dietas || details.dietas?.real || '',
+                totalDevengado: rawData.totalDevengado || details.calculos_finales?.total_devengado || ''
             };
 
-            console.log('🚨 DEBUG - PrefilledData final:', JSON.stringify(prefilledData, null, 2));
+            console.log('\n📋 PREFILLED DATA CONSTRUIDA:');
+            console.log(JSON.stringify(prefilledData, null, 2));
+            console.log('=== FIN AUDITORIA FRONTEND ===\n');
+
+            console.log('\n📤 PREFILLED DATA FINAL QUE SE PASA A ManualInput:');
+            console.log(JSON.stringify(prefilledData, null, 2));
 
             setReviewData(prefilledData);
             setExtractedText(response.data.debugText || '');
