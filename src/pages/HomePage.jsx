@@ -43,7 +43,8 @@ const HomePage = () => {
         let apiUrl = process.env.REACT_APP_API_URL;
         if (!apiUrl) {
             if (window.location.hostname.includes('vercel.app')) {
-                return 'https://nomina-app-production.up.railway.app';
+                // URL de producción (Railway)
+                return 'https://nomina-app-production-653f.up.railway.app';
             } else {
                 return 'http://localhost:5987';
             }
@@ -54,25 +55,25 @@ const HomePage = () => {
     // Helper function to safely extract numeric values - DEBUG VERSION
     const safeNumericValue = (value) => {
         console.log(`🔢 safeNumericValue: entrada="${value}" (${typeof value})`);
-        
+
         if (value === null || value === undefined || value === '') {
             console.log(`🔢 safeNumericValue: vacío -> 0`);
             return '';
         }
-        
+
         // Si ya es string, devolverlo tal cual
         if (typeof value === 'string') {
             console.log(`🔢 safeNumericValue: string -> "${value}"`);
             return value;
         }
-        
+
         // Si es número, convertir a string exacto
         if (typeof value === 'number') {
             const result = value.toString();
             console.log(`🔢 safeNumericValue: número -> "${result}"`);
             return result;
         }
-        
+
         const parsed = parseFloat(value);
         const result = isNaN(parsed) ? '' : parsed.toString();
         console.log(`🔢 safeNumericValue: procesado -> "${result}"`);
@@ -127,7 +128,7 @@ const HomePage = () => {
             console.log(JSON.stringify(rawData, null, 2));
             console.log('✅ DETAILS (procesados):');
             console.log(JSON.stringify(details, null, 2));
-            
+
             console.log('\n🎯 VERIFICACIÓN CAMPO POR CAMPO:');
             console.log(`  Salario Base:`);
             console.log(`    - rawData.salarioBase: "${rawData.salarioBase}" (${typeof rawData.salarioBase})`);
@@ -140,13 +141,13 @@ const HomePage = () => {
             const prefilledData = {
                 convenio: uploadData.convenio || 'general',
                 categoria: uploadData.categoria || 'empleado',
-                
+
                 // Salario Base: usar rawData directamente SIN procesar
                 salarioBase: rawData.salarioBase || details.salario_base_comparativa?.real || '',
-                
+
                 // Plus Convenio: mismo approach
                 plusConvenio: rawData.plusConvenio || details.plus_convenio?.real || '',
-                
+
                 antiguedad: rawData.antiguedad || "",
                 valorAntiguedad: rawData.valorAntiguedad || details.antiguedad?.real || '',
                 horasNocturnas: rawData.horasNocturnas || details.nocturnidad?.horas || '',
