@@ -224,8 +224,11 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
-// Puerto dinámico para Railway
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Servidor corriendo en http://0.0.0.0:${PORT}`);
+// Puerto dinámico para Railway: IMPORTANTE usar process.env.PORT
+const ACTIVE_PORT = process.env.PORT || 5987;
+
+app.listen(ACTIVE_PORT, '0.0.0.0', () => {
+    console.log(`🚀 SERVIDOR INICIADO en http://0.0.0.0:${ACTIVE_PORT}`);
+    console.log(`📡 Escuchando en puerto ${ACTIVE_PORT} (Variable PORT: ${process.env.PORT})`);
     console.log(`📁 Directorio de uploads: ${path.join(__dirname, 'uploads')}`);
 });
