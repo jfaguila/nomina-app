@@ -1,9 +1,15 @@
+console.log('✅ SERVER.JS: Iniciando ejecución del script...');
+console.log(`✅ SERVER.JS: Entorno = ${process.env.NODE_ENV}`);
+console.log(`✅ SERVER.JS: PORT Variable = ${process.env.PORT}`);
+
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const ocrService = require('./services/ocrService');
 const nominaValidator = require('./services/nominaValidator');
+
+console.log('✅ SERVER.JS: Módulos cargados correctamente');
 
 const app = express();
 const PORT = process.env.PORT || 5987;
