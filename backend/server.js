@@ -27,61 +27,43 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
     fileFilter: (req, file, cb) => {
-        // Permitir modo debug sin archivo
-        if (req.body.manualText || (req.path && req.path.includes('debug'))) {
-            return cb(null, true);
-        }
-        
-        const allowedTypes = /jpeg|jpg|png|pdf/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-
-        if (mimetype && extname) {
-            return cb(null, true);
+        if (!req.file && req.body.manualText) return cb(null, true);
+        if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('image/')) {
+            cb(null, true);
         } else {
-            cb(new Error('Solo se permiten archivos PDF, JPG, JPEG y PNG'));
+            cb(new Error('Formato no soportado. Sube PDF o imágenes.'), false);
         }
     }
 });
 
-// Rutas
-app.get('/', (req, res) => {
-    res.json({ message: 'API de Verificación de Nóminas' });
+// Crear directorio uploads si no existe
+const fs = require('fs');
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+
+// Ruta de healthcheck para Railway/Render
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date() });
 });
 
 // Endpoint principal para verificar nóminas
 app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
     try {
         let extractedText = '';
-        
+
         // MODO DEBUG: Permitir texto manual para pruebas
         if (!req.file && req.body.manualText) {
             console.log('🚨 MODO DEBUG: Usando texto manual');
             extractedText = req.body.manualText;
             const manualData = JSON.parse(req.body.data || '{}');
             console.log('Texto manual recibido:', extractedText.substring(0, 200) + '...');
-            
-                // Validar nómina con texto manual
+
+            // Validar nómina con texto manual
             const validationResults = nominaValidator.validate(extractedText, manualData);
             const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
-            
-            // AUDITORIA COMPLETA
-            console.log('\n🚨 === AUDITORIA MODO MANUAL COMPLETA ===');
-            console.log('📄 TEXTO MANUAL RECIBIDO:');
-            console.log(extractedText);
-            console.log('\n📊 DATOS CRUDOS EXTRAÍDOS:');
-            console.log(JSON.stringify(rawExtractedData, null, 2));
-            console.log('\n✅ RESULTADOS VALIDACIÓN:');
-            console.log(JSON.stringify(validationResults.details, null, 2));
-            console.log('\n🎯 RESPUESTA COMPLETA QUE SE ENVÍA:');
-            const responseManual = {
-                ...validationResults,
-                rawExtractedData,
-                debugMode: true
-            };
-            console.log(JSON.stringify(responseManual, null, 2));
-            console.log('=== FIN AUDITORIA MANUAL ===\n');
-            
+
             res.json({
                 ...validationResults,
                 rawExtractedData,
@@ -89,7 +71,7 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
             });
             return;
         }
-        
+
         if (!req.file) {
             return res.status(400).json({ error: 'No se ha subido ningún archivo' });
         }
@@ -103,38 +85,18 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
         // Extraer texto con OCR
         try {
             extractedText = await ocrService.extractText(filePath, req.file.mimetype);
-            console.log('🔤 TEXTO OCR EXTRAÍDO COMPLETO:');
-            console.log('--- INICIO TEXTO OCR ---');
-            console.log(extractedText);
-            console.log('--- FIN TEXTO OCR ---');
-            
-            // DEBUG: Si el OCR no extrae nada, usar texto REAL de ejemplo
+            console.log('Texto extraído:', extractedText.substring(0, 200) + '...');
+
+            // DEBUG: Si el OCR no extrae nada, usar texto de ejemplo
             if (!extractedText || extractedText.trim().length < 50) {
-                console.log('🚨 OCR FALLÓ - Usando texto REAL de ejemplo para debug');
-                extractedText = `NOMINA DEL EMPLEADO
-AMBULANCIAS M.PASQUAU S.L.
-NIF: B95348221
-C/ CORREDERA, 51 - 41008 SEVILLA
-
-Periodo: 01/11/2024 - 30/11/2024
-Categoría: TES CONDUCTOR
-
-DEVENGOS
-Salario Base: 1.253,26
+                console.log('🚨 OCR FALLÓ - Usando texto de ejemplo para debug');
+                extractedText = `NÓMINA DEL EMPLEADO
+Salario Base: 1.250,50
 Plus Convenio: 200,00
-Plus Antigüedad: 50,00
-Plus Nocturnidad: 37,76
-Total Devengado: 1.541,02
-
-DEDUCCIONES
-Contingencias Comunes: 115,56
-Desempleo: 15,41
-Formación Profesional: 2,31
-Horas Extras: 3,09
-IRPF: 261,98
-Total Deducciones: 398,35
-
-LÍQUIDO TOTAL A PERCIBIR: 1.142,67`;
+Antigüedad: 50,00
+Total Devengado: 1.500,50
+Deducciones: 350,00
+Líquido a percibir: 1.150,50`;
             }
         } catch (ocrError) {
             console.error('Error en OCR:', ocrError);
@@ -144,45 +106,22 @@ LÍQUIDO TOTAL A PERCIBIR: 1.142,67`;
             });
         }
 
-        // Validar nómina
         const validationResults = nominaValidator.validate(extractedText, manualData);
-
-        // Extraer datos crudos del OCR para el paso de revisión
+        // Important: Extract raw data independently to send to frontend
         const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
 
-        // AUDITORIA COMPLETA: Log completo para debugging
-        console.log('\n🚨 === AUDITORIA BACKEND COMPLETA ===');
-        console.log('📄 TEXTO COMPLETO OCR:');
-        console.log(extractedText);
-        console.log('\n📊 DATOS CRUDOS EXTRAÍDOS:');
-        console.log(JSON.stringify(rawExtractedData, null, 2));
-        console.log('\n✅ RESULTADOS VALIDACIÓN:');
-        console.log(JSON.stringify(validationResults.details, null, 2));
-        console.log('\n📝 DATOS MANUALES RECIBIDOS:');
-        console.log(JSON.stringify(manualData, null, 2));
-        
-        console.log('\n🎯 RESPUESTA COMPLETA QUE SE ENVÍA AL FRONTEND:');
-        const response = {
-            ...validationResults,
-            rawExtractedData
-        };
-        console.log(JSON.stringify(response, null, 2));
-        console.log('=== FIN AUDITORIA BACKEND ===\n');
+        console.log('🔍 DEBUG BACKEND - Extracted Text length:', extractedText.length);
+        console.log('🔍 DEBUG BACKEND - RawExtractedData:', rawExtractedData);
+        console.log('🔍 DEBUG BACKEND - ValidationResults details:', validationResults.details);
 
-        // Limpiar archivo temporal
-        const fs = require('fs');
+        // Limpiar archivo subido
         fs.unlinkSync(filePath);
 
-        // Enviar resultados completos incluyendo datos crudos del OCR
-        const responseFinal = {
+        // Enviar respuesta completa
+        res.json({
             ...validationResults,
             rawExtractedData
-        };
-        
-        console.log('\n📤 RESPUESTA FINAL ENVIADA:');
-        console.log(JSON.stringify(responseFinal, null, 2));
-        
-        res.json(responseFinal);
+        });
 
     } catch (error) {
         console.error('Error en /api/verify-nomina:', error);
@@ -193,112 +132,64 @@ LÍQUIDO TOTAL A PERCIBIR: 1.142,67`;
     }
 });
 
-// Endpoint para validar datos manuales o corregidos (sin OCR)
+// Endpoint simple para validar datos manuales sin OCR
 app.post('/api/validate-data', (req, res) => {
     try {
-        const { extractedText, manualData } = req.body;
-
-        console.log('Validando datos corregidos:', manualData);
-
-        // El texto extraído puede estar vacío si es puramente manual
-        const results = nominaValidator.validate(extractedText || '', manualData);
-
-        res.json(results);
+        const { manualData, extractedText } = req.body;
+        const validationResults = nominaValidator.validate(extractedText || '', manualData || {});
+        res.json(validationResults);
     } catch (error) {
         console.error('Error en /api/validate-data:', error);
         res.status(500).json({ error: error.message });
     }
 });
 
-// Servir archivos estáticos del frontend (React build)
-app.use(express.static(path.join(__dirname, '../build')));
-
-// Endpoint de prueba para OCR con modo manual
-app.post('/api/test-ocr', upload.single('file'), async (req, res) => {
+app.post('/api/test-ocr', upload.single('nomina'), async (req, res) => {
     try {
-        let text = '';
-        
-        // MODO DEBUG: Permitir texto manual
-        if (!req.file && req.body.manualText) {
-            console.log('🚨 MODO DEBUG TEST: Usando texto manual');
-            text = req.body.manualText;
-        } else if (!req.file) {
-            return res.status(400).json({ error: 'No se ha subido ningún archivo' });
-        } else {
-            text = await ocrService.extractText(req.file.path, req.file.mimetype);
-            
-            if (!text || text.trim().length < 10) {
-                console.log('🚨 OCR vacío - usando texto ejemplo');
-                text = `Salario Base: 1.250,50
-Plus Convenio: 200,00
-Antigüedad: 50,00
-Total Devengado: 1.500,50`;
-            }
-
-            const fs = require('fs');
-            fs.unlinkSync(req.file.path);
-        }
-
+        if (!req.file) throw new Error('No file uploaded');
+        const text = await ocrService.extractText(req.file.path, req.file.mimetype);
+        fs.unlinkSync(req.file.path);
         res.json({ text });
     } catch (error) {
-        console.error('Error en test-ocr:', error);
         res.status(500).json({ error: error.message });
     }
 });
 
-// Nuevo endpoint: Debug OCR directo
-app.post('/api/debug-ocr', async (req, res) => {
+// Debug endpoint
+app.post('/api/debug-ocr', upload.single('nomina'), async (req, res) => {
     try {
-        const { manualText } = req.body;
-        
-        if (!manualText) {
-            return res.status(400).json({ error: 'Se requiere texto manual para debug' });
-        }
-        
-        console.log('🚨 DEBUG OCR - Texto recibido:', manualText.substring(0, 200));
-        
-        const extractedData = nominaValidator.extractDataFromText(manualText);
-        const validationResults = nominaValidator.validate(manualText, {});
-        
+        if (!req.file) return res.status(400).json({ error: 'No file' });
+
+        console.log('--- DEBUGGING OCR ---');
+        const text = await ocrService.extractText(req.file.path, req.file.mimetype);
+        console.log('Raw Text:', text);
+
+        const rawData = nominaValidator.extractDataFromText(text);
+
+        fs.unlinkSync(req.file.path);
+
         res.json({
-            textLength: manualText.length,
-            extractedData,
-            validationResults
+            rawText: text,
+            parsedData: rawData
         });
-        
-    } catch (error) {
-        console.error('Error en debug-ocr:', error);
-        res.status(500).json({ error: error.message });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
     }
 });
 
-// Manejo de errores mejorado
+// Error handling middleware
 app.use((error, req, res, next) => {
     console.error('Error global:', error);
-
-    // Error específico de Multer (tamaño de archivo, tipo no permitido)
-    if (error.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({
-            error: 'El archivo es demasiado grande. Tamaño máximo: 10MB',
-            code: 'FILE_TOO_LARGE'
-        });
+    if (error instanceof multer.MulterError) {
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                error: 'El archivo es demasiado grande (Máx 10MB)',
+                code: 'FILE_TOO_LARGE'
+            });
+        }
     }
 
-    if (error.code === 'LIMIT_FILE_COUNT') {
-        return res.status(400).json({
-            error: 'Solo se permite un archivo a la vez',
-            code: 'TOO_MANY_FILES'
-        });
-    }
-
-    if (error.message.includes('Solo se permiten archivos')) {
-        return res.status(400).json({
-            error: error.message,
-            code: 'INVALID_FILE_TYPE'
-        });
-    }
-
-    // Error de JSON malformado
     if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
         return res.status(400).json({
             error: 'JSON inválido en los datos enviados',
@@ -306,7 +197,6 @@ app.use((error, req, res, next) => {
         });
     }
 
-    // Error por defecto
     res.status(500).json({
         error: process.env.NODE_ENV === 'production'
             ? 'Error interno del servidor'
@@ -317,13 +207,12 @@ app.use((error, req, res, next) => {
 
 // Manejo de rutas no encontradas (SPA fallback)
 app.get('*', (req, res) => {
-    // Si es una petición a la API, devolver 404
     if (req.path.startsWith('/api')) {
         return res.status(404).json({
             error: 'Ruta de API no encontrada',
             code: 'NOT_FOUND',
             availableRoutes: [
-                'GET /',
+                'GET /health',
                 'POST /api/verify-nomina',
                 'POST /api/test-ocr',
                 'POST /api/validate-data',
@@ -335,7 +224,8 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+// Puerto dinámico para Railway
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor corriendo en http://0.0.0.0:${PORT}`);
     console.log(`📁 Directorio de uploads: ${path.join(__dirname, 'uploads')}`);
 });
