@@ -15,11 +15,19 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs'); // Moved up
-const ocrService = require('./services/ocrService');
-const nominaValidator = require('./services/nominaValidator');
+const fs = require('fs');
 
-console.log('✅ SERVER.JS: Módulos cargados correctamente');
+// Lazy Load Services to prevent Startup Crash (Debug Mode)
+let ocrService = null;
+let nominaValidator = null;
+
+try {
+    ocrService = require('./services/ocrService');
+    nominaValidator = require('./services/nominaValidator');
+    console.log('✅ SERVER.JS: Módulos cargados correctamente');
+} catch (loadError) {
+    console.error('🔥 CRITICAL: Error loading services:', loadError);
+}
 
 // Heartbeat log every 10 seconds to prove liveness
 setInterval(() => {
