@@ -67,7 +67,7 @@ const upload = multer({
 });
 
 // Crear directorio uploads si no existe
-const fs = require('fs');
+// fs module imported at top
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
