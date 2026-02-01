@@ -2,14 +2,30 @@ console.log('✅ SERVER.JS: Iniciando ejecución del script...');
 console.log(`✅ SERVER.JS: Entorno = ${process.env.NODE_ENV}`);
 console.log(`✅ SERVER.JS: PORT Variable = ${process.env.PORT}`);
 
+// Global Error Handlers - CRÍTICO para diagnosticar crashes
+process.on('uncaughtException', (err) => {
+    console.error('🔥 CRITICAL: Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('🔥 CRITICAL: Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs'); // Moved up
 const ocrService = require('./services/ocrService');
 const nominaValidator = require('./services/nominaValidator');
 
 console.log('✅ SERVER.JS: Módulos cargados correctamente');
+
+// Heartbeat log every 10 seconds to prove liveness
+setInterval(() => {
+    const memUsage = process.memoryUsage();
+    console.log(`❤️ Heartbeat: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB used. Uptime: ${process.uptime().toFixed(0)}s`);
+}, 10000);
 
 const app = express();
 const PORT = process.env.PORT || 5987;
@@ -212,6 +228,7 @@ app.use((error, req, res, next) => {
 });
 
 // Manejo de rutas no encontradas (SPA fallback)
+// Manejo de rutas no encontradas
 app.get('*', (req, res) => {
     if (req.path.startsWith('/api')) {
         return res.status(404).json({
@@ -221,13 +238,17 @@ app.get('*', (req, res) => {
                 'GET /health',
                 'POST /api/verify-nomina',
                 'POST /api/test-ocr',
-                'POST /api/validate-data',
-                'POST /api/debug-ocr'
+                'POST /api/validate-data'
             ]
         });
     }
-    // Para cualquier otra ruta, servir el index.html del frontend
-    res.sendFile(path.join(__dirname, '../build', 'index.html'));
+    // RESPUESTA SIMPLE PARA LA RAÍZ - Evita crash por falta de index.html
+    res.status(200).send(`
+        <h1>NominIA Backend API</h1>
+        <p>Status: <strong>Online</strong> 🟢</p>
+        <p>Environment: ${process.env.NODE_ENV}</p>
+        <p>Time: ${new Date().toISOString()}</p>
+    `);
 });
 
 // Puerto dinámico para Railway: IMPORTANTE usar process.env.PORT
