@@ -108,7 +108,7 @@ class OCRService {
             const results = await Promise.allSettled(
                 configurations.map(async (conf, index) => {
                     console.log(`Ejecutando configuración ${index + 1}: ${conf.name}`);
-                    
+
                     const result = await Tesseract.recognize(
                         filePath,
                         'spa',
@@ -123,7 +123,7 @@ class OCRService {
                     );
 
                     console.log(`Config ${index + 1} (${conf.name}) - Confianza: ${result.data.confidence}%`);
-                    
+
                     return {
                         text: result.data.text,
                         confidence: result.data.confidence,
@@ -137,13 +137,13 @@ class OCRService {
             results.forEach((result, index) => {
                 if (result.status === 'fulfilled') {
                     const { text, confidence, configName, words } = result.value;
-                    
+
                     // Puntuación combinada: confianza + longitud del texto + calidad de números
                     const numberMatches = (text.match(/\d+[.,]\d+/g) || []).length;
                     const score = confidence + (text.length / 10) + (numberMatches * 5);
-                    
+
                     console.log(`Config ${index + 1} - Score: ${score.toFixed(1)} (Conf: ${confidence}, Números: ${numberMatches})`);
-                    
+
                     if (score > bestConfidence || (confidence > 80 && numberMatches > bestResult?.numberMatches)) {
                         bestConfidence = score;
                         bestResult = {
@@ -165,7 +165,7 @@ class OCRService {
 
             console.log(`Mejor resultado: ${bestResult.configName} con confianza ${bestResult.confidence}%`);
             console.log(`Números detectados: ${bestResult.numberMatches}`);
-            
+
             // Si la mejor confianza es muy baja, aplicar limpieza agresiva
             if (bestResult.confidence < 70) {
                 console.log('Aplicando limpieza post-OCR por baja confianza...');
@@ -187,7 +187,7 @@ class OCRService {
      */
     limpiezaAgresiva(text) {
         console.log("🧹 LIMPIEZA AGRESIVA - TEXTO ORIGINAL:", text);
-        
+
         const limpio = text
             // PRESERVAR formato español: 1.253,26 = 1253.26
             .replace(/(\d+)\.(\d{3}),(\d{2})/g, (match, p1, p2, p3) => {
@@ -215,7 +215,7 @@ class OCRService {
             // Normalizar espacios
             .replace(/\s+/g, ' ')
             .trim();
-            
+
         console.log("🧹 LIMPIEZA AGRESIVA - TEXTO LIMPIO:", limpio);
         return limpio;
     }
@@ -305,7 +305,7 @@ class OCRService {
                 /l[ií]quido\s*a\s*percibir[:\s]*(\d+[.,]\d{2})/i,
                 /devengado[:\s]*(\d+[.,]\d{2})/i
             ],
-            
+
             // DEDUCCIONES
             totalDeducciones: [
                 /total\s*deducciones?[:\s]*(\d+[.,]\d{2})/i,
@@ -342,14 +342,31 @@ class OCRService {
             ]
         };
 
+        // Helper para limpiar montos
+        const cleanAmount = (str) => {
+            if (!str) return null;
+            // 1. Eliminar símbolos de moneda y letras
+            let cleaned = str.replace(/[€EUR\s]/g, '');
+            // 2. Normalizar separadores: 
+            // Si hay punto y coma (1.234,56), quitar punto y cambiar coma por punto.
+            // Si solo hay coma (1234,56), cambiar por punto.
+            // Si solo hay punto (1234.56), dejar igual.
+            if (cleaned.includes('.') && cleaned.includes(',')) {
+                cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+            } else if (cleaned.includes(',')) {
+                cleaned = cleaned.replace(',', '.');
+            }
+            return parseFloat(cleaned);
+        };
+
         // Extraer valores usando todos los patrones
         for (const [key, patternList] of Object.entries(patterns)) {
             if (!data[key]) {
                 for (const pattern of patternList) {
                     const match = text.match(pattern);
                     if (match) {
-                        const valor = match[1].replace(',', '.').replace(/\./g, '').replace('.', '.');
-                        data[key] = parseFloat(valor);
+                        const valor = cleanAmount(match[1]);
+                        data[key] = valor;
                         console.log(`✅ ${key}: ${match[1]} -> ${data[key]}`);
                         break;
                     }

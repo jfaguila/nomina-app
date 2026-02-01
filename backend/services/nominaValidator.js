@@ -1,4 +1,5 @@
 const convenios = require('../data/convenios.json');
+const ConvenioFactory = require('../strategies/ConvenioFactory'); // Importar Factory
 
 class NominaValidator {
     /**
@@ -160,23 +161,53 @@ class NominaValidator {
         // Calcular total esperado para validación
         // Calcular total esperado para validación (Usando variables corregidas)
         // const totalDevengadoCalculado = checkSalarioBase + checkPlusConvenio + checkAntiguedad + checkNocturnidad + checkDietas;
-        // (Comentado porque puede haber nulos y romper la suma)
 
-        // 🔥 ELIMINADO: NO SE CALCULAN VALORES INVENTADOS
-        console.log('🚫 MODO ESTRICTO: SOLO VERIFICAR DATOS EXISTENTES');
+        console.log('🚫 MODO ESTRICTO: ESTRATEGIA DE CONVENIO');
+
+        // 1. DETECTAR EMPRESA Y ESTRATEGIA
+        const strategy = ConvenioFactory.getStrategy(nominaData.empresa);
+        if (strategy) {
+            console.log(`✅ Estrategia detectada: ${strategy.name}`);
+        } else {
+            console.log('⚠️ No se detectó convenio específico, usando genérico.');
+        }
 
         // Solo procesar si hay datos reales
         let seguridadSocial = null;
         let irpf = null;
         let totalDeducciones = null;
         let liquidoTotal = null;
-        // let totalDevengadoCalculado = null; // Eliminado por duplicado
 
         if (checkTotalDevengado && checkTotalDevengado > 0) {
-            seguridadSocial = checkTotalDevengado * 0.0635;
-            irpf = this.calcularIRPF(checkTotalDevengado);
-            totalDeducciones = seguridadSocial + irpf;
+
+            // OBTENER TASAS DE LA ESTRATEGIA (o por defecto)
+            const rates = strategy ? strategy.getDeductionRates() : {
+                contingenciasComunes: 4.70,
+                desempleo: 1.55,
+                formacionProfesional: 0.10,
+                mei: 0.13 // Asumimos 0.13 por defecto actual
+            };
+
+            // Cálculos más precisos
+            const baseCC = checkTotalDevengado; // Simplificación: Base CC suele ser Total Devengado (ajustar si hay dietas exentas)
+
+            // Contingencias Comunes
+            seguridadSocial = baseCC * (rates.contingenciasComunes / 100);
+
+            // MEI + Desempleo + FP (A menudo agrupados o separados)
+            const otrasDeducciones = baseCC * ((rates.desempleo + rates.formacionProfesional + (rates.mei || 0)) / 100);
+
+            // IRPF (Variable)
+            irpf = this.calcularIRPF(checkTotalDevengado); // Este método sigue siendo una estimación básica
+
+            totalDeducciones = seguridadSocial + otrasDeducciones + irpf;
             liquidoTotal = checkTotalDevengado - totalDeducciones;
+
+            console.log(`📊 Cálculos Estrategia (${strategy ? strategy.name : 'Genérico'}):`);
+            console.log(`- Base: ${baseCC.toFixed(2)}`);
+            console.log(`- CC (${rates.contingenciasComunes}%): ${seguridadSocial.toFixed(2)}`);
+            console.log(`- Desempleo/FP/MEI: ${otrasDeducciones.toFixed(2)}`);
+            console.log(`- Total Deducciones Calc: ${totalDeducciones.toFixed(2)}`);
         }
 
         // SOLO incluir cálculos si hay datos reales
