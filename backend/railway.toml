@@ -1,5 +1,5 @@
 [deploy]
 healthcheckPath = "/health"
 healthcheckTimeout = 180
-startCommand = "npm install && npm start"
+startCommand = "npm start"
 restartPolicyType = "ON_FAILURE"
