@@ -158,7 +158,9 @@ class NominaValidator {
         console.log('- Dietas:', checkDietas);
 
         // Calcular total esperado para validación
-        const totalDevengadoCalculado = salarioBaseReal + plusConvenioReal + valorAntiguedadReal + valorNocturnidadReal + dietasReales;
+        // Calcular total esperado para validación (Usando variables corregidas)
+        // const totalDevengadoCalculado = checkSalarioBase + checkPlusConvenio + checkAntiguedad + checkNocturnidad + checkDietas;
+        // (Comentado porque puede haber nulos y romper la suma)
 
         // 🔥 ELIMINADO: NO SE CALCULAN VALORES INVENTADOS
         console.log('🚫 MODO ESTRICTO: SOLO VERIFICAR DATOS EXISTENTES');
@@ -168,13 +170,13 @@ class NominaValidator {
         let irpf = null;
         let totalDeducciones = null;
         let liquidoTotal = null;
-        let totalDevengadoCalculado = null;
+        // let totalDevengadoCalculado = null; // Eliminado por duplicado
 
-        if (totalDevengadoReal && totalDevengadoReal > 0) {
-            seguridadSocial = totalDevengadoReal * 0.0635;
-            irpf = this.calcularIRPF(totalDevengadoReal);
+        if (checkTotalDevengado && checkTotalDevengado > 0) {
+            seguridadSocial = checkTotalDevengado * 0.0635;
+            irpf = this.calcularIRPF(checkTotalDevengado);
             totalDeducciones = seguridadSocial + irpf;
-            liquidoTotal = totalDevengadoReal - totalDeducciones;
+            liquidoTotal = checkTotalDevengado - totalDeducciones;
         }
 
         // SOLO incluir cálculos si hay datos reales
