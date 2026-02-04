@@ -314,31 +314,76 @@ class NominaValidator {
         if (text.includes('AMBULANCIAS') || text.includes('TRANSPORTE SANITARIO') || text.includes('PASQUAU')) {
             console.log("🚑 MODO AMBULANCIAS PASQUAU - VALIDACIÓN ESPECÍFICA DE TASAS");
 
+            // 🔥 PATRÓN UNIVERSAL PARA MONTOS EUROPEOS: Captura 1.253,26 y 1253,26
+            // Formato: 1-3 dígitos, opcionalmente seguidos de grupos de .XXX, luego coma y 2 decimales
+            const MONEY_PATTERN = '(\\d{1,3}(?:\\.\\d{3})*,\\d{2}|\\d+,\\d{2})';
+
             const patternsAmbulancias = {
                 salarioBase: [
-                    /Salario\s*Base.*?(\d+[,.]\d{2})/i,
-                    /SUELDO.*?(\d+[,.]\d{2})/i,
-                    /Salario.*?(\d+[,.]\d{2})/i
+                    new RegExp(`\\*?Salario\\s*Base[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`SUELDO[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Salario[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                plusConvenio: [
+                    new RegExp(`\\*?Plus\\s*Convenio[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Plus\\s*Conv[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Convenio[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                valorAntiguedad: [
+                    new RegExp(`\\*?Antigüedad[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Antiguedad[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Antig[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                valorNocturnidad: [
+                    new RegExp(`\\*?Nocturnidad[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Nocturno[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                dietas: [
+                    new RegExp(`\\*?Dietas?\\s*Malaga[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Dietas?[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                horasExtras: [
+                    new RegExp(`P\\.?\\s*P\\.?\\s*Extras?[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Horas\\s*Extras?[^\\d]*${MONEY_PATTERN}`, 'i')
                 ],
                 totalDevengado: [
-                    /Total.*?Devengado.*?(\d+[,.]\d{2})/i,
-                    /TOTAL.*?(\d+[,.]\d{2})/i,
-                    /L[ií]quido.*?(\d+[,.]\d{2})/i
+                    new RegExp(`T\\.?\\s*DEVENGADO[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Total\\s*Devengado[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`REM\\.?\\s*TOTAL[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                totalDeducciones: [
+                    new RegExp(`T\\.?\\s*A\\s*DEDUCIR[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Total\\s*Deducciones[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                liquidoTotal: [
+                    new RegExp(`L[ií]quido\\s*a\\s*Percibir[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`L[ií]quido[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Neto[^\\d]*${MONEY_PATTERN}`, 'i')
                 ],
                 // 🔥 ESPECÍFICO AMBULANCIAS: Tasas exactas para transporte sanitario
+                cotizacionContingenciasComunes: [
+                    new RegExp(`Contingencias\\s*Comunes\\s*\\(?4[.,]70%?\\)?[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Contingencias\\s*Comunes[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Cont\\.?\\s*Com\\.?[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
                 cotizacionMEI: [
-                    /MEI[:\s]*(\d+[,.]\d{2})/i,
-                    /Mutualidad\s*Empresarial[:\s]*(\d+[,.]\d{2})/i,
-                    /Instituciones\s*Sanitarias[:\s]*(\d+[,.]\d{2})/i
+                    new RegExp(`Mecanismo\\s*Equidad\\s*Intergeneracional\\s*\\(?0[.,]13%?\\)?[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`MEI[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Equidad\\s*Intergeneracional[^\\d]*${MONEY_PATTERN}`, 'i')
                 ],
                 cotizacionDesempleo: [
-                    /Desempleo[:\s]*(\d+[,.]\d{2})/i,
-                    /Desempleo\s*Trabajadores[:\s]*(\d+[,.]\d{2})/i
+                    new RegExp(`Desempleo\\s*\\(?1[.,]55%?\\)?[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Desempleo[^\\d]*${MONEY_PATTERN}`, 'i')
                 ],
                 cotizacionFormacionProfesional: [
-                    /Formación\s*Profesional[:\s]*(\d+[,.]\d{2})/i,
-                    /Formación[:\s]*(\d+[,.]\d{2})/i,
-                    /FP[:\s]*(\d+[,.]\d{2})/i
+                    new RegExp(`Formaci[oó]n\\s*Profesional\\s*\\(?0[.,]10%?\\)?[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Formaci[oó]n\\s*Profesional[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Formaci[oó]n[^\\d]*${MONEY_PATTERN}`, 'i')
+                ],
+                irpf: [
+                    new RegExp(`Tributaci[oó]n\\s*IRPF\\s*\\(?\\d+[.,]\\d+%?\\)?[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`IRPF[^\\d]*${MONEY_PATTERN}`, 'i'),
+                    new RegExp(`Retenci[oó]n[^\\d]*${MONEY_PATTERN}`, 'i')
                 ]
             };
 
@@ -351,7 +396,7 @@ class NominaValidator {
                             const value = parseFloat(cleaned);
                             if (!isNaN(value) && value > 0) {
                                 data[key] = cleaned;
-                                console.log(`✅ AMBULANCIAS ${key}: ${match[1]} -> ${cleaned}`);
+                                console.log(`✅ AMBULANCIAS ${key}: "${match[1]}" -> ${cleaned}`);
                                 break;
                             }
                         }
@@ -366,7 +411,7 @@ class NominaValidator {
             // 🔥 VALIDACIÓN ESPECÍFICA DE TASAS AMBULANCIAS PASQUAU
             if (data.cotizacionMEI || data.cotizacionDesempleo || data.cotizacionFormacionProfesional) {
                 console.log("🔍 AMBULANCIAS: Validando tasas específicas");
-                
+
                 // Tasas correctas para transporte sanitario (Ambulancias Pasquau)
                 const tasasCorrectas = {
                     mei: 0.13,        // 0.13% - Mutualidad Empresarial Instituciones Sanitarias
@@ -379,9 +424,9 @@ class NominaValidator {
                     const meiReal = parseFloat(this.limpiarNumero(data.cotizacionMEI));
                     const meiEsperado = checkTotalDevengado * (tasasCorrectas.mei / 100);
                     const diffMEI = Math.abs(meiReal - meiEsperado);
-                    
+
                     console.log(`🔍 MEI - Real: ${meiReal}, Esperado: ${meiEsperado.toFixed(2)}, Diferencia: ${diffMEI.toFixed(2)}`);
-                    
+
                     if (diffMEI > 1) { // Tolerancia de 1€
                         console.warn(`⚠️ MEI con discrepancia: ${meiReal} vs ${meiEsperado.toFixed(2)} (0.13%)`);
                     }
@@ -392,9 +437,9 @@ class NominaValidator {
                     const fpReal = parseFloat(this.limpiarNumero(data.cotizacionFormacionProfesional));
                     const fpEsperado = checkTotalDevengado * (tasasCorrectas.formacion / 100);
                     const diffFP = Math.abs(fpReal - fpEsperado);
-                    
+
                     console.log(`🔍 Formación Profesional - Real: ${fpReal}, Esperado: ${fpEsperado.toFixed(2)}, Diferencia: ${diffFP.toFixed(2)}`);
-                    
+
                     if (diffFP > 1) { // Tolerancia de 1€
                         console.warn(`⚠️ Formación Profesional con discrepancia: ${fpReal} vs ${fpEsperado.toFixed(2)} (0.10%)`);
                     }
@@ -405,9 +450,9 @@ class NominaValidator {
                     const desempleoReal = parseFloat(this.limpiarNumero(data.cotizacionDesempleo));
                     const desempleoEsperado = checkTotalDevengado * (tasasCorrectas.desempleo / 100);
                     const diffDesempleo = Math.abs(desempleoReal - desempleoEsperado);
-                    
+
                     console.log(`🔍 Desempleo - Real: ${desempleoReal}, Esperado: ${desempleoEsperado.toFixed(2)}, Diferencia: ${diffDesempleo.toFixed(2)}`);
-                    
+
                     if (diffDesempleo > 1) { // Tolerancia de 1€
                         console.warn(`⚠️ Desempleo con discrepancia: ${desempleoReal} vs ${desempleoEsperado.toFixed(2)} (1.55%)`);
                     }
@@ -621,14 +666,14 @@ class NominaValidator {
         // Caso 1: 8+ dígitos seguidos (ej: 12502024 -> 1250.2024)
         if (/^\d{8,}$/.test(limpio)) {
             console.log(`🔍 Números largos pegados detectados: "${limpio}"`);
-            
+
             // Intentar diferentes posiciones para el decimal
             const intentos = [
                 limpio.slice(0, -2) + '.' + limpio.slice(-2),  // Antes de últimos 2 dígitos
                 limpio.slice(0, -4) + '.' + limpio.slice(-4),  // Antes de últimos 4 dígitos  
                 limpio.slice(0, -6) + '.' + limpio.slice(-6),  // Antes de últimos 6 dígitos
             ];
-            
+
             // Elegir el más razonable (basado en magnitud)
             for (const intento of intentos) {
                 const valor = parseFloat(intento);
@@ -639,7 +684,7 @@ class NominaValidator {
                 }
             }
         }
-        
+
         // Caso 2: Números con formato mixto (ej: 12.502024 -> 1250.2024)
         else if (/^\d{1,3}\.\d{6,}$/.test(limpio)) {
             console.log(`🔍 Formato mixto detectado: "${limpio}"`);
@@ -648,7 +693,7 @@ class NominaValidator {
             console.log(`🔍 Corrección mixta: "${limpio}" -> "${posibleCorreccion}"`);
             limpio = posibleCorreccion;
         }
-        
+
         // Caso 3: Patrones específicos de nóminas (ej: 1500EUR -> 1500.00)
         else if (/^\d+E?U?R?$/i.test(limpio)) {
             console.log(`🔍 Patrón EUR detectado: "${limpio}"`);
