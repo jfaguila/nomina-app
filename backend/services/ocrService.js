@@ -113,6 +113,10 @@ class OCRService {
                         filePath,
                         'spa',
                         {
+                            langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
+                            gzip: false,
+                            langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
+                            gzip: false,
                             logger: (m) => {
                                 if (m.status === 'recognizing text' && m.progress % 0.25 < 0.1) {
                                     console.log(`Config ${index + 1} - Progress: ${Math.round(m.progress * 100)}%`);

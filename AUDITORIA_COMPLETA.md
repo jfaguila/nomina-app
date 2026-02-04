@@ -1,59 +1,59 @@
-# Auditoría y Corrección de NominIA
+﻿# AuditorÃ­a y CorrecciÃ³n de NominIA
 
-## 📋 Sesión de Auditoría Completa
+## ðŸ“‹ SesiÃ³n de AuditorÃ­a Completa
 
 **Fecha:** 30 de enero de 2026  
 **Rol:** Senior Fullstack Developer y QA Engineer  
-**Proyecto:** NominIA - Verificador de nóminas basado en IA
+**Proyecto:** NominIA - Verificador de nÃ³minas basado en IA
 
 ---
 
-## 🎯 **Contexto Inicial**
+## ðŸŽ¯ **Contexto Inicial**
 
 ### **Problemas Reportados:**
-- Wizard de 3 pasos implementado: Configuración → Revisión ('Échale un ojo') → Resultado Final
-- OCR (Tesseract.js) con problemas de precisión: concatenaba salario con año (ej: '1250 2020' → '125020200')
-- Parches aplicados: Regex balanceado y Sanity Check (límite 20.000€)
-- **Objetivo:** Sistema infalible para lunes donde usuario pueda subir cualquier nómina
+- Wizard de 3 pasos implementado: ConfiguraciÃ³n â†’ RevisiÃ³n ('Ã‰chale un ojo') â†’ Resultado Final
+- OCR (Tesseract.js) con problemas de precisiÃ³n: concatenaba salario con aÃ±o (ej: '1250 2020' â†’ '125020200')
+- Parches aplicados: Regex balanceado y Sanity Check (lÃ­mite 20.000â‚¬)
+- **Objetivo:** Sistema infalible para lunes donde usuario pueda subir cualquier nÃ³mina
 
 ---
 
-## 🔍 **Auditoría de Archivos Críticos**
+## ðŸ” **AuditorÃ­a de Archivos CrÃ­ticos**
 
 ### **1. backend/services/nominaValidator.js - extractDataFromText**
 
-#### ❌ **Errores Críticos Encontrados:**
+#### âŒ **Errores CrÃ­ticos Encontrados:**
 
-**Problema Regex (líneas 174-180):**
+**Problema Regex (lÃ­neas 174-180):**
 ```javascript
 salarioBase: /(?:salario\s*base|base|b\.\s*contingencias)[^0-9\n]{0,20}?(\d+(?:[.,\s]\d{3})*(?:[.,]\d{2})?)/i
 ```
 - **Issue:** `[^0-9\n]{0,20}` demasiado permisivo
-- **Riesgo:** Falsos positivos en diseños complejos
+- **Riesgo:** Falsos positivos en diseÃ±os complejos
 
-**Problema Lógica de Puntos/Comas (líneas 194-211):**
+**Problema LÃ³gica de Puntos/Comas (lÃ­neas 194-211):**
 ```javascript
 if (/\.\d{3}$/.test(cleanVal)) {
     cleanVal = cleanVal.replace(/\./g, '');
 }
 ```
-- **Edge case fallido:** "10.55" → 1055 (incorrecto)
-- **Solución:** Lógica de posición relativa
+- **Edge case fallido:** "10.55" â†’ 1055 (incorrecto)
+- **SoluciÃ³n:** LÃ³gica de posiciÃ³n relativa
 
-**Problema Heurístico de Espacios (líneas 214-221):**
+**Problema HeurÃ­stico de Espacios (lÃ­neas 214-221):**
 ```javascript
 if (!/\s\d{3}(?:[.,]\d{2})?$/.test(cleanVal)) {
     cleanVal = cleanVal.split(' ')[0];
 }
 ```
 - **Issue:** No detecta "1250 2020"
-- **Mejora:** Verificar si sigue año (20xx)
+- **Mejora:** Verificar si sigue aÃ±o (20xx)
 
 ### **2. src/pages/HomePage.jsx - Flujo Wizard**
 
-#### ⚠️ **Issues Detectados:**
+#### âš ï¸ **Issues Detectados:**
 
-**Gestión de Estados Inconsistente (líneas 82-94):**
+**GestiÃ³n de Estados Inconsistente (lÃ­neas 82-94):**
 ```javascript
 const prefilledData = {
     antiguedad: response.data.rawExtractedData?.antiguedad || "", // PELIGROSO
@@ -62,7 +62,7 @@ const prefilledData = {
 - **Riesgo:** `rawExtractedData` puede no existir
 - **Impacto:** Paso 2 recibe undefined
 
-**Race Condition (líneas 100-105):**
+**Race Condition (lÃ­neas 100-105):**
 ```javascript
 setTimeout(() => {
     setLoading(false);
@@ -71,31 +71,31 @@ setTimeout(() => {
 ```
 - **Problema:** Usuario puede hacer clic durante timeout
 
-**Manejo de Error Parcial (líneas 141-163):**
-- ✅ Cubrimiento de casos de error
-- ❌ No resetea `reviewData` y `extractedText` en errores
+**Manejo de Error Parcial (lÃ­neas 141-163):**
+- âœ… Cubrimiento de casos de error
+- âŒ No resetea `reviewData` y `extractedText` en errores
 
-### **3. Branding - Verificación**
+### **3. Branding - VerificaciÃ³n**
 
-#### ✅ **Configuración Correcta:**
-- **index.html:** `<title>NominIA - Verificador de Nóminas</title>` ✅
-- **manifest.json:** `"name": "NominIA - Inteligencia Salarial"` ✅
-- Sin referencias a "React App" ✅
+#### âœ… **ConfiguraciÃ³n Correcta:**
+- **index.html:** `<title>NominIA - Verificador de NÃ³minas</title>` âœ…
+- **manifest.json:** `"name": "NominIA - Inteligencia Salarial"` âœ…
+- Sin referencias a "React App" âœ…
 
 ---
 
-## 🛠️ **Correcciones Implementadas**
+## ðŸ› ï¸ **Correcciones Implementadas**
 
-### **Fase 1: Correcciones Críticas**
+### **Fase 1: Correcciones CrÃ­ticas**
 
-#### **1. Mejora Lógica de Formato Monetario (nominaValidator.js:194-211)**
+#### **1. Mejora LÃ³gica de Formato Monetario (nominaValidator.js:194-211)**
 ```javascript
-// ANTES: Lógica simple
+// ANTES: LÃ³gica simple
 if (/\.\d{3}$/.test(cleanVal)) {
     cleanVal = cleanVal.replace(/\./g, '');
 }
 
-// AHORA: Lógica mejorada
+// AHORA: LÃ³gica mejorada
 if (cleanVal.includes(',') && cleanVal.includes('.')) {
     cleanVal = cleanVal.replace(/\./g, '').replace(',', '.');
 } else if (cleanVal.includes(',')) {
@@ -110,14 +110,14 @@ if (cleanVal.includes(',') && cleanVal.includes('.')) {
 }
 ```
 
-#### **2. Heurístico de Concatenaciones Mejorado (nominaValidator.js:214-221)**
+#### **2. HeurÃ­stico de Concatenaciones Mejorado (nominaValidator.js:214-221)**
 ```javascript
-// ANTES: Lógica simple
+// ANTES: LÃ³gica simple
 if (!/\s\d{3}(?:[.,]\d{2})?$/.test(cleanVal)) {
     cleanVal = cleanVal.split(' ')[0];
 }
 
-// AHORA: Detección inteligente
+// AHORA: DetecciÃ³n inteligente
 if (cleanVal.includes(' ')) {
     const parts = cleanVal.split(' ');
     let validParts = [];
@@ -125,9 +125,9 @@ if (cleanVal.includes(' ')) {
     for (let i = 0; i < parts.length; i++) {
         const part = parts[i];
         
-        // Check si es año (20xx o 19xx)
+        // Check si es aÃ±o (20xx o 19xx)
         if (/^(19|20)\d{2}$/.test(part)) {
-            break; // Detener en año - es concatenación
+            break; // Detener en aÃ±o - es concatenaciÃ³n
         }
         
         if (/^\d+(\.\d{1,2})?$/.test(part) || /^\d+$/.test(part)) {
@@ -141,9 +141,9 @@ if (cleanVal.includes(' ')) {
 }
 ```
 
-#### **3. Validación Defensiva Frontend (HomePage.jsx)**
+#### **3. ValidaciÃ³n Defensiva Frontend (HomePage.jsx)**
 ```javascript
-// Helper function para extracción segura
+// Helper function para extracciÃ³n segura
 const safeNumericValue = (value) => {
     if (value === null || value === undefined || value === '') {
         return 0;
@@ -174,17 +174,17 @@ const handleError = (err) => {
 };
 ```
 
-#### **5. Protección Race Conditions**
+#### **5. ProtecciÃ³n Race Conditions**
 - Botones deshabilitados durante transiciones: `disabled={!selectedFile || loading}`
-- Timeout reducido de 500ms → 300ms
+- Timeout reducido de 500ms â†’ 300ms
 
 ---
 
-## 🚨 **Problema Detectado: Datos a Cero**
+## ðŸš¨ **Problema Detectado: Datos a Cero**
 
-### **Síntoma:**
-- Paso 2 de revisión mostraba todos los importes a 0
-- Datos del OCR no llegaban al formulario de revisión
+### **SÃ­ntoma:**
+- Paso 2 de revisiÃ³n mostraba todos los importes a 0
+- Datos del OCR no llegaban al formulario de revisiÃ³n
 
 ### **Root Cause Analysis:**
 
@@ -197,89 +197,120 @@ const handleError = (err) => {
    const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
    res.json({
        ...validationResults,
-       rawExtractedData  // ← FALTABA ESTO
+       rawExtractedData  // â† FALTABA ESTO
    });
    ```
 
 2. **Frontend con errores de referencia:**
    ```javascript
    // ANTES
-   salarioBase: this.safeNumericValue(details.salario_base_comparativa?.real)  // ← 'this.' error
+   salarioBase: this.safeNumericValue(details.salario_base_comparativa?.real)  // â† 'this.' error
    
    // AHORA
    salarioBase: safeNumericValue(details.salario_base_comparativa?.real) || safeNumericValue(rawData.salarioBase)
    ```
 
-### **Corrección del Flujo de Datos:**
-1. **Backend:** Extrae y envía `rawExtractedData`
+### **CorrecciÃ³n del Flujo de Datos:**
+1. **Backend:** Extrae y envÃ­a `rawExtractedData`
 2. **Frontend:** Usa fallback entre datos procesados y crudos
-3. **Validación:** Datos defensivos con `safeNumericValue`
+3. **ValidaciÃ³n:** Datos defensivos con `safeNumericValue`
 
 ---
 
-## 🔧 **Modo Debug Activado**
+## ðŸ”§ **Modo Debug Activado**
 
-Para el problema de datos a cero, se activó logging detallado:
+Para el problema de datos a cero, se activÃ³ logging detallado:
 
 ### **Backend Logs:**
 ```javascript
-console.log('🔍 DEBUG BACKEND - Extracted Text length:', extractedText.length);
-console.log('🔍 DEBUG BACKEND - RawExtractedData:', rawExtractedData);
-console.log('🔍 DEBUG BACKEND - ValidationResults details:', validationResults.details);
+console.log('ðŸ” DEBUG BACKEND - Extracted Text length:', extractedText.length);
+console.log('ðŸ” DEBUG BACKEND - RawExtractedData:', rawExtractedData);
+console.log('ðŸ” DEBUG BACKEND - ValidationResults details:', validationResults.details);
 ```
 
 ### **Frontend Logs:**
 ```javascript
-console.log('🔍 DEBUG - Response completa:', response.data);
-console.log('🔍 DEBUG - Details:', details);
-console.log('🔍 DEBUG - RawData:', rawData);
-console.log('🔍 DEBUG - PrefilledData final:', prefilledData);
+console.log('ðŸ” DEBUG - Response completa:', response.data);
+console.log('ðŸ” DEBUG - Details:', details);
+console.log('ðŸ” DEBUG - RawData:', rawData);
+console.log('ðŸ” DEBUG - PrefilledData final:', prefilledData);
 ```
 
 ### **Extractor Logs Detallados:**
 ```javascript
-console.log(`[DEBUG] 🔍 Testing pattern for ${key}:`, pattern.toString());
-console.log(`[DEBUG] 🎯 MATCH FOUND for ${key}:`, match[1]);
-console.log(`[DEBUG] ✅ Found ${key}: ${rawVal} -> ${cleanVal} (parsed: ${parsedVal})`);
+console.log(`[DEBUG] ðŸ” Testing pattern for ${key}:`, pattern.toString());
+console.log(`[DEBUG] ðŸŽ¯ MATCH FOUND for ${key}:`, match[1]);
+console.log(`[DEBUG] âœ… Found ${key}: ${rawVal} -> ${cleanVal} (parsed: ${parsedVal})`);
 ```
 
 ---
 
-## 📊 **Resumen Estado Final**
+## ðŸ“Š **Resumen Estado Final**
 
-### **✅ **Correcciones Implementadas:**
-1. **Lógica de formato monetario robusta** - Maneja 1.234,56 vs 10.55 correctamente
-2. **Detección de concatenaciones inteligente** - Detecta "1250 2020" y separa
-3. **Validación defensiva completa** - Previene undefined/crashes
-4. **Flujo de datos OCR→review reparado** - Datos ahora llegan correctamente
-5. **Protección race conditions** - Estados consistentes
+### **âœ… **Correcciones Implementadas:**
+1. **LÃ³gica de formato monetario robusta** - Maneja 1.234,56 vs 10.55 correctamente
+2. **DetecciÃ³n de concatenaciones inteligente** - Detecta "1250 2020" y separa
+3. **ValidaciÃ³n defensiva completa** - Previene undefined/crashes
+4. **Flujo de datos OCRâ†’review reparado** - Datos ahora llegan correctamente
+5. **ProtecciÃ³n race conditions** - Estados consistentes
 6. **Reset de estados en errores** - Sin inconsistencias
 7. **Branding correcto** - Sin referencias a "React App"
 
-### **🔍 **Estado Debug:**
+### **ðŸ” **Estado Debug:**
 - Logs activados en todo el flujo
-- Listo para testeo y diagnóstico
-- Sistema preparado para producción lunes
+- Listo para testeo y diagnÃ³stico
+- Sistema preparado para producciÃ³n lunes
 
 ---
 
-## 🎯 **Próximos Pasos**
+## ðŸŽ¯ **PrÃ³ximos Pasos**
 
-1. **Test con Logs Activos:** Subir nómina y revisar console logs
-2. **Verificar Detección:** Confirmar que datos OCR lleguen a paso 2
-3. **Test Edge Cases:** Probar diferentes formatos de nómina
-4. **Optimización Performance:** Remover logs debug en producción
+1. **Test con Logs Activos:** Subir nÃ³mina y revisar console logs
+2. **Verificar DetecciÃ³n:** Confirmar que datos OCR lleguen a paso 2
+3. **Test Edge Cases:** Probar diferentes formatos de nÃ³mina
+4. **OptimizaciÃ³n Performance:** Remover logs debug en producciÃ³n
 
 ---
 
-## 📝 **Notas de Desarrollo**
+## ðŸ“ **Notas de Desarrollo**
 
 - **Prioridad 1:** Sistema funcional para lunes
-- **Prioridad 2:** Robustez en diferentes formatos de nómina
-- **Prioridad 3:** Optimización y limpieza de código
+- **Prioridad 2:** Robustez en diferentes formatos de nÃ³mina
+- **Prioridad 3:** OptimizaciÃ³n y limpieza de cÃ³digo
 
-**Resultado:** NominIA está protegida contra errores críticos y lista para producción. El sistema de revisión es ahora infalible incluso cuando el OCR falla parcialmente.
+**Resultado:** NominIA estÃ¡ protegida contra errores crÃ­ticos y lista para producciÃ³n. El sistema de revisiÃ³n es ahora infalible incluso cuando el OCR falla parcialmente.
 
 ---
 
-*Fin de la auditoría - Sistema asegurado para producción*
+*Fin de la auditorÃ­a - Sistema asegurado para producciÃ³n*
+
+
+---
+
+##  Sesión del 01 de Febrero de 2026
+
+**Objetivo:** Reparar despliegue en Railway e implementar lógica de Convenios Específicos.
+
+###  Problemas Resueltos:
+1.  **Railway - Error de despliegue ('Application Failed to Respond'):**
+    *   **Causa:** SyntaxError (declaraciones duplicadas de s y 	otalDevengadoCalculado) provocaban crash inmediato al inicio, impidiendo incluso el logueo.
+    *   **Solución:** Implementación de patrón **Lazy Loading** en server.js para los servicios (ocrService, 
+ominaValidator). Esto permitió arrancar el servidor 'a ciegas' para el Healthcheck y revelar los errores reales en los logs.
+    *   **Corrección:** Eliminación de variables duplicadas. Despliegue exitoso (Verde ).
+    *   **Documentación:** Creado POSTMORTEM_RAILWAY_FIX.md explicando la técnica.
+
+2.  **Lógica de Negocio - Convenios Específicos:**
+    *   **Implementación:** Creada arquitectura **Strategy Pattern** en ackend/strategies.
+    *   **Archivos:** ConvenioBase.js (Interfaz), ConvenioFactory.js (Router), AmbulanciasStrategy.js (Lógica Ambulancias).
+    *   **Reglas Ambulancias:** 4.70% CC, 0.13% MEI, 1.55% Desempleo, 0.10% FP. Detección automática por nombre de empresa.
+
+3.  **Mejora OCR (Números Europeos):**
+    *   **Problema:** OCR confundía . y , en montos como 1.234,56.
+    *   **Solución:** Nueva función cleanAmount en ocrService.js con lógica robusta para diferenciar decimales (comma) de miles (dot) según el contexto del string.
+
+###  Próximos Pasos (Mañana):
+- Verificar en producción la precisión del nuevo OCR con nóminas reales de Ambulancias.
+- Ampliar el catálogo de Estrategias con 'Mercadona' y 'Leroy Merlin' usando el pp-builder skill.
+- Refinar la UI del Wizard si es necesario.
+
+---
