@@ -102,7 +102,10 @@ const HomePage = () => {
                 setLoadingMessage('Convirtiendo PDF a imagen...');
 
                 const pdfjsLib = await import('pdfjs-dist/build/pdf');
-                pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+                // 🔧 FIX: Usar worker local del paquete npm en lugar de CDN
+                const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+                pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker.default;
 
                 const arrayBuffer = await selectedFile.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
