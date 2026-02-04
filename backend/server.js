@@ -215,16 +215,6 @@ app.post('/api/debug-ocr', upload.single('nomina'), async (req, res) => {
     }
 });
 
-res.json({
-    rawText: text,
-    parsedData: rawData
-});
-    } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-}
-});
-
 // Error handling middleware
 app.use((error, req, res, next) => {
     console.error('Error global:', error);
