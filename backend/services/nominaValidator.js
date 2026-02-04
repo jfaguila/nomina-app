@@ -313,6 +313,9 @@ class NominaValidator {
         // AMBULANCIAS - EXTRAER SOLO DATOS REALES CON VALIDACIÓN ESPECÍFICA
         if (text.includes('AMBULANCIAS') || text.includes('TRANSPORTE SANITARIO') || text.includes('PASQUAU')) {
             console.log("🚑 MODO AMBULANCIAS PASQUAU - VALIDACIÓN ESPECÍFICA DE TASAS");
+            console.log("📄 ========== TEXTO EXTRAÍDO DEL PDF (PRIMEROS 2000 CARACTERES) ==========");
+            console.log(text.substring(0, 2000));
+            console.log("📄 ========== FIN TEXTO EXTRAÍDO ==========\n");
 
             // 🔥 PATRÓN UNIVERSAL PARA MONTOS EUROPEOS: Captura 1.253,26 y 1253,26
             // Formato: 1-3 dígitos, opcionalmente seguidos de grupos de .XXX, luego coma y 2 decimales
@@ -389,17 +392,32 @@ class NominaValidator {
 
             for (const [key, patterns] of Object.entries(patternsAmbulancias)) {
                 if (!data[key]) {
-                    for (const pattern of patterns) {
+                    console.log(`\n🔎 Buscando campo: "${key}"`);
+                    for (let i = 0; i < patterns.length; i++) {
+                        const pattern = patterns[i];
+                        console.log(`  Patrón ${i + 1}/${patterns.length}: ${pattern}`);
                         const match = text.match(pattern);
                         if (match) {
+                            console.log(`  ✅ MATCH ENCONTRADO!`);
+                            console.log(`    - match[0] (texto completo): "${match[0]}"`);
+                            console.log(`    - match[1] (número capturado): "${match[1]}"`);
                             const cleaned = this.limpiarNumero(match[1]);
                             const value = parseFloat(cleaned);
+                            console.log(`    - Después de limpiar: "${cleaned}"`);
+                            console.log(`    - Parseado como float: ${value}`);
                             if (!isNaN(value) && value > 0) {
                                 data[key] = cleaned;
-                                console.log(`✅ AMBULANCIAS ${key}: "${match[1]}" -> ${cleaned}`);
+                                console.log(`  ✅ ${key} = ${cleaned}`);
                                 break;
+                            } else {
+                                console.log(`  ❌ Valor inválido: isNaN=${isNaN(value)}, value=${value}`);
                             }
+                        } else {
+                            console.log(`  ❌ No match`);
                         }
+                    }
+                    if (!data[key]) {
+                        console.log(`  ⚠️ "${key}" NO ENCONTRADO con ningún patrón`);
                     }
                 }
             }
