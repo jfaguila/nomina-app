@@ -44,60 +44,38 @@ class OCRService {
             }
 
             console.log('⚠️ PDF sin texto nativo (probablemente imagen escaneada)');
-            console.log('🔄 Convirtiendo PDF a imágenes para OCR...');
+            console.log('🔄 Usando Tesseract OCR directamente en el PDF...');
 
-            // PASO 2: Convertir PDF a imágenes y hacer OCR
-            const pdfToPng = require('pdf-to-png-converter');
-            const path = require('path');
-
-            // Convertir PDF a PNG (devuelve array de buffers)
-            const pngPages = await pdfToPng.pdfToPng(dataBuffer, {
-                disableFontFace: true,
-                useSystemFonts: false,
-                viewportScale: 2.0  // Mayor resolución para mejor OCR
-            });
-
-            console.log(`✅ Convertidas ${pngPages.length} página(s) a PNG`);
-
-            // PASO 3: Hacer OCR en cada imagen
-            let fullText = '';
+            // PASO 2: Usar Tesseract.js para hacer OCR directamente del PDF
+            // Tesseract.js puede leer PDFs nativamente
             const Tesseract = require('tesseract.js');
+            const path = require('path');
             const tessdataDir = path.resolve(__dirname, '..', 'tessdata');
 
-            for (let i = 0; i < pngPages.length; i++) {
-                console.log(`🔍 Haciendo OCR en página ${i + 1}/${pngPages.length}...`);
+            console.log('🔍 Iniciando OCR del PDF con Tesseract...');
 
-                try {
-                    const result = await Tesseract.recognize(
-                        pngPages[i].content,  // Buffer de la imagen PNG
-                        'spa',
-                        {
-                            langPath: tessdataDir,
-                            gzip: false,
-                            logger: (m) => {
-                                if (m.status === 'recognizing text') {
-                                    console.log(`  OCR Página ${i + 1}: ${Math.round(m.progress * 100)}%`);
-                                }
-                            }
+            const result = await Tesseract.recognize(
+                filePath,  // Tesseract puede leer PDFs directamente
+                'spa',
+                {
+                    langPath: tessdataDir,
+                    gzip: false,
+                    logger: (m) => {
+                        if (m.status === 'recognizing text') {
+                            console.log(`  OCR Progreso: ${Math.round(m.progress * 100)}%`);
                         }
-                    );
-
-                    const pageText = result.data.text;
-                    console.log(`✅ Página ${i + 1} OCR: ${pageText.length} caracteres (confianza: ${result.data.confidence}%)`);
-                    fullText += pageText + '\n\n';
-
-                } catch (ocrError) {
-                    console.error(`❌ Error OCR en página ${i + 1}:`, ocrError.message);
-                    // Continuar con las demás páginas
+                    }
                 }
+            );
+
+            const extractedText = result.data.text;
+            console.log(`✅ OCR completo: ${extractedText.length} caracteres (confianza: ${result.data.confidence}%)`);
+
+            if (extractedText.trim().length === 0) {
+                throw new Error('No se pudo extraer texto del PDF (OCR devolvió texto vacío)');
             }
 
-            if (fullText.trim().length === 0) {
-                throw new Error('No se pudo extraer texto del PDF (ni nativo ni por OCR)');
-            }
-
-            console.log(`✅ OCR completo: ${fullText.length} caracteres totales`);
-            return fullText;
+            return extractedText;
 
         } catch (error) {
             console.error('❌ Error al procesar PDF:', error);
