@@ -94,20 +94,33 @@ const FileUpload = ({ onFileSelect }) => {
 
             {fileName && (
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-4 flex items-center justify-between glass-card p-4"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="mt-6 flex items-center justify-between glass-card p-6 border-2 border-green-500 bg-green-50/50"
                 >
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <div className="flex items-center space-x-4">
+                        <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
                         <div>
-                            <p className="font-semibold text-gray-800">{fileName}</p>
-                            <p className="text-xs text-gray-500">Archivo cargado correctamente</p>
+                            <p className="font-bold text-lg text-gray-800">✅ {fileName}</p>
+                            <p className="text-sm text-green-600 font-semibold">Archivo listo para analizar</p>
                         </div>
+                    </div>
+                    <div className="text-right">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setFileName('');
+                                setPreview(null);
+                                onFileSelect(null);
+                            }}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                        >
+                            ❌ Quitar
+                        </button>
                     </div>
                 </motion.div>
             )}
