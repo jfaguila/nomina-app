@@ -40,16 +40,19 @@ const HomePage = () => {
     };
 
     const getApiUrl = () => {
-        let apiUrl = process.env.REACT_APP_API_URL;
-        if (!apiUrl) {
-            if (window.location.hostname.includes('vercel.app')) {
-                // URL de producción (Railway)
-                return 'https://nomina-app-production-653f.up.railway.app';
-            } else {
-                return 'http://localhost:5987';
-            }
-        }
-        return apiUrl;
+        // 🔥 TEMP: FORZADO A RAILWAY PARA DEBUG
+        return 'https://nomina-app-production-653f.up.railway.app';
+
+        // CÓDIGO ORIGINAL (comentado temporalmente):
+        // let apiUrl = process.env.REACT_APP_API_URL;
+        // if (!apiUrl) {
+        //     if (window.location.hostname.includes('vercel.app')) {
+        //         return 'https://nomina-app-production-653f.up.railway.app';
+        //     } else {
+        //         return 'http://localhost:5987';
+        //     }
+        // }
+        // return apiUrl;
     };
 
     // Helper function to safely extract numeric values - DEBUG VERSION

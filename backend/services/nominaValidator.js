@@ -667,7 +667,8 @@ class NominaValidator {
     }
 
     /**
-     * Limpia un número en formato español - CORRECCIÓN DEFINITIVA
+     * Limpia un número en formato español - VERSIÓN ULTRA SIMPLE Y ROBUSTA
+     * Regla fundamental: En formato español, la COMA es el decimal, el PUNTO es separador de miles
      */
     limpiarNumero(numeroSucio) {
         if (!numeroSucio) {
@@ -676,104 +677,63 @@ class NominaValidator {
         }
 
         const original = numeroSucio.toString();
-        console.log(`🧹 limpiarNumero: ORIGINAL="${original}"`);
+        console.log(`🧹 limpiarNumero INPUT: "${original}"`);
 
         let limpio = original.trim();
 
-        // 🔥 MEJORADO: Detectar y separar números pegados múltiples patrones
-        // Caso 1: 8+ dígitos seguidos (ej: 12502024 -> 1250.2024)
-        if (/^\d{8,}$/.test(limpio)) {
-            console.log(`🔍 Números largos pegados detectados: "${limpio}"`);
+        // PASO 1: Eliminar TODO excepto números, puntos y comas
+        limpio = limpio.replace(/[^\d.,]/g, '');
+        console.log(`  Paso 1 - Solo dígitos, puntos, comas: "${limpio}"`);
 
-            // Intentar diferentes posiciones para el decimal
-            const intentos = [
-                limpio.slice(0, -2) + '.' + limpio.slice(-2),  // Antes de últimos 2 dígitos
-                limpio.slice(0, -4) + '.' + limpio.slice(-4),  // Antes de últimos 4 dígitos  
-                limpio.slice(0, -6) + '.' + limpio.slice(-6),  // Antes de últimos 6 dígitos
-            ];
+        // PASO 2: Detectar formato y normalizar
+        if (limpio.includes(',')) {
+            // FORMATO EUROPEO: La coma ES el decimal
+            // Ejemplos: "1.253,26" o "1253,26" o "50,00"
 
-            // Elegir el más razonable (basado en magnitud)
-            for (const intento of intentos) {
-                const valor = parseFloat(intento);
-                if (valor > 0 && valor < 999999) { // Rango salarial razonable
-                    console.log(`🔍 Corrección aplicada: "${limpio}" -> "${intento}"`);
-                    limpio = intento;
-                    break;
+            // Eliminar TODOS los puntos (son separadores de miles)
+            limpio = limpio.replace(/\./g, '');
+            console.log(`  Paso 2a - Eliminados puntos (miles): "${limpio}"`);
+
+            // Reemplazar la coma por punto (para parseFloat)
+            limpio = limpio.replace(',', '.');
+            console.log(`  Paso 2b - Coma → punto decimal: "${limpio}"`);
+
+        } else if (limpio.includes('.')) {
+            // Solo tiene puntos, sin comas
+            // Puede ser: "1.253.26" (europeo sin coma) o "1253.26" (ya correcto) o "1.25" (ambiguo)
+
+            const partes = limpio.split('.');
+
+            if (partes.length > 2) {
+                // Múltiples puntos: "1.253.26" → Todos son miles excepto el último
+                limpio = partes.slice(0, -1).join('') + '.' + partes[partes.length - 1];
+                console.log(`  Paso 2c - Múltiples puntos → miles: "${limpio}"`);
+
+            } else if (partes.length === 2) {
+                // Un solo punto: "1253.26" o "1.25"
+                const parteDecimal = partes[1];
+
+                if (parteDecimal.length === 3 && partes[0].length <= 3) {
+                    // Caso especial: "1.253" → separador de miles, NO decimal
+                    // Esto es claramente formato europeo sin decimales
+                    limpio = partes[0] + partes[1];
+                    console.log(`  Paso 2d - Patrón X.XXX → miles sin decimal: "${limpio}"`);
+
+                } else {
+                    // Asumir que el punto ya es decimal válido
+                    console.log(`  Paso 2e - Punto como decimal válido: "${limpio}"`);
                 }
             }
         }
 
-        // Caso 2: Números con formato mixto (ej: 12.502024 -> 1250.2024)
-        else if (/^\d{1,3}\.\d{6,}$/.test(limpio)) {
-            console.log(`🔍 Formato mixto detectado: "${limpio}"`);
-            const partes = limpio.split('.');
-            const posibleCorreccion = partes[0] + partes[1].slice(0, -2) + '.' + partes[1].slice(-2);
-            console.log(`🔍 Corrección mixta: "${limpio}" -> "${posibleCorreccion}"`);
-            limpio = posibleCorreccion;
-        }
-
-        // Caso 3: Patrones específicos de nóminas (ej: 1500EUR -> 1500.00)
-        else if (/^\d+E?U?R?$/i.test(limpio)) {
-            console.log(`🔍 Patrón EUR detectado: "${limpio}"`);
-            const soloNumero = limpio.replace(/[EUR]/gi, '');
-            limpio = soloNumero + '.00';
-            console.log(`🔍 Corrección EUR: "${limpio}"`);
-        }
-
-        // Paso 1: Eliminar caracteres NO numéricos excepto . y ,
-        limpio = limpio.replace(/[^\d.,]/g, '');
-        console.log(`🧹 Paso 1 (solo números): "${limpio}"`);
-
-        // Paso 2: Manejar formato español 1.253,26 -> 1253.26
-        if (limpio.includes(',') && limpio.includes('.')) {
-            // Tiene ambos: probablemente formato español
-            const antesComa = limpio.split(',')[0];
-            const despuesComa = limpio.split(',')[1];
-
-            // Quitar puntos de la parte entera
-            const parteEntera = antesComa.replace(/\./g, '');
-
-            // Usar solo 2 decimales
-            const parteDecimal = despuesComa.substring(0, 2);
-
-            limpio = parteEntera + '.' + parteDecimal;
-            console.log(`🧹 Paso 2 (español): "${original}" -> "${limpio}"`);
-
-        } else if (limpio.includes(',')) {
-            // Solo coma: formato decimal 1253,26 -> 1253.26
-            const partes = limpio.split(',');
-            const parteEntera = partes[0];
-            const parteDecimal = partes[1] ? partes[1].substring(0, 2) : '00';
-            limpio = parteEntera + '.' + parteDecimal;
-            console.log(`🧹 Paso 2 (coma decimal): "${original}" -> "${limpio}"`);
-
-        } else if (limpio.includes('.')) {
-            // Solo puntos: podría ser miles o decimal
-            const partes = limpio.split('.');
-            if (partes.length > 2) {
-                // Múltiples puntos = miles: 1.253.26 -> 1253.26
-                limpio = limpio.replace(/\./g, '');
-                limpio = limpio.slice(0, -2) + '.' + limpio.slice(-2);
-                console.log(`🧹 Paso 2 (múltiples puntos): "${original}" -> "${limpio}"`);
-            } else if (partes[1] && partes[1].length === 2) {
-                // Dos dígitos después del punto = decimal válido
-                console.log(`🧹 Paso 2 (decimal válido): "${original}" -> "${limpio}"`);
-            } else {
-                // Un punto probablemente separador de miles
-                limpio = limpio.replace(/\./g, '');
-                limpio = limpio.slice(0, -2) + '.' + limpio.slice(-2);
-                console.log(`🧹 Paso 2 (punto miles): "${original}" -> "${limpio}"`);
-            }
-        }
-
-        // Paso 3: Validar que sea un número válido
+        // PASO 3: Validar resultado
         const valor = parseFloat(limpio);
         if (isNaN(valor)) {
-            console.log(`⚠️ limpiarNumero: "${original}" -> INVÁLIDO -> 0`);
+            console.log(`❌ limpiarNumero OUTPUT: "${original}" → INVÁLIDO → 0`);
             return '0';
         }
 
-        console.log(`✅ limpiarNumero: "${original}" -> "${valor}"`);
+        console.log(`✅ limpiarNumero OUTPUT: "${original}" → ${valor}`);
         return valor.toString();
     }
 
