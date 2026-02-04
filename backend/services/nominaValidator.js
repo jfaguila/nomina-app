@@ -213,8 +213,8 @@ class NominaValidator {
         // SOLO incluir cálculos si hay datos reales
         const calculosFinales = {};
 
-        if (totalDevengadoReal) {
-            calculosFinales.total_devengado = parseFloat(totalDevengadoReal.toFixed(2));
+        if (checkTotalDevengado) {
+            calculosFinales.total_devengado = parseFloat(checkTotalDevengado.toFixed(2));
         }
         if (seguridadSocial) {
             calculosFinales.seguridad_social_estimada = parseFloat(seguridadSocial.toFixed(2));
@@ -310,9 +310,9 @@ class NominaValidator {
             return data;
         }
 
-        // AMBULANCIAS - EXTRAER SOLO DATOS REALES
-        if (text.includes('AMBULANCIAS') || text.includes('TRANSPORTE SANITARIO')) {
-            console.log("🚑 MODO AMBULANCIAS - EXTRAER DATOS REALES");
+        // AMBULANCIAS - EXTRAER SOLO DATOS REALES CON VALIDACIÓN ESPECÍFICA
+        if (text.includes('AMBULANCIAS') || text.includes('TRANSPORTE SANITARIO') || text.includes('PASQUAU')) {
+            console.log("🚑 MODO AMBULANCIAS PASQUAU - VALIDACIÓN ESPECÍFICA DE TASAS");
 
             const patternsAmbulancias = {
                 salarioBase: [
@@ -324,6 +324,21 @@ class NominaValidator {
                     /Total.*?Devengado.*?(\d+[,.]\d{2})/i,
                     /TOTAL.*?(\d+[,.]\d{2})/i,
                     /L[ií]quido.*?(\d+[,.]\d{2})/i
+                ],
+                // 🔥 ESPECÍFICO AMBULANCIAS: Tasas exactas para transporte sanitario
+                cotizacionMEI: [
+                    /MEI[:\s]*(\d+[,.]\d{2})/i,
+                    /Mutualidad\s*Empresarial[:\s]*(\d+[,.]\d{2})/i,
+                    /Instituciones\s*Sanitarias[:\s]*(\d+[,.]\d{2})/i
+                ],
+                cotizacionDesempleo: [
+                    /Desempleo[:\s]*(\d+[,.]\d{2})/i,
+                    /Desempleo\s*Trabajadores[:\s]*(\d+[,.]\d{2})/i
+                ],
+                cotizacionFormacionProfesional: [
+                    /Formación\s*Profesional[:\s]*(\d+[,.]\d{2})/i,
+                    /Formación[:\s]*(\d+[,.]\d{2})/i,
+                    /FP[:\s]*(\d+[,.]\d{2})/i
                 ]
             };
 
@@ -346,6 +361,57 @@ class NominaValidator {
 
             if (!data.categoria) {
                 data.categoria = this.detectarCategoriaDesdeTexto(text) || 'tes_conductor';
+            }
+
+            // 🔥 VALIDACIÓN ESPECÍFICA DE TASAS AMBULANCIAS PASQUAU
+            if (data.cotizacionMEI || data.cotizacionDesempleo || data.cotizacionFormacionProfesional) {
+                console.log("🔍 AMBULANCIAS: Validando tasas específicas");
+                
+                // Tasas correctas para transporte sanitario (Ambulancias Pasquau)
+                const tasasCorrectas = {
+                    mei: 0.13,        // 0.13% - Mutualidad Empresarial Instituciones Sanitarias
+                    formacion: 0.10,   // 0.10% - Formación Profesional
+                    desempleo: 1.55    // 1.55% - Desempleo
+                };
+
+                // Validar MEI (0.13%)
+                if (data.cotizacionMEI && checkTotalDevengado) {
+                    const meiReal = parseFloat(this.limpiarNumero(data.cotizacionMEI));
+                    const meiEsperado = checkTotalDevengado * (tasasCorrectas.mei / 100);
+                    const diffMEI = Math.abs(meiReal - meiEsperado);
+                    
+                    console.log(`🔍 MEI - Real: ${meiReal}, Esperado: ${meiEsperado.toFixed(2)}, Diferencia: ${diffMEI.toFixed(2)}`);
+                    
+                    if (diffMEI > 1) { // Tolerancia de 1€
+                        console.warn(`⚠️ MEI con discrepancia: ${meiReal} vs ${meiEsperado.toFixed(2)} (0.13%)`);
+                    }
+                }
+
+                // Validar Formación Profesional (0.10%)
+                if (data.cotizacionFormacionProfesional && checkTotalDevengado) {
+                    const fpReal = parseFloat(this.limpiarNumero(data.cotizacionFormacionProfesional));
+                    const fpEsperado = checkTotalDevengado * (tasasCorrectas.formacion / 100);
+                    const diffFP = Math.abs(fpReal - fpEsperado);
+                    
+                    console.log(`🔍 Formación Profesional - Real: ${fpReal}, Esperado: ${fpEsperado.toFixed(2)}, Diferencia: ${diffFP.toFixed(2)}`);
+                    
+                    if (diffFP > 1) { // Tolerancia de 1€
+                        console.warn(`⚠️ Formación Profesional con discrepancia: ${fpReal} vs ${fpEsperado.toFixed(2)} (0.10%)`);
+                    }
+                }
+
+                // Validar Desempleo (1.55%)
+                if (data.cotizacionDesempleo && checkTotalDevengado) {
+                    const desempleoReal = parseFloat(this.limpiarNumero(data.cotizacionDesempleo));
+                    const desempleoEsperado = checkTotalDevengado * (tasasCorrectas.desempleo / 100);
+                    const diffDesempleo = Math.abs(desempleoReal - desempleoEsperado);
+                    
+                    console.log(`🔍 Desempleo - Real: ${desempleoReal}, Esperado: ${desempleoEsperado.toFixed(2)}, Diferencia: ${diffDesempleo.toFixed(2)}`);
+                    
+                    if (diffDesempleo > 1) { // Tolerancia de 1€
+                        console.warn(`⚠️ Desempleo con discrepancia: ${desempleoReal} vs ${desempleoEsperado.toFixed(2)} (1.55%)`);
+                    }
+                }
             }
 
             return data;
@@ -421,22 +487,40 @@ class NominaValidator {
                 /A\s*Deducir[:\s]*(\d+[,.]\d{2})/i,
                 /Total\s*a\s*Deducir[:\s]*(\d+[,.]\d{2})/i
             ],
+            // MEI (Mutualidad Empresarial de Instituciones Sanitarias) - 0.13%
+            cotizacionMEI: [
+                /MEI[:\s]*(\d+[,.]\d{2})/i,
+                /Mutualidad\s*Empresarial[:\s]*(\d+[,.]\d{2})/i,
+                /Instituciones\s*Sanitarias[:\s]*(\d+[,.]\d{2})/i,
+                /M\.?\s*E\.?\s*I\.?[:\s]*(\d+[,.]\d{2})/i,
+                /Mutualidad[:\s]*(\d+[,.]\d{2})/i
+            ],
             cotizacionContingenciasComunes: [
                 /Contingencias\s*Comunes[:\s]*(\d+[,.]\d{2})/i,
                 /C\.?\s*Comunes[:\s]*(\d+[,.]\d{2})/i,
                 /Contingencias[:\s]*(\d+[,.]\d{2})/i,
-                /CC[:\s]*(\d+[,.]\d{2})/i
+                /CC[:\s]*(\d+[,.]\d{2})/i,
+                /Comunes[:\s]*(\d+[,.]\d{2})/i,
+                /Cont\.?\s*Com[:\s]*(\d+[,.]\d{2})/i
             ],
             cotizacionDesempleo: [
                 /Desempleo[:\s]*(\d+[,.]\d{2})/i,
                 /Desemp[:\s]*(\d+[,.]\d{2})/i,
-                /Desempleo.*?(\d+[,.]\d{2})/i
+                /Desempleo.*?(\d+[,.]\d{2})/i,
+                /Desempleo\s*Trabajadores[:\s]*(\d+[,.]\d{2})/i,
+                /D\.?\s*E\.?[:\s]*(\d+[,.]\d{2})/i
             ],
             cotizacionFormacionProfesional: [
                 /Formación\s*Profesional[:\s]*(\d+[,.]\d{2})/i,
                 /Formación[:\s]*(\d+[,.]\d{2})/i,
                 /FP[:\s]*(\d+[,.]\d{2})/i,
-                /Formación\s*Prof.*?(\d+[,.]\d{2})/i
+                /Formación\s*Prof.*?(\d+[,.]\d{2})/i,
+                /F\.?\s*P\.?[:\s]*(\d+[,.]\d{2})/i,
+                /Formac[ií]on\s*Prof[:\s]*(\d+[,.]\d{2})/i,
+                /Formac[ií]on[:\s]*(\d+[,.]\d{2})/i,
+                /Formac[ií]on\s*Profesional[:\s]*(\d+[,.]\d{2})/i,
+                /Educación[:\s]*(\d+[,.]\d{2})/i,
+                /Formación\s*Obligatoria[:\s]*(\d+[,.]\d{2})/i
             ],
             cotizacionHorasExtras: [
                 /Cotización\s*Horas\s*Extras?[:\s]*(\d+[,.]\d{2})/i,
@@ -533,6 +617,46 @@ class NominaValidator {
 
         let limpio = original.trim();
 
+        // 🔥 MEJORADO: Detectar y separar números pegados múltiples patrones
+        // Caso 1: 8+ dígitos seguidos (ej: 12502024 -> 1250.2024)
+        if (/^\d{8,}$/.test(limpio)) {
+            console.log(`🔍 Números largos pegados detectados: "${limpio}"`);
+            
+            // Intentar diferentes posiciones para el decimal
+            const intentos = [
+                limpio.slice(0, -2) + '.' + limpio.slice(-2),  // Antes de últimos 2 dígitos
+                limpio.slice(0, -4) + '.' + limpio.slice(-4),  // Antes de últimos 4 dígitos  
+                limpio.slice(0, -6) + '.' + limpio.slice(-6),  // Antes de últimos 6 dígitos
+            ];
+            
+            // Elegir el más razonable (basado en magnitud)
+            for (const intento of intentos) {
+                const valor = parseFloat(intento);
+                if (valor > 0 && valor < 999999) { // Rango salarial razonable
+                    console.log(`🔍 Corrección aplicada: "${limpio}" -> "${intento}"`);
+                    limpio = intento;
+                    break;
+                }
+            }
+        }
+        
+        // Caso 2: Números con formato mixto (ej: 12.502024 -> 1250.2024)
+        else if (/^\d{1,3}\.\d{6,}$/.test(limpio)) {
+            console.log(`🔍 Formato mixto detectado: "${limpio}"`);
+            const partes = limpio.split('.');
+            const posibleCorreccion = partes[0] + partes[1].slice(0, -2) + '.' + partes[1].slice(-2);
+            console.log(`🔍 Corrección mixta: "${limpio}" -> "${posibleCorreccion}"`);
+            limpio = posibleCorreccion;
+        }
+        
+        // Caso 3: Patrones específicos de nóminas (ej: 1500EUR -> 1500.00)
+        else if (/^\d+E?U?R?$/i.test(limpio)) {
+            console.log(`🔍 Patrón EUR detectado: "${limpio}"`);
+            const soloNumero = limpio.replace(/[EUR]/gi, '');
+            limpio = soloNumero + '.00';
+            console.log(`🔍 Corrección EUR: "${limpio}"`);
+        }
+
         // Paso 1: Eliminar caracteres NO numéricos excepto . y ,
         limpio = limpio.replace(/[^\d.,]/g, '');
         console.log(`🧹 Paso 1 (solo números): "${limpio}"`);
@@ -589,126 +713,88 @@ class NominaValidator {
         console.log(`✅ limpiarNumero: "${original}" -> "${valor}"`);
         return valor.toString();
     }
-}
-        } else if (limpio.includes('.')) {
-    // Si solo tiene punto, determinar si es decimal o separador
-    const partes = limpio.split('.');
-    if (partes.length === 2) {
-        if (partes[1].length === 2) {
-            // Es decimal, mantenerlo
-            // limpio = limpio;
-        } else if (partes[1].length === 3) {
-            // Podría ser separador de miles
-            if (partes[0].length > 3) {
-                // Probablemente separador de miles: 1.234 -> 1234
-                limpio = limpio.replace(/\./g, '');
+
+    /**
+     * Calcula el valor de una hora extra
+     */
+    calcularValorHoraExtra(salarioBase, convenio) {
+        const horasMes = 160; // Aproximado para jornada completa
+        const valorHoraNormal = salarioBase / horasMes;
+        return valorHoraNormal * convenio.incrementoHoraExtra;
+    }
+
+    /**
+     * Calcula el IRPF estimado (simplificado)
+     */
+    calcularIRPF(totalDevengado) {
+        if (totalDevengado < 12450) return totalDevengado * 0.19;
+        if (totalDevengado < 20200) return totalDevengado * 0.24;
+        if (totalDevengado < 35200) return totalDevengado * 0.30;
+        if (totalDevengado < 60000) return totalDevengado * 0.37;
+        return totalDevengado * 0.45;
+    }
+
+    /**
+     * Helper para comparar valores y generar explicación - CORREGIDO
+     */
+    compararValores(nombre, real, teorico) {
+        console.log(`🔍 compararValores(${nombre}): real=${real}, teorico=${teorico}`);
+
+        // Asegurar que ambos son números
+        const realNum = parseFloat(real) || 0;
+        const teoricoNum = parseFloat(teorico) || 0;
+
+        console.log(`🔍 compararValores(${nombre}): realNum=${realNum}, teoricoNum=${teoricoNum}`);
+
+        const diff = parseFloat((realNum - teoricoNum).toFixed(2));
+        const estado = Math.abs(diff) < 1 ? 'CORRECTO' : (diff > 0 ? 'CORRECTO' : 'REVISAR');
+
+        let mensaje = '';
+        if (Math.abs(diff) < 1) {
+            mensaje = `Coincide con lo estipulado en el convenio.`;
+        } else if (diff > 0) {
+            mensaje = `¡Bien! Cobras ${diff}€ más de lo mínimo exigido.`;
+        } else {
+            mensaje = `Atención: Cobras ${Math.abs(diff)}€ menos de lo que deberías.`;
+        }
+
+        const resultado = {
+            real: realNum,
+            teorico: teoricoNum,
+            diferencia: diff,
+            estado,
+            mensaje
+        };
+
+        console.log(`✅ compararValores(${nombre}):`, resultado);
+        return resultado;
+    }
+
+    /**
+     * Detecta categoría profesional desde el texto
+     */
+    detectarCategoriaDesdeTexto(text) {
+        const categoriaPatterns = [
+            { pattern: /GERENTE/i, categoria: 'gerente' },
+            { pattern: /ENCARGADO/i, categoria: 'mando_intermedio' },
+            { pattern: /SUPERVISOR/i, categoria: 'mando_intermedio' },
+            { pattern: /JEFE/i, categoria: 'mando_intermedio' },
+            { pattern: /TECNICO/i, categoria: 'tecnico' },
+            { pattern: /ADMINISTRATIVO/i, categoria: 'empleado' },
+            { pattern: /AUXILIAR/i, categoria: 'empleado' },
+            { pattern: /CONDUCTOR/i, categoria: 'empleado' },
+            { pattern: /OPERARIO/i, categoria: 'empleado' }
+        ];
+
+        for (const { pattern, categoria } of categoriaPatterns) {
+            if (text.match(pattern)) {
+                console.log(`✅ CATEGORÍA DETECTADA: ${categoria}`);
+                return categoria;
             }
-            // else mantener como decimal
         }
+
+        return null; // NO inventar categoría si no se detecta
     }
-}
-
-// Quitar espacios y otros caracteres no numéricos excepto punto
-limpio = limpio.replace(/[^\d.]/g, '');
-
-// Validar que sea un número válido
-const valor = parseFloat(limpio);
-if (isNaN(valor)) return '0';
-
-return valor.toString();
-    }
-
-/**
- * Calcula el valor de una hora extra
- */
-calcularValorHoraExtra(salarioBase, convenio) {
-    const horasMes = 160; // Aproximado para jornada completa
-    const valorHoraNormal = salarioBase / horasMes;
-    return valorHoraNormal * convenio.incrementoHoraExtra;
-}
-
-/**
- * Calcula el IRPF estimado (simplificado)
- */
-calcularIRPF(totalDevengado) {
-    if (totalDevengado < 12450) return totalDevengado * 0.19;
-    if (totalDevengado < 20200) return totalDevengado * 0.24;
-    if (totalDevengado < 35200) return totalDevengado * 0.30;
-    if (totalDevengado < 60000) return totalDevengado * 0.37;
-    return totalDevengado * 0.45;
-}
-
-/**
- * Helper para comparar valores y generar explicación - CORREGIDO
- */
-compararValores(nombre, real, teorico) {
-    console.log(`🔍 compararValores(${nombre}): real=${real}, teorico=${teorico}`);
-
-    // Asegurar que ambos son números
-    const realNum = parseFloat(real) || 0;
-    const teoricoNum = parseFloat(teorico) || 0;
-
-    console.log(`🔍 compararValores(${nombre}): realNum=${realNum}, teoricoNum=${teoricoNum}`);
-
-    const diff = parseFloat((realNum - teoricoNum).toFixed(2));
-    const estado = Math.abs(diff) < 1 ? 'CORRECTO' : (diff > 0 ? 'CORRECTO' : 'REVISAR');
-
-    let mensaje = '';
-    if (Math.abs(diff) < 1) {
-        mensaje = `Coincide con lo estipulado en el convenio.`;
-    } else if (diff > 0) {
-        mensaje = `¡Bien! Cobras ${diff}€ más de lo mínimo exigido.`;
-    } else {
-        mensaje = `Atención: Cobras ${Math.abs(diff)}€ menos de lo que deberías.`;
-    }
-
-    const resultado = {
-        real: realNum,
-        teorico: teoricoNum,
-        diferencia: diff,
-        estado,
-        mensaje
-    };
-
-    console.log(`✅ compararValores(${nombre}):`, resultado);
-    return resultado;
-}
-
-return {
-    real: realNum,
-    teorico: teoricoNum,
-    diferencia: diff,
-    estado,
-    mensaje
-};
-    }
-
-/**
- * Detecta categoría profesional desde el texto
- */
-detectarCategoriaDesdeTexto(text) {
-    const categoriaPatterns = [
-        { pattern: /GERENTE/i, categoria: 'gerente' },
-        { pattern: /ENCARGADO/i, categoria: 'mando_intermedio' },
-        { pattern: /SUPERVISOR/i, categoria: 'mando_intermedio' },
-        { pattern: /JEFE/i, categoria: 'mando_intermedio' },
-        { pattern: /TECNICO/i, categoria: 'tecnico' },
-        { pattern: /ADMINISTRATIVO/i, categoria: 'empleado' },
-        { pattern: /AUXILIAR/i, categoria: 'empleado' },
-        { pattern: /CONDUCTOR/i, categoria: 'empleado' },
-        { pattern: /OPERARIO/i, categoria: 'empleado' }
-    ];
-
-    for (const { pattern, categoria } of categoriaPatterns) {
-        if (text.match(pattern)) {
-            console.log(`✅ CATEGORÍA DETECTADA: ${categoria}`);
-            return categoria;
-        }
-    }
-
-    return null; // NO inventar categoría si no se detecta
-}
-}
 }
 
 module.exports = new NominaValidator();

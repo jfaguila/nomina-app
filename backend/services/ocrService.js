@@ -58,129 +58,44 @@ class OCRService {
      */
     async extractFromImage(filePath) {
         try {
-            console.log('🚀 INICIANDO OCR 100% INFALIBLE en imagen:', filePath);
+            const path = require('path');
+            console.log('🚀 INICIANDO OCR ROBUSTO en:', filePath);
 
-            // Preprocesar imagen
-            await this.preprocesarImagen(filePath);
+            // Path absoluto a la carpeta de idiomas local
+            const tessdataDir = path.resolve(__dirname, '..', 'tessdata');
+            console.log('📂 Usando tessdata local:', tessdataDir);
 
-            const configurations = [
+            const result = await Tesseract.recognize(
+                filePath,
+                'spa',
                 {
-                    name: 'Precisión Máxima - Datos Tabulares',
-                    config: {
-                        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT,
-                        tessedit_ocr_engine_mode: Tesseract.OEM.LSTM_ONLY,
-                        tessedit_char_whitelist: '0123456789.,abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ€%ºª-_: ./\\-',
-                        preserve_interword_spaces: '1',
-                        tessedit_do_invert: '0'
-                    }
-                },
-                {
-                    name: 'Modo Bloque Único',
-                    config: {
-                        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
-                        tessedit_ocr_engine_mode: Tesseract.OEM.LSTM_ONLY,
-                        tessedit_char_whitelist: '0123456789.,abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ€%ºª-_: ./\\-',
-                        preserve_interword_spaces: '1'
-                    }
-                },
-                {
-                    name: 'Texto Denso',
-                    config: {
-                        tessedit_pageseg_mode: Tesseract.PSM.AUTO,
-                        tessedit_ocr_engine_mode: Tesseract.OEM.TesseractCombined,
-                        preserve_interword_spaces: '1'
-                    }
-                },
-                {
-                    name: 'Columnas',
-                    config: {
-                        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_COLUMN,
-                        tessedit_ocr_engine_mode: Tesseract.OEM.LSTM_ONLY,
-                        preserve_interword_spaces: '1'
-                    }
-                }
-            ];
-
-            let bestResult = null;
-            let bestConfidence = 0;
-
-            // Ejecutar todas las configuraciones en paralelo
-            const results = await Promise.allSettled(
-                configurations.map(async (conf, index) => {
-                    console.log(`Ejecutando configuración ${index + 1}: ${conf.name}`);
-
-                    const result = await Tesseract.recognize(
-                        filePath,
-                        'spa',
-                        {
-                            langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
-                            gzip: false,
-                            langPath: 'https://tessdata.projectnaptha.com/4.0.0_best',
-                            gzip: false,
-                            logger: (m) => {
-                                if (m.status === 'recognizing text' && m.progress % 0.25 < 0.1) {
-                                    console.log(`Config ${index + 1} - Progress: ${Math.round(m.progress * 100)}%`);
-                                }
-                            },
-                            ...conf.config
+                    langPath: tessdataDir,
+                    gzip: false,
+                    logger: (m) => {
+                        if (m.status === 'recognizing text' && m.progress % 0.25 < 0.1) {
+                            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
                         }
-                    );
-
-                    console.log(`Config ${index + 1} (${conf.name}) - Confianza: ${result.data.confidence}%`);
-
-                    return {
-                        text: result.data.text,
-                        confidence: result.data.confidence,
-                        configName: conf.name,
-                        words: result.data.words
-                    };
-                })
+                    },
+                    tessedit_pageseg_mode: Tesseract.PSM.AUTO,
+                    tessedit_ocr_engine_mode: Tesseract.OEM.LSTM_ONLY
+                }
             );
 
-            // Evaluar resultados y elegir el mejor
-            results.forEach((result, index) => {
-                if (result.status === 'fulfilled') {
-                    const { text, confidence, configName, words } = result.value;
+            console.log(`✅ OCR Completado - Confianza: ${result.data.confidence}%`);
 
-                    // Puntuación combinada: confianza + longitud del texto + calidad de números
-                    const numberMatches = (text.match(/\d+[.,]\d+/g) || []).length;
-                    const score = confidence + (text.length / 10) + (numberMatches * 5);
+            let text = result.data.text;
 
-                    console.log(`Config ${index + 1} - Score: ${score.toFixed(1)} (Conf: ${confidence}, Números: ${numberMatches})`);
-
-                    if (score > bestConfidence || (confidence > 80 && numberMatches > bestResult?.numberMatches)) {
-                        bestConfidence = score;
-                        bestResult = {
-                            text: text,
-                            confidence: confidence,
-                            configName: configName,
-                            numberMatches: numberMatches,
-                            words: words
-                        };
-                    }
-                } else {
-                    console.error(`Config ${index + 1} falló:`, result.reason);
-                }
-            });
-
-            if (!bestResult) {
-                throw new Error('Todas las configuraciones de OCR fallaron');
+            // Si la confianza es baja o el texto muy corto, intentar limpieza
+            if (result.data.confidence < 70 || text.length < 50) {
+                console.log('⚠️ Baja confianza o poco texto, aplicando limpieza agresiva...');
+                text = this.limpiezaAgresiva(text);
             }
 
-            console.log(`Mejor resultado: ${bestResult.configName} con confianza ${bestResult.confidence}%`);
-            console.log(`Números detectados: ${bestResult.numberMatches}`);
-
-            // Si la mejor confianza es muy baja, aplicar limpieza agresiva
-            if (bestResult.confidence < 70) {
-                console.log('Aplicando limpieza post-OCR por baja confianza...');
-                bestResult.text = this.limpiezaAgresiva(bestResult.text);
-            }
-
-            return bestResult.text;
+            return text;
 
         } catch (error) {
-            console.error('Error en OCR de imagen:', error);
-            throw new Error('Error al procesar la imagen con OCR');
+            console.error('🔥 Error CRÍTICO en OCR:', error);
+            throw new Error(`Error al procesar la imagen con OCR: ${error.message}`);
         }
     }
 
