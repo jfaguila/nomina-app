@@ -185,27 +185,44 @@ app.post('/api/test-ocr', upload.single('nomina'), async (req, res) => {
     }
 });
 
-// Debug endpoint
+// Debug endpoint - Enhanced for full diagnostics
 app.post('/api/debug-ocr', upload.single('nomina'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No file' });
 
-        console.log('--- DEBUGGING OCR ---');
+        console.log('🔍 === DEBUG ENDPOINT CALLED ===');
+        console.log('File:', req.file.originalname, 'Type:', req.file.mimetype);
+
         const text = await ocrService.extractText(req.file.path, req.file.mimetype);
-        console.log('Raw Text:', text);
+        console.log('✅ Text extracted. Length:', text.length);
 
         const rawData = nominaValidator.extractDataFromText(text);
+        console.log('✅ Data extracted:', Object.keys(rawData));
 
         fs.unlinkSync(req.file.path);
 
         res.json({
-            rawText: text,
-            parsedData: rawData
+            success: true,
+            extractedTextPreview: text.substring(0, 3000),
+            extractedTextLength: text.length,
+            extractedData: rawData,
+            timestamp: new Date().toISOString()
         });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
+
+    } catch (error) {
+        console.error('❌ Debug OCR Error:', error);
+        res.status(500).json({ error: error.message, stack: error.stack });
     }
+});
+
+res.json({
+    rawText: text,
+    parsedData: rawData
+});
+    } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+}
 });
 
 // Error handling middleware
