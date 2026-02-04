@@ -31,23 +31,77 @@ class OCRService {
      */
     async extractFromPDF(filePath) {
         try {
+            console.log('📄 Procesando PDF:', filePath);
             const dataBuffer = fs.readFileSync(filePath);
             const data = await pdf(dataBuffer);
 
-            console.log('PDF procesado:', data.numpages, 'páginas');
+            console.log(`📄 PDF: ${data.numpages} página(s)`);
 
-            // Si el PDF tiene texto nativo, usarlo
+            // PASO 1: Intentar extraer texto nativo
             if (data.text && data.text.trim().length > 100) {
+                console.log('✅ PDF con texto nativo extraído:', data.text.length, 'caracteres');
                 return data.text;
             }
 
-            // Si no tiene texto, intentar OCR (requeriría convertir PDF a imagen)
-            console.log('PDF sin texto nativo, se requiere OCR de imagen');
-            return data.text || '';
+            console.log('⚠️ PDF sin texto nativo (probablemente imagen escaneada)');
+            console.log('🔄 Convirtiendo PDF a imágenes para OCR...');
+
+            // PASO 2: Convertir PDF a imágenes y hacer OCR
+            const pdfToPng = require('pdf-to-png-converter');
+            const path = require('path');
+
+            // Convertir PDF a PNG (devuelve array de buffers)
+            const pngPages = await pdfToPng.pdfToPng(dataBuffer, {
+                disableFontFace: true,
+                useSystemFonts: false,
+                viewportScale: 2.0  // Mayor resolución para mejor OCR
+            });
+
+            console.log(`✅ Convertidas ${pngPages.length} página(s) a PNG`);
+
+            // PASO 3: Hacer OCR en cada imagen
+            let fullText = '';
+            const Tesseract = require('tesseract.js');
+            const tessdataDir = path.resolve(__dirname, '..', 'tessdata');
+
+            for (let i = 0; i < pngPages.length; i++) {
+                console.log(`🔍 Haciendo OCR en página ${i + 1}/${pngPages.length}...`);
+
+                try {
+                    const result = await Tesseract.recognize(
+                        pngPages[i].content,  // Buffer de la imagen PNG
+                        'spa',
+                        {
+                            langPath: tessdataDir,
+                            gzip: false,
+                            logger: (m) => {
+                                if (m.status === 'recognizing text') {
+                                    console.log(`  OCR Página ${i + 1}: ${Math.round(m.progress * 100)}%`);
+                                }
+                            }
+                        }
+                    );
+
+                    const pageText = result.data.text;
+                    console.log(`✅ Página ${i + 1} OCR: ${pageText.length} caracteres (confianza: ${result.data.confidence}%)`);
+                    fullText += pageText + '\n\n';
+
+                } catch (ocrError) {
+                    console.error(`❌ Error OCR en página ${i + 1}:`, ocrError.message);
+                    // Continuar con las demás páginas
+                }
+            }
+
+            if (fullText.trim().length === 0) {
+                throw new Error('No se pudo extraer texto del PDF (ni nativo ni por OCR)');
+            }
+
+            console.log(`✅ OCR completo: ${fullText.length} caracteres totales`);
+            return fullText;
 
         } catch (error) {
-            console.error('Error al procesar PDF:', error);
-            throw new Error('Error al procesar el archivo PDF');
+            console.error('❌ Error al procesar PDF:', error);
+            throw new Error(`Error al procesar el archivo PDF: ${error.message}`);
         }
     }
 
