@@ -3,25 +3,52 @@ import { motion } from 'framer-motion';
 
 const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false }) => {
     const [formData, setFormData] = useState({
-        horasExtras: '',
-        dietas: '',
+        // === CONTEXTO ===
+        convenio: 'general',
+        categoria: 'empleado',
+
+        // === DEVENGOS ===
         salarioBase: '',
         plusConvenio: '',
         valorAntiguedad: '',
         valorNocturnidad: '',
         horasNocturnas: '',
+        horasExtras: '',
+        dietas: '',
+        totalDevengado: '',
+
+        // === DEDUCCIONES ===
+        cotizacionContingenciasComunes: '',
+        cotizacionMEI: '',
+        cotizacionDesempleo: '',
+        cotizacionFormacionProfesional: '',
+        irpf: '',
+        totalDeducciones: '',
+
+        // === RESULTADO ===
+        liquidoTotal: '',
+
+        // === CONFIG ===
         antiguedad: '',
         pagas: '14',
-        prorrateo: false,
-        categoria: 'empleado',
-        convenio: 'general'
+        prorrateo: false
     });
 
     const [detectedFields, setDetectedFields] = useState({
         salarioBase: false,
+        plusConvenio: false,
+        valorAntiguedad: false,
+        valorNocturnidad: false,
         horasExtras: false,
         dietas: false,
         totalDevengado: false,
+        cotizacionContingenciasComunes: false,
+        cotizacionMEI: false,
+        cotizacionDesempleo: false,
+        cotizacionFormacionProfesional: false,
+        irpf: false,
+        totalDeducciones: false,
+        liquidoTotal: false,
         categoria: false
     });
 
@@ -31,7 +58,7 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
             console.log('\n🚨 === AUDITORIA ManualInput useEffect ===');
             console.log('📥 INITIAL DATA RECIBIDO EN ManualInput:');
             console.log(JSON.stringify(initialData, null, 2));
-            
+
             // Marcar qué campos fueron detectados automáticamente
             const detected = {
                 salarioBase: !!initialData.salarioBase,
@@ -41,21 +68,21 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                 categoria: !!initialData.categoria
             };
             setDetectedFields(detected);
-            
+
             console.log('🎯 DETECTED FIELDS:');
             console.log(JSON.stringify(detected, null, 2));
-            
+
             const newFormData = {
                 ...formData,
                 ...initialData
             };
-            
+
             console.log('📋 FORM DATA ANTES DE SETEAR:');
             console.log(JSON.stringify(formData, null, 2));
-            
+
             console.log('📋 NEW FORM DATA (formData + initialData):');
             console.log(JSON.stringify(newFormData, null, 2));
-            
+
             setFormData(newFormData);
             console.log('=== FIN AUDITORIA ManualInput ===\n');
         }
@@ -63,22 +90,22 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
+
         console.log(`\n🔄 === ManualInput handleChange ===`);
         console.log(`📝 Input change - name: "${name}", value: "${value}", type: "${type}"`);
         console.log(`📋 Form data ANTES:`);
         console.log(JSON.stringify(formData, null, 2));
-        
+
         setFormData(prev => {
             const newFormData = {
                 ...prev,
                 [name]: type === 'checkbox' ? checked : value
             };
-            
+
             console.log(`📋 Form data DESPUÉS:`);
             console.log(JSON.stringify(newFormData, null, 2));
             console.log(`=== FIN ManualInput handleChange ===\n`);
-            
+
             return newFormData;
         });
     };
@@ -132,11 +159,10 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 name="categoria"
                                 value={formData.categoria}
                                 onChange={handleChange}
-                                className={`w-full rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${
-                                    detectedFields.categoria
-                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700 dark:bg-gray-800'
-                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-                                }`}
+                                className={`w-full rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${detectedFields.categoria
+                                    ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700 dark:bg-gray-800'
+                                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    }`}
                             >
                                 {formData.convenio === 'transporte_sanitario_andalucia' ? (
                                     <>
@@ -207,11 +233,10 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                     value={formData.salarioBase || ''}
                                     onChange={handleChange}
                                     placeholder="0.00"
-                                    className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${
-                                        detectedFields.salarioBase 
-                                            ? 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10' 
-                                            : 'border-gray-200 dark:border-gray-700'
-                                    }`}
+                                    className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${detectedFields.salarioBase
+                                        ? 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10'
+                                        : 'border-gray-200 dark:border-gray-700'
+                                        }`}
                                 />
                                 {detectedFields.salarioBase && (
                                     <button
@@ -303,11 +328,10 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 value={formData.dietas}
                                 onChange={handleChange}
                                 placeholder="0.00"
-                                className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${
-                                    detectedFields.dietas 
-                                        ? 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10' 
-                                        : 'border-gray-200 dark:border-gray-700'
-                                }`}
+                                className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${detectedFields.dietas
+                                    ? 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10'
+                                    : 'border-gray-200 dark:border-gray-700'
+                                    }`}
                                 step="0.01"
                             />
                             {detectedFields.dietas && (
@@ -348,6 +372,191 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                     <option value="15">15 pagas</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* TOTAL DEVENGADO */}
+                <div className="bg-green-50/50 dark:bg-green-900/20 p-6 rounded-3xl border border-green-200 dark:border-green-800">
+                    <div className="flex justify-between items-center">
+                        <h4 className="text-sm font-bold text-green-600 dark:text-green-400 uppercase tracking-widest flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Total Devengado
+                            {detectedFields.totalDevengado && (
+                                <span className="ml-2 text-xs font-normal">✓ Detectado</span>
+                            )}
+                        </h4>
+                        <input
+                            type="text"
+                            name="totalDevengado"
+                            value={formData.totalDevengado || ''}
+                            onChange={handleChange}
+                            placeholder="0.00"
+                            className={`w-40 text-right text-2xl font-black bg-transparent border-b-2 px-2 py-1 focus:outline-none ${detectedFields.totalDevengado
+                                    ? 'border-green-400 text-green-700 dark:text-green-300'
+                                    : 'border-green-300 text-green-600 dark:text-green-400'
+                                }`}
+                        />
+                        <span className="text-2xl font-black text-green-600 dark:text-green-400">€</span>
+                    </div>
+                </div>
+
+                {/* 3. DEDUCCIONES */}
+                <section className="space-y-6 bg-red-50/30 dark:bg-red-900/10 p-6 rounded-3xl border border-red-100 dark:border-red-900/30">
+                    <h4 className="text-sm font-bold text-red-500 dark:text-red-400 uppercase tracking-widest flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Deducciones
+                    </h4>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {/* Contingencias Comunes */}
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                Contingencias Comunes (4.70%)
+                                {detectedFields.cotizacionContingenciasComunes && (
+                                    <span className="ml-1 text-green-500">✓</span>
+                                )}
+                            </label>
+                            <input
+                                type="text"
+                                name="cotizacionContingenciasComunes"
+                                value={formData.cotizacionContingenciasComunes || ''}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionContingenciasComunes
+                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    } border`}
+                            />
+                        </div>
+
+                        {/* MEI */}
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                MEI (0.13%)
+                                {detectedFields.cotizacionMEI && (
+                                    <span className="ml-1 text-green-500">✓</span>
+                                )}
+                            </label>
+                            <input
+                                type="text"
+                                name="cotizacionMEI"
+                                value={formData.cotizacionMEI || ''}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionMEI
+                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    } border`}
+                            />
+                        </div>
+
+                        {/* Desempleo */}
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                Desempleo (1.55%)
+                                {detectedFields.cotizacionDesempleo && (
+                                    <span className="ml-1 text-green-500">✓</span>
+                                )}
+                            </label>
+                            <input
+                                type="text"
+                                name="cotizacionDesempleo"
+                                value={formData.cotizacionDesempleo || ''}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionDesempleo
+                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    } border`}
+                            />
+                        </div>
+
+                        {/* Formación Profesional */}
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                Formación Prof. (0.10%)
+                                {detectedFields.cotizacionFormacionProfesional && (
+                                    <span className="ml-1 text-green-500">✓</span>
+                                )}
+                            </label>
+                            <input
+                                type="text"
+                                name="cotizacionFormacionProfesional"
+                                value={formData.cotizacionFormacionProfesional || ''}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionFormacionProfesional
+                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    } border`}
+                            />
+                        </div>
+
+                        {/* IRPF */}
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+                                IRPF (%)
+                                {detectedFields.irpf && (
+                                    <span className="ml-1 text-green-500">✓</span>
+                                )}
+                            </label>
+                            <input
+                                type="text"
+                                name="irpf"
+                                value={formData.irpf || ''}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.irpf
+                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    } border`}
+                            />
+                        </div>
+
+                        {/* Total Deducciones */}
+                        <div className="relative">
+                            <label className="block text-xs font-bold text-red-500 dark:text-red-400 uppercase mb-2 ml-1">
+                                Total Deducciones
+                                {detectedFields.totalDeducciones && (
+                                    <span className="ml-1 text-green-500">✓</span>
+                                )}
+                            </label>
+                            <input
+                                type="text"
+                                name="totalDeducciones"
+                                value={formData.totalDeducciones || ''}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className={`w-full rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.totalDeducciones
+                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                        : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
+                                    } border text-red-600 dark:text-red-400`}
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                {/* 4. LÍQUIDO A PERCIBIR */}
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-3xl shadow-lg">
+                    <div className="flex justify-between items-center">
+                        <h4 className="text-sm font-bold text-white/80 uppercase tracking-widest flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            Líquido a Percibir
+                            {detectedFields.liquidoTotal && (
+                                <span className="ml-2 text-xs font-normal text-white/60">✓ Detectado</span>
+                            )}
+                        </h4>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="text"
+                                name="liquidoTotal"
+                                value={formData.liquidoTotal || ''}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className="w-48 text-right text-3xl font-black bg-white/10 backdrop-blur border-2 border-white/30 rounded-xl px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-white/60"
+                            />
+                            <span className="text-3xl font-black text-white">€</span>
                         </div>
                     </div>
                 </div>
