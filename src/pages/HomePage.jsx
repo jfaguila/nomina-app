@@ -83,6 +83,7 @@ const HomePage = () => {
         return result;
     };
 
+
     // Step 1 -> Step 2: Upload and initial OCR
     const handleAnalyze = async () => {
         if (!selectedFile) return;
@@ -92,11 +93,44 @@ const HomePage = () => {
         setLoadingMessage(t('analyzing'));
         setLoadingProgress(0);
 
-        const formDataToSend = new FormData();
-        formDataToSend.append('nomina', selectedFile);
-        formDataToSend.append('data', JSON.stringify(uploadData));
-
         try {
+            let fileToSend = selectedFile;
+
+            // 🔥 NUEVO: Si es PDF, convertirlo a imagen en el navegador
+            if (selectedFile.type === 'application/pdf') {
+                console.log('📄 PDF detectado, convirtiendo a imagen...');
+                setLoadingMessage('Convirtiendo PDF a imagen...');
+
+                const pdfjsLib = await import('pdfjs-dist/build/pdf');
+                pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+                const arrayBuffer = await selectedFile.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                console.log(`📄 PDF cargado: ${pdf.numPages} página(s)`);
+
+                // Convertir la primera página a imagen
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 2.0 }); // Escala 2x para mejor calidad OCR
+
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                const context = canvas.getContext('2d');
+                await page.render({ canvasContext: context, viewport }).promise;
+
+                // Convertir canvas a blob
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                fileToSend = new File([blob], 'nomina.png', { type: 'image/png' });
+
+                console.log('✅ PDF convertido a PNG:', fileToSend.size, 'bytes');
+            }
+
+            const formDataToSend = new FormData();
+            formDataToSend.append('nomina', fileToSend);
+            formDataToSend.append('data', JSON.stringify(uploadData));
+
             setLoadingMessage(t('uploading'));
             setLoadingProgress(25);
 
