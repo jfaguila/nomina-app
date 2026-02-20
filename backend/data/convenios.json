@@ -139,7 +139,11 @@
                     "Almería",
                     "Córdoba",
                     "Málaga",
-                    "Sevilla"
+                    "Sevilla",
+                    "Cádiz",
+                    "Granada",
+                    "Huelva",
+                    "Jaén"
                 ]
             },
             "2025": {
@@ -150,26 +154,36 @@
                 "aplicacion": "Desde 01/07/2025"
             }
         },
-        "descripcion": "IV Convenio Colectivo del Transporte Sanitario de Enfermos y Accidentados en Ambulancias de Andalucía. Vigente desde 2020 hasta 2025 con ultraactividad. Incluye categorías TES (Técnico en Emergencias Sanitarias): Conductor/a, Ayudante Camillero/a y Camillero/a. Código BOJA: 71001075012005",
-        "codigoBOJA": "71001075012005",
-        "publicacion": "BOJA 241 - 16/12/2020"
+        "localizaciones": [
+            "Almería",
+            "Cádiz",
+            "Córdoba",
+            "Granada",
+            "Huelva",
+            "Jaén",
+            "Málaga",
+            "Sevilla"
+        ],
+        "descripcion": "IV Convenio Colectivo del Transporte Sanitario de Enfermos y Accidentados en Ambulancias de Andalucía. Vigente desde 2020 hasta 2025 con ultraactividad. Código BOJA: 71001075012005",
+        "codigoBOJA": "71001075012005"
     },
     "mercadona": {
         "nombre": "Convenio Colectivo Mercadona (2024-2028)",
         "salarioMinimo": {
-            "gerente_a": 1553,
-            "gerente_b": 1700,
-            "gerente_c": 1900,
-            "coordinador": 2100,
-            "base": 1368
+            "personal_base_menos_1": 1553.00,
+            "personal_base_más_1": 1686.25,
+            "personal_base_más_2": 1851.30,
+            "personal_base_más_3": 2054.45,
+            "personal_base_más_4": 2280.15,
+            "gerente_a": 1553.00,
+            "gerente_b": 1700.00,
+            "gerente_c": 1900.00,
+            "coordinador": 2100.00,
+            "base": 1553.00
         },
         "detallesSalariales": {
-            "gerente_a": {
-                "salarioBase": 1368,
-                "plusConvenio": 185
-            },
             "personal_base": {
-                "salarioBase": 1368,
+                "salarioBase": 1553.00,
                 "plusConvenio": 0
             }
         },
@@ -177,28 +191,28 @@
             "regla": "prorrateo_opcional",
             "cantidad": 3
         },
-        "horasExtra": {
-            "tipo": "variable"
-        },
         "reglasAntiguedad": {
             "tipo": "cuatrienio",
             "porcentajeBase": 0.05
         },
         "reglasNocturnidad": {
             "valorHora": 2.25
-        }
+        },
+        "notas": "Los salarios indicados para 2025 incluyen el incremento del 8.5% aplicado en enero."
     },
     "leroy_merlin": {
         "nombre": "Convenio Grandes Almacenes (Leroy Merlin)",
         "salarioMinimo": {
-            "profesional": 1277.25,
-            "coordinador": 1450.00,
-            "tecnico": 1600.00
+            "personal_base": 1308.80,
+            "profesional": 1345.50,
+            "coordinador": 1520.00,
+            "tecnico": 1680.00
         },
         "detallesSalariales": {
-            "profesional": {
-                "salarioBase": 1277.25,
-                "plusConvenio": 0
+            "personal_base": {
+                "salarioBase": 1121.83,
+                "pagas": 14,
+                "totalProrrateado": 1308.80
             }
         },
         "incentivos": {
@@ -212,6 +226,7 @@
         "reglasAntiguedad": {
             "tipo": "cuatrienio",
             "porcentajeBase": 0.03
-        }
+        },
+        "incremento2024": 0.25
     }
 }

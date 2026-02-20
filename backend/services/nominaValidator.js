@@ -3,27 +3,66 @@ const ConvenioFactory = require('../strategies/ConvenioFactory'); // Importar Fa
 
 class NominaValidator {
     /**
-     * Valida una nómina comparándola con el convenio aplicable
+     * Valida una nómina comparándola con el convenio aplicable (vínculo antiguo)
      * @param {string} extractedText - Texto extraído de la nómina
      * @param {Object} manualData - Datos ingresados manualmente
      * @returns {Object} - Resultados de la validación
      */
     validate(extractedText, manualData) {
-        const errors = [];
-        const warnings = [];
-        const details = {};
-
-        // Extraer datos del texto
+        // Extraer datos del texto de forma tradicional (regex)
         const extractedData = this.extractDataFromText(extractedText);
 
-        console.log('🔍 DEPURACIÓN - extractedData:', extractedData);
-        console.log('🔍 DEPURACIÓN - manualData:', manualData);
-
-        // Combinar datos extraídos con datos manuales
-        const nominaData = {
+        // Combinar
+        const combinedData = {
             ...extractedData,
             ...manualData
         };
+
+        // Ejecutar validación con los datos extraídos
+        return this.runValidationLogic(combinedData, extractedText);
+    }
+
+    /**
+     * Valida una nómina comparándola con el convenio aplicable (Versión para IA)
+     * @param {Object} aiData - Datos extraídos por la IA
+     * @param {Object} manualData - Datos ingresados manualmente
+     * @returns {Object} - Resultados de la validación
+     */
+    validateFromAI(aiData, manualData) {
+        // Combinar datos de la IA con los manuales (los manuales mandan si existen)
+        const combinedData = {};
+
+        // Todos los campos posibles que manejamos
+        const fields = [
+            'salarioBase', 'plusConvenio', 'valorAntiguedad', 'horasExtras',
+            'dietas', 'valorNocturnidad', 'horasNocturnas', 'totalDevengado',
+            'cotizacionContingenciasComunes', 'cotizacionDesempleo',
+            'cotizacionFormacionProfesional', 'cotizacionHorasExtras',
+            'irpf', 'totalDeducciones', 'liquidoTotal', 'convenio', 'categoria',
+            'antiguedad' // fecha
+        ];
+
+        fields.forEach(field => {
+            combinedData[field] = (manualData && manualData[field]) !== undefined && manualData[field] !== ''
+                ? manualData[field]
+                : aiData[field];
+        });
+
+        console.log('🧠 IA DATA COMBINED:', combinedData);
+
+        // Pasamos "Análisis por IA" como debugText
+        return this.runValidationLogic(combinedData, "Análisis por IA");
+    }
+
+    /**
+     * Lógica central de validación que acepta un objeto de datos procesado
+     * @param {Object} nominaData - Datos de la nómina
+     * @param {string|null} debugText - Texto original para depuración
+     */
+    runValidationLogic(nominaData, debugText = null) {
+        const errors = [];
+        const warnings = [];
+        const details = {};
 
         console.log('🔍 DATOS FINALES COMBINADOS:');
         console.log('📋 Combinados:', JSON.stringify(nominaData, null, 2));
@@ -32,11 +71,13 @@ class NominaValidator {
         const convenioKey = nominaData.convenio || 'general';
         const convenio = convenios[convenioKey] || convenios.general;
 
-        // --- CÁLCULOS TEÓRICOS VS REALES ---
+        // --- CÁLCULOS TEÓRICOS VS REALES CON INCREMENTOS ---
+        const anio = parseInt(nominaData.anio) || new Date().getFullYear();
+        const provincia = nominaData.provincia || '';
 
         // 1. SALARIO BASE
         const salarioBaseReal = parseFloat(nominaData.salarioBase) || 0;
-        let salarioBaseTeorico = convenio.salarioMinimo[nominaData.categoria] || convenio.salarioMinimo.empleado;
+        let salarioBaseTeorico = convenio.salarioMinimo[nominaData.categoria] || convenio.salarioMinimo.empleado || 0;
 
         // Ajuste específico para transporte sanitario (Base + Plus Convenio)
         if (convenioKey === 'transporte_sanitario_andalucia' && convenio.detallesSalariales && convenio.detallesSalariales[nominaData.categoria]) {
@@ -44,19 +85,34 @@ class NominaValidator {
 
             // Plus Convenio
             const plusConvenioReal = parseFloat(nominaData.plusConvenio) || 0;
-            const plusConvenioTeorico = convenio.detallesSalariales[nominaData.categoria].plusConvenio;
+            let plusConvenioTeorico = convenio.detallesSalariales[nominaData.categoria].plusConvenio;
+
+            // APLICAR INCREMENTOS LEGALES (2024/2025)
+            if (anio === 2024) {
+                const inc = 1 + (convenio.incrementos["2024"].porcentaje / 100);
+                salarioBaseTeorico = parseFloat((salarioBaseTeorico * inc).toFixed(2));
+                plusConvenioTeorico = parseFloat((plusConvenioTeorico * inc).toFixed(2));
+                console.log(`📈 Incremento 2024 aplicado (2.75%): ${salarioBaseTeorico}`);
+            } else if (anio === 2025) {
+                // Asumimos acumulativo o directo desde tabla 2025
+                const inc24 = 1 + (convenio.incrementos["2024"].porcentaje / 100);
+                const inc25 = 1 + (convenio.incrementos["2025"].porcentaje / 100);
+                salarioBaseTeorico = parseFloat((salarioBaseTeorico * inc24 * inc25).toFixed(2));
+                plusConvenioTeorico = parseFloat((plusConvenioTeorico * inc24 * inc25).toFixed(2));
+                console.log(`📈 Incremento 2025 acumulado aplicado: ${salarioBaseTeorico}`);
+            }
 
             details.plus_convenio = this.compararValores('Plus Convenio', plusConvenioReal, plusConvenioTeorico);
 
             if (details.plus_convenio.estado === 'REVISAR') {
-                errors.push(`El Plus Convenio (${plusConvenioReal}€) es inferior al estipulado (${plusConvenioTeorico}€).`);
+                errors.push(`El Plus Convenio (${plusConvenioReal}€) es inferior al estipulado (${plusConvenioTeorico}€) para ${provincia} en ${anio}.`);
             }
         }
 
         details.salario_base_comparativa = this.compararValores('Salario Base', salarioBaseReal, salarioBaseTeorico);
 
         if (details.salario_base_comparativa.estado === 'REVISAR' && salarioBaseReal < salarioBaseTeorico) {
-            errors.push(`El Salario Base (${salarioBaseReal}€) es inferior al convenio (${salarioBaseTeorico}€).`);
+            errors.push(`El Salario Base (${salarioBaseReal}€) es inferior al mínimo de convenio (${salarioBaseTeorico}€) en ${anio}.`);
         }
 
         // 2. ANTIGÜEDAD
@@ -162,14 +218,42 @@ class NominaValidator {
         // Calcular total esperado para validación (Usando variables corregidas)
         // const totalDevengadoCalculado = checkSalarioBase + checkPlusConvenio + checkAntiguedad + checkNocturnidad + checkDietas;
 
-        console.log('🚫 MODO ESTRICTO: ESTRATEGIA DE CONVENIO');
-
         // 1. DETECTAR EMPRESA Y ESTRATEGIA
-        const strategy = ConvenioFactory.getStrategy(nominaData.empresa);
+        // Priorizar el convenio seleccionado por el usuario, pero intentar detectar por empresa
+        let strategy = null;
+        if (convenioKey !== 'general') {
+            // Si el usuario seleccionó uno específico, intentamos forzar esa estrategia
+            if (convenioKey === 'transporte_sanitario_andalucia') {
+                const AmbulanciasStrategy = require('../strategies/AmbulanciasStrategy');
+                strategy = new AmbulanciasStrategy();
+            } else if (convenioKey === 'mercadona') {
+                const MercadonaStrategy = require('../strategies/MercadonaStrategy');
+                strategy = new MercadonaStrategy();
+            } else if (convenioKey === 'leroy_merlin') {
+                const LeroyMerlinStrategy = require('../strategies/LeroyMerlinStrategy');
+                strategy = new LeroyMerlinStrategy();
+            }
+        }
+
+        // Si no hay estrategia por selección o es general, intentamos por nombre de empresa (por si la IA lo detectó)
+        if (!strategy && nominaData.empresa) {
+            strategy = ConvenioFactory.getStrategy(nominaData.empresa);
+        }
+
         if (strategy) {
-            console.log(`✅ Estrategia detectada: ${strategy.name}`);
-        } else {
-            console.log('⚠️ No se detectó convenio específico, usando genérico.');
+            console.log(`✅ Estrategia activa: ${strategy.name}`);
+
+            // 2. VERIFICAR CONCEPTOS OBLIGATORIOS
+            const required = strategy.getRequiredConcepts();
+            required.forEach(concept => {
+                if (!nominaData[concept] || parseFloat(nominaData[concept]) === 0) {
+                    warnings.push(`No se ha detectado el concepto obligatorio: "${concept}".`);
+                }
+            });
+
+            // 3. EJECUTAR REGLAS PERSONALIZADAS
+            const customWarnings = strategy.validateCustomRules(nominaData);
+            warnings.push(...customWarnings);
         }
 
         // Solo procesar si hay datos reales
@@ -240,7 +324,7 @@ class NominaValidator {
             details,
             convenioAplicado: convenio.nombre,
             comparativa: true,
-            debugText: extractedText
+            debugText: debugText || "Análisis por IA"
         };
     }
 
@@ -667,8 +751,9 @@ class NominaValidator {
     }
 
     /**
-     * Limpia un número en formato español - VERSIÓN ULTRA SIMPLE Y ROBUSTA
+     * Limpia un número en formato español - VERSIÓN DE PRECISIÓN ABSOLUTA
      * Regla fundamental: En formato español, la COMA es el decimal, el PUNTO es separador de miles
+     * SIN REDONDEOS - CONSERVA VALOR EXACTO
      */
     limpiarNumero(numeroSucio) {
         if (!numeroSucio) {
@@ -770,7 +855,8 @@ class NominaValidator {
         console.log(`🔍 compararValores(${nombre}): realNum=${realNum}, teoricoNum=${teoricoNum}`);
 
         const diff = parseFloat((realNum - teoricoNum).toFixed(2));
-        const estado = Math.abs(diff) < 1 ? 'CORRECTO' : (diff > 0 ? 'CORRECTO' : 'REVISAR');
+        // Tolerancia más estricta para detectar discrepancias reales
+        const estado = Math.abs(diff) < 0.01 ? 'CORRECTO' : (diff > 0 ? 'CORRECTO' : 'REVISAR');
 
         let mensaje = '';
         if (Math.abs(diff) < 1) {

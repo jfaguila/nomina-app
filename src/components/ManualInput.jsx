@@ -31,7 +31,9 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
         // === CONFIG ===
         antiguedad: '',
         pagas: '14',
-        prorrateo: false
+        prorrateo: false,
+        provincia: '',
+        anio: new Date().getFullYear().toString()
     });
 
     const [detectedFields, setDetectedFields] = useState({
@@ -393,8 +395,8 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                             onChange={handleChange}
                             placeholder="0.00"
                             className={`w-40 text-right text-2xl font-black bg-transparent border-b-2 px-2 py-1 focus:outline-none ${detectedFields.totalDevengado
-                                    ? 'border-green-400 text-green-700 dark:text-green-300'
-                                    : 'border-green-300 text-green-600 dark:text-green-400'
+                                ? 'border-green-400 text-green-700 dark:text-green-300'
+                                : 'border-green-300 text-green-600 dark:text-green-400'
                                 }`}
                         />
                         <span className="text-2xl font-black text-green-600 dark:text-green-400">€</span>
@@ -424,8 +426,8 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionContingenciasComunes
-                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
-                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                                     } border`}
                             />
                         </div>
@@ -445,8 +447,8 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionMEI
-                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
-                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                                     } border`}
                             />
                         </div>
@@ -466,8 +468,8 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionDesempleo
-                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
-                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                                     } border`}
                             />
                         </div>
@@ -487,8 +489,8 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.cotizacionFormacionProfesional
-                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
-                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                                     } border`}
                             />
                         </div>
@@ -508,8 +510,8 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.irpf
-                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
-                                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                                    ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                                     } border`}
                             />
                         </div>
@@ -529,13 +531,72 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 onChange={handleChange}
                                 placeholder="0.00"
                                 className={`w-full rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-red-400 outline-none transition-all shadow-sm ${detectedFields.totalDeducciones
-                                        ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
-                                        : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
+                                    ? 'bg-green-50/30 dark:bg-green-900/10 border-green-200 dark:border-green-700'
+                                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
                                     } border text-red-600 dark:text-red-400`}
                             />
                         </div>
                     </div>
                 </section>
+
+                {/* 3.5 CONFIGURACIÓN DE CONVENIO (AÑO / PROVINCIA) */}
+                <div className="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-900/30">
+                    <h4 className="text-sm font-bold text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Configuración del Análisis
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Año de la Nómina</label>
+                            <select
+                                name="anio"
+                                value={formData.anio}
+                                onChange={handleChange}
+                                className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none border transition-all"
+                            >
+                                <option value="2023">2023</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Provincia</label>
+                            <select
+                                name="provincia"
+                                value={formData.provincia}
+                                onChange={handleChange}
+                                className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none border transition-all"
+                            >
+                                <option value="">No aplica / Otras</option>
+                                <option value="Almería">Almería</option>
+                                <option value="Cádiz">Cádiz</option>
+                                <option value="Córdoba">Córdoba</option>
+                                <option value="Granada">Granada</option>
+                                <option value="Huelva">Huelva</option>
+                                <option value="Jaén">Jaén</option>
+                                <option value="Málaga">Málaga</option>
+                                <option value="Sevilla">Sevilla</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">Pagas Extras</label>
+                            <select
+                                name="pagas"
+                                value={formData.pagas}
+                                onChange={handleChange}
+                                className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none border transition-all"
+                            >
+                                <option value="12">12 Pagas (Prorrateadas)</option>
+                                <option value="14">14 Pagas (Tradicional)</option>
+                                <option value="15">15 Pagas (Especiales)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
                 {/* 4. LÍQUIDO A PERCIBIR */}
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-3xl shadow-lg">

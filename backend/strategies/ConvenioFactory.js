@@ -1,7 +1,6 @@
 const AmbulanciasStrategy = require('./AmbulanciasStrategy');
-// Importar futuras estrategias aquí:
-// const MercadonaStrategy = require('./MercadonaStrategy');
-// const LeroyMerlinStrategy = require('./LeroyMerlinStrategy');
+const MercadonaStrategy = require('./MercadonaStrategy');
+const LeroyMerlinStrategy = require('./LeroyMerlinStrategy');
 
 class ConvenioFactory {
     static getStrategy(companyName) {
@@ -13,9 +12,13 @@ class ConvenioFactory {
             return new AmbulanciasStrategy();
         }
 
-        // Futuros:
-        // if (normalizedName.includes('mercadona')) return new MercadonaStrategy();
-        // if (normalizedName.includes('leroy')) return new LeroyMerlinStrategy();
+        if (normalizedName.includes('mercadona')) {
+            return new MercadonaStrategy();
+        }
+
+        if (normalizedName.includes('leroy') || normalizedName.includes('merlin')) {
+            return new LeroyMerlinStrategy();
+        }
 
         return null; // Estrategia genérica o null
     }

@@ -28,7 +28,9 @@ const HomePage = () => {
     // Pre-analysis options (Initial selection)
     const [uploadData, setUploadData] = useState({
         convenio: 'general',
-        categoria: 'empleado'
+        categoria: 'empleado',
+        provincia: '',
+        anio: new Date().getFullYear().toString()
     });
 
     const handleFileSelect = (file) => {
@@ -40,46 +42,46 @@ const HomePage = () => {
     };
 
     const getApiUrl = () => {
-        // 🔥 TEMP: FORZADO A RAILWAY PARA DEBUG
-        return 'https://nomina-app-production-653f.up.railway.app';
+        // 🔥 DESARROLLO LOCAL
+        return 'http://localhost:5987';
 
-        // CÓDIGO ORIGINAL (comentado temporalmente):
-        // let apiUrl = process.env.REACT_APP_API_URL;
-        // if (!apiUrl) {
-        //     if (window.location.hostname.includes('vercel.app')) {
-        //         return 'https://nomina-app-production-653f.up.railway.app';
-        //     } else {
-        //         return 'http://localhost:5987';
-        //     }
-        // }
-        // return apiUrl;
+        // PRODUCCIÓN (comentado temporalmente):
+        // return 'https://nomina-app-production-653f.up.railway.app';
     };
 
-    // Helper function to safely extract numeric values - DEBUG VERSION
+    // Helper function to safely extract numeric values - PRECISE VERSION
     const safeNumericValue = (value) => {
         console.log(`🔢 safeNumericValue: entrada="${value}" (${typeof value})`);
 
         if (value === null || value === undefined || value === '') {
-            console.log(`🔢 safeNumericValue: vacío -> 0`);
+            console.log(`🔢 safeNumericValue: vacío -> ""`);
             return '';
         }
 
-        // Si ya es string, devolverlo tal cual
+        // Si ya es string, devolverlo tal cual (evitar conversiones)
         if (typeof value === 'string') {
-            console.log(`🔢 safeNumericValue: string -> "${value}"`);
+            console.log(`🔢 safeNumericValue: string exacto -> "${value}"`);
             return value;
         }
 
-        // Si es número, convertir a string exacto
+        // Si es número, convertir a string sin redondeo (precisión máxima)
         if (typeof value === 'number') {
-            const result = value.toString();
-            console.log(`🔢 safeNumericValue: número -> "${result}"`);
+            // Usar toFixed para preservar decimales exactos
+            const result = Number.isInteger(value) ? value.toString() : value.toFixed(2).replace(/\.?0+$/, '');
+            console.log(`🔢 safeNumericValue: número exacto -> "${result}"`);
             return result;
         }
 
+        // Para otros tipos, intentar parsear sin alterar
         const parsed = parseFloat(value);
-        const result = isNaN(parsed) ? '' : parsed.toString();
-        console.log(`🔢 safeNumericValue: procesado -> "${result}"`);
+        if (isNaN(parsed)) {
+            console.log(`🔢 safeNumericValue: inválido -> ""`);
+            return '';
+        }
+        
+        // Preservar decimales exactos del valor parseado
+        const result = Number.isInteger(parsed) ? parsed.toString() : parsed.toFixed(2).replace(/\.?0+$/, '');
+        console.log(`🔢 safeNumericValue: procesado exacto -> "${result}"`);
         return result;
     };
 
@@ -103,9 +105,11 @@ const HomePage = () => {
 
                 const pdfjsLib = await import('pdfjs-dist/build/pdf');
 
-                // 🔧 FIX: Usar worker local del paquete npm en lugar de CDN
-                const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
-                pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker.default;
+                // Configurar el worker usando el build local
+                pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+                    'pdfjs-dist/build/pdf.worker.min.mjs',
+                    import.meta.url
+                ).toString();
 
                 const arrayBuffer = await selectedFile.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -179,8 +183,11 @@ const HomePage = () => {
 
             // CONSTRUCCIÓN EXPLÍCITA sin conversión automática
             const prefilledData = {
-                convenio: uploadData.convenio || 'general',
-                categoria: uploadData.categoria || 'empleado',
+                // Auto-detectado por la IA
+                convenio: rawData.convenio || 'general',
+                categoria: rawData.categoria || 'empleado',
+                provincia: rawData.provincia || '',
+                anio: rawData.anio || new Date().getFullYear().toString(),
 
                 // Salario Base: usar rawData directamente SIN procesar
                 salarioBase: rawData.salarioBase || details.salario_base_comparativa?.real || '',
@@ -375,37 +382,39 @@ const HomePage = () => {
                                     <div className="space-y-6">
                                         <h3 className="text-xl font-bold flex items-center gap-3">
                                             <span className="flex-none bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
-                                            Configuración
+                                            Analizar con IA
                                         </h3>
 
-                                        <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
-                                            <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Convenio Aplicable</label>
-                                                <select
-                                                    value={uploadData.convenio}
-                                                    onChange={(e) => setUploadData({ ...uploadData, convenio: e.target.value })}
-                                                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                                >
-                                                    <option value="general">Convenio General</option>
-                                                    <option value="hosteleria">Hostelería</option>
-                                                    <option value="comercio">Comercio</option>
-                                                    <option value="construccion">Construcción</option>
-                                                    <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía</option>
-                                                    <option value="mercadona">Mercadona (2024-2028)</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Categoría Profesional</label>
-                                                <select
-                                                    value={uploadData.categoria}
-                                                    onChange={(e) => setUploadData({ ...uploadData, categoria: e.target.value })}
-                                                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                                >
-                                                    <option value="empleado">Empleado</option>
-                                                    <option value="tecnico">Técnico</option>
-                                                    <option value="mando_intermedio">Mando Intermedio</option>
-                                                    <option value="directivo">Directivo</option>
-                                                </select>
+                                        <div className="space-y-4 p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/30">
+                                            <div className="flex items-start gap-3">
+                                                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                                </svg>
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-gray-900 dark:text-white mb-2">La IA detectará automáticamente:</h4>
+                                                    <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                                                        <li className="flex items-center gap-2">
+                                                            <span className="text-green-500">✓</span>
+                                                            <span>Empresa y convenio aplicable</span>
+                                                        </li>
+                                                        <li className="flex items-center gap-2">
+                                                            <span className="text-green-500">✓</span>
+                                                            <span>Año y periodo de la nómina</span>
+                                                        </li>
+                                                        <li className="flex items-center gap-2">
+                                                            <span className="text-green-500">✓</span>
+                                                            <span>Provincia (si aplica)</span>
+                                                        </li>
+                                                        <li className="flex items-center gap-2">
+                                                            <span className="text-green-500">✓</span>
+                                                            <span>Categoría profesional</span>
+                                                        </li>
+                                                        <li className="flex items-center gap-2">
+                                                            <span className="text-green-500">✓</span>
+                                                            <span>Todos los importes y deducciones</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
 

@@ -18,15 +18,17 @@ const path = require('path');
 const fs = require('fs');
 
 // Lazy Load Services to prevent Startup Crash (Debug Mode)
-let ocrService = null;
+let aiService = null;
 let nominaValidator = null;
+let convenioMapper = null;
 
 try {
-    ocrService = require('./services/ocrService');
+    aiService = require('./services/aiService');
     nominaValidator = require('./services/nominaValidator');
-    console.log('✅ SERVER.JS: Módulos cargados correctamente');
-} catch (loadError) {
-    console.error('🔥 CRITICAL: Error loading services:', loadError);
+    convenioMapper = require('./utils/convenioMapper');
+    console.log('✅ Servicios cargados correctamente');
+} catch (err) {
+    console.error('⚠️ Error al cargar servicios:', err.message);
 }
 
 // Heartbeat log every 10 seconds to prove liveness
@@ -81,26 +83,7 @@ app.get('/health', (req, res) => {
 // Endpoint principal para verificar nóminas
 app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
     try {
-        let extractedText = '';
-
-        // MODO DEBUG: Permitir texto manual para pruebas
-        if (!req.file && req.body.manualText) {
-            console.log('🚨 MODO DEBUG: Usando texto manual');
-            extractedText = req.body.manualText;
-            const manualData = JSON.parse(req.body.data || '{}');
-            console.log('Texto manual recibido:', extractedText.substring(0, 200) + '...');
-
-            // Validar nómina con texto manual
-            const validationResults = nominaValidator.validate(extractedText, manualData);
-            const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
-
-            res.json({
-                ...validationResults,
-                rawExtractedData,
-                debugMode: true
-            });
-            return;
-        }
+        let extractedData = {};
 
         if (!req.file) {
             return res.status(400).json({ error: 'No se ha subido ningún archivo' });
@@ -109,58 +92,62 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
         const filePath = req.file.path;
         const manualData = JSON.parse(req.body.data || '{}');
 
-        console.log('Procesando archivo:', req.file.originalname);
-        console.log('Datos manuales:', manualData);
+        console.log('🚀 Iniciando análisis de IA para:', req.file.originalname);
 
-        // Extraer texto con OCR
+        // PASO 1: Análisis inteligente con IA (Gemini Vision)
         try {
-            extractedText = await ocrService.extractText(filePath, req.file.mimetype);
-            console.log('Texto extraído:', extractedText.substring(0, 200) + '...');
+            extractedData = await aiService.extractData(filePath, req.file.mimetype);
+            console.log('✅ IA: Datos extraídos con éxito');
+        } catch (aiError) {
+            console.error('❌ Error en el análisis de IA:', aiError);
 
-            // DEBUG: Si el OCR no extrae nada, usar texto de ejemplo
-            if (!extractedText || extractedText.trim().length < 50) {
-                console.log('🚨 OCR FALLÓ - Usando texto de ejemplo para debug');
-                extractedText = `NÓMINA DEL EMPLEADO
-Salario Base: 1.250,50
-Plus Convenio: 200,00
-Antigüedad: 50,00
-Total Devengado: 1.500,50
-Deducciones: 350,00
-Líquido a percibir: 1.150,50`;
-            }
-        } catch (ocrError) {
-            console.error('Error en OCR:', ocrError);
+            // Borrar el archivo si falla
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
             return res.status(500).json({
-                error: 'Error al procesar el archivo con OCR',
-                details: ocrError.message
+                error: 'Error al procesar la nómina con IA',
+                details: aiError.message
             });
         }
 
-        const validationResults = nominaValidator.validate(extractedText, manualData);
-        // Important: Extract raw data independently to send to frontend
-        const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
+        // Borrar el archivo temporal después de extraer los datos
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
 
-        console.log('🔍 DEBUG BACKEND - Extracted Text length:', extractedText.length);
-        console.log('🔍 DEBUG BACKEND - RawExtractedData:', rawExtractedData);
-        console.log('🔍 DEBUG BACKEND - ValidationResults details:', validationResults.details);
+        // AUTO-DETECCIÓN: Mapear empresa → convenio y categoría → código normalizado
+        const convenioDetectado = convenioMapper.detectarConvenio(extractedData.empresa);
+        const categoriaDetectada = convenioMapper.normalizarCategoria(extractedData.categoria);
 
-        // Limpiar archivo subido
-        fs.unlinkSync(filePath);
+        console.log(`🔍 Auto-detección: Empresa="${extractedData.empresa}" → Convenio="${convenioDetectado}"`);
+        console.log(`🔍 Auto-detección: Categoría="${extractedData.categoria}" → Código="${categoriaDetectada}"`);
 
-        // Enviar respuesta completa
+        // Enriquecer los datos extraídos con la detección automática
+        const enrichedData = {
+            ...extractedData,
+            convenio: manualData.convenio || convenioDetectado,
+            categoria: manualData.categoria || categoriaDetectada,
+            anio: extractedData.anio || manualData.anio || new Date().getFullYear().toString(),
+            provincia: extractedData.provincia || manualData.provincia || ''
+        };
+
+        console.log('📦 Datos enriquecidos con auto-detección:', enrichedData);
+
+        // PASO 2: Comparación legal con el convenio (usando datos enriquecidos)
+        const validationResults = nominaValidator.validateFromAI(enrichedData, manualData);
+
         res.json({
             ...validationResults,
-            rawExtractedData
+            rawExtractedData: enrichedData, // Devolver datos enriquecidos al frontend
+            success: true
         });
 
     } catch (error) {
-        console.error('Error en /api/verify-nomina:', error);
-        res.status(500).json({
-            error: 'Error al procesar la nómina',
-            details: error.message
-        });
+        console.error('🔥 Error General en verify-nomina:', error);
+        res.status(500).json({ error: error.message });
     }
 });
+
 
 // Endpoint simple para validar datos manuales sin OCR
 app.post('/api/validate-data', (req, res) => {
