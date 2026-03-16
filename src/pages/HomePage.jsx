@@ -40,19 +40,9 @@ const HomePage = () => {
     };
 
     const getApiUrl = () => {
-        // 🔥 TEMP: FORZADO A RAILWAY PARA DEBUG
-        return 'https://nomina-app-production-653f.up.railway.app';
-
-        // CÓDIGO ORIGINAL (comentado temporalmente):
-        // let apiUrl = process.env.REACT_APP_API_URL;
-        // if (!apiUrl) {
-        //     if (window.location.hostname.includes('vercel.app')) {
-        //         return 'https://nomina-app-production-653f.up.railway.app';
-        //     } else {
-        //         return 'http://localhost:5987';
-        //     }
-        // }
-        // return apiUrl;
+        const apiUrl = process.env.REACT_APP_API_URL;
+        if (apiUrl) return apiUrl;
+        return 'http://localhost:5987';
     };
 
     // Helper function to safely extract numeric values - DEBUG VERSION
@@ -94,44 +84,9 @@ const HomePage = () => {
         setLoadingProgress(0);
 
         try {
-            let fileToSend = selectedFile;
-
-            // 🔥 NUEVO: Si es PDF, convertirlo a imagen en el navegador
-            if (selectedFile.type === 'application/pdf') {
-                console.log('📄 PDF detectado, convirtiendo a imagen...');
-                setLoadingMessage('Convirtiendo PDF a imagen...');
-
-                const pdfjsLib = await import('pdfjs-dist/build/pdf');
-
-                // 🔧 FIX: Usar worker local del paquete npm en lugar de CDN
-                const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
-                pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker.default;
-
-                const arrayBuffer = await selectedFile.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-                console.log(`📄 PDF cargado: ${pdf.numPages} página(s)`);
-
-                // Convertir la primera página a imagen
-                const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 2.0 }); // Escala 2x para mejor calidad OCR
-
-                const canvas = document.createElement('canvas');
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-
-                const context = canvas.getContext('2d');
-                await page.render({ canvasContext: context, viewport }).promise;
-
-                // Convertir canvas a blob
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                fileToSend = new File([blob], 'nomina.png', { type: 'image/png' });
-
-                console.log('✅ PDF convertido a PNG:', fileToSend.size, 'bytes');
-            }
-
+            // El backend maneja PDFs directamente (pdf-parse + Tesseract OCR)
             const formDataToSend = new FormData();
-            formDataToSend.append('nomina', fileToSend);
+            formDataToSend.append('nomina', selectedFile);
             formDataToSend.append('data', JSON.stringify(uploadData));
 
             setLoadingMessage(t('uploading'));
