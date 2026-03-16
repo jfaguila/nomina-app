@@ -1,0 +1,11 @@
+[phases.setup]
+aptPkgs = ["poppler-utils"]
+
+[phases.install]
+cmds = ["npm ci", "cd backend && npm install"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node backend/server.js"

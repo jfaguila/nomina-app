@@ -4,8 +4,8 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "cd backend && npm install && npm start",
-    "healthcheckPath": "/api/verify-nomina",
+    "startCommand": "node backend/server.js",
+    "healthcheckPath": "/health",
     "healthcheckTimeout": 100,
     "readinessTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
