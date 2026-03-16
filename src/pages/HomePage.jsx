@@ -42,6 +42,10 @@ const HomePage = () => {
     const getApiUrl = () => {
         const apiUrl = process.env.REACT_APP_API_URL;
         if (apiUrl) return apiUrl;
+        // En produccion (Vercel), usar el backend de Railway
+        if (window.location.hostname !== 'localhost') {
+            return 'https://nomina-app-production-653f.up.railway.app';
+        }
         return 'http://localhost:5987';
     };
 
