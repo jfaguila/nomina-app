@@ -262,51 +262,127 @@ class NominaValidator {
         if (text.includes('MERCADONA') || text.includes('Mercadona')) {
             console.log("🛒 MODO MERCADONA - EXTRAER DATOS REALES");
 
-            // BUSCAR PATRONES ESPECÍFICOS MERCADONA
-            const patternsMercadona = {
-                salarioBase: [
-                    /Salario\s*Base.*?(\d+[,.]\d{2})/i,
-                    /SUELDO\s*BASE.*?(\d+[,.]\d{2})/i,
-                    /Base.*?(\d+[,.]\d{2})/i,
-                    /Salario\s*[:\s]*(\d+[,.]\d{2})/i
-                ],
-                totalDevengado: [
-                    /Total\s*Devengado.*?(\d+[,.]\d{2})/i,
-                    /TOTAL.*?DEVENGADO.*?(\d+[,.]\d{2})/i,
-                    /L[ií]quido.*?(\d+[,.]\d{2})/i,
-                    /Total.*?a\s*Pagar.*?(\d+[,.]\d{2})/i
-                ],
-                plusConvenio: [
-                    /Plus.*?Convenio.*?(\d+[,.]\d{2})/i,
-                    /PLUS.*?CONVENIO.*?(\d+[,.]\d{2})/i,
-                    /Convenio.*?(\d+[,.]\d{2})/i
-                ]
+            // Patrón europeo para montos: captura 1.068,16 o 268,16
+            const euMoneyRe = /\d{1,3}(?:\.\d{3})*,\d{2}/g;
+
+            // Helper: extrae el último importe europeo de una línea
+            const lastMoney = (line) => {
+                if (!line) return null;
+                const matches = line.match(euMoneyRe);
+                return matches ? matches[matches.length - 1] : null;
+            };
+            // Helper: extrae el primer importe europeo de una línea
+            const firstMoney = (line) => {
+                if (!line) return null;
+                const matches = line.match(euMoneyRe);
+                return matches ? matches[0] : null;
             };
 
-            // EXTRAER USANDO PATRONES ESPECÍFICOS
-            for (const [key, patterns] of Object.entries(patternsMercadona)) {
-                if (!data[key]) {
-                    for (const pattern of patterns) {
-                        const match = text.match(pattern);
-                        if (match) {
-                            const cleaned = this.limpiarNumero(match[1]);
-                            const value = parseFloat(cleaned);
-                            if (!isNaN(value) && value > 0) {
-                                data[key] = cleaned;
-                                console.log(`✅ MERCADONA ${key}: ${match[1]} -> ${cleaned}`);
-                                break;
-                            }
-                        }
-                    }
+            // Buscar líneas por keyword
+            const lines = text.split('\n');
+            const findLine = (keyword) => lines.find(l => l.match(keyword));
+
+            // === DEVENGOS (primer importe = el relevante, o último si solo hay uno) ===
+            const sueldoLine = findLine(/SUELDO\s*BASE/i);
+            if (sueldoLine) {
+                const val = lastMoney(sueldoLine);
+                if (val) { data.salarioBase = this.limpiarNumero(val); console.log(`✅ MERCADONA salarioBase: ${val} -> ${data.salarioBase}`); }
+            }
+
+            const pagasLine = findLine(/^\s*PAGAS\b/i);
+            if (pagasLine) {
+                const val = lastMoney(pagasLine);
+                if (val) { data.pagas = this.limpiarNumero(val); console.log(`✅ MERCADONA pagas: ${val} -> ${data.pagas}`); }
+            }
+
+            const puestoLine = findLine(/PUESTO\s*TRABAJO/i);
+            if (puestoLine) {
+                const val = lastMoney(puestoLine);
+                if (val) { data.complementoPuesto = this.limpiarNumero(val); console.log(`✅ MERCADONA complementoPuesto: ${val} -> ${data.complementoPuesto}`); }
+            }
+
+            const noctLine = findLine(/NOCTURNIDAD/i);
+            if (noctLine) {
+                const val = lastMoney(noctLine);
+                if (val) { data.valorNocturnidad = this.limpiarNumero(val); console.log(`✅ MERCADONA nocturnidad: ${val} -> ${data.valorNocturnidad}`); }
+            }
+
+            // Total devengado: línea "TOTAL" dentro de sección DEVENGOS (antes de sección DEDUCCIONES)
+            const devengosIdx = text.indexOf('DEVENGOS');
+            const deduccionesIdx = text.indexOf('DEDUCCIONES');
+            if (devengosIdx !== -1 && deduccionesIdx !== -1) {
+                const devengosSection = text.substring(devengosIdx, deduccionesIdx);
+                const totalMatch = devengosSection.match(/TOTAL\s+([\d.]+,\d{2})/);
+                if (totalMatch) {
+                    data.totalDevengado = this.limpiarNumero(totalMatch[1]);
+                    console.log(`✅ MERCADONA totalDevengado: ${totalMatch[1]} -> ${data.totalDevengado}`);
                 }
             }
 
-            // NO FORZAR VALORES - solo categoría si se detectó
+            // === DEDUCCIONES (último importe en la línea = importe real) ===
+            const ssLine = findLine(/SEGURIDAD\s*SOCIAL/i);
+            if (ssLine) {
+                const val = lastMoney(ssLine);
+                if (val) { data.cotizacionContingenciasComunes = this.limpiarNumero(val); console.log(`✅ MERCADONA CC: ${val} -> ${data.cotizacionContingenciasComunes}`); }
+            }
+
+            const desempleoLine = findLine(/DESEMPLEO/i);
+            if (desempleoLine) {
+                const val = lastMoney(desempleoLine);
+                if (val) { data.cotizacionDesempleo = this.limpiarNumero(val); console.log(`✅ MERCADONA desempleo: ${val} -> ${data.cotizacionDesempleo}`); }
+            }
+
+            const fpLine = findLine(/FORMACION\s*PROFESIONAL/i);
+            if (fpLine) {
+                const val = lastMoney(fpLine);
+                if (val) { data.cotizacionFormacionProfesional = this.limpiarNumero(val); console.log(`✅ MERCADONA FP: ${val} -> ${data.cotizacionFormacionProfesional}`); }
+            }
+
+            const irpfLine = findLine(/I\.?R\.?P\.?F/i) || findLine(/IMPUESTO\s*RENTA/i);
+            if (irpfLine) {
+                const val = lastMoney(irpfLine);
+                if (val) { data.irpf = this.limpiarNumero(val); console.log(`✅ MERCADONA irpf: ${val} -> ${data.irpf}`); }
+            }
+
+            // Total deducciones: línea "TOTAL" dentro de sección DEDUCCIONES
+            if (deduccionesIdx !== -1) {
+                const resumenIdx = text.indexOf('DEVENGOS   -   DEDUCCIONES');
+                const dedSection = text.substring(deduccionesIdx, resumenIdx !== -1 ? resumenIdx : undefined);
+                const totalDedMatch = dedSection.match(/TOTAL\s+([\d.]+,\d{2})/);
+                if (totalDedMatch) {
+                    data.totalDeducciones = this.limpiarNumero(totalDedMatch[1]);
+                    console.log(`✅ MERCADONA totalDeducciones: ${totalDedMatch[1]} -> ${data.totalDeducciones}`);
+                }
+            }
+
+            // Líquido: última cifra de la línea resumen
+            const resumenLine = findLine(/DEVENGOS\s*-\s*DEDUCCIONES\s*=/) || findLine(/TOTAL\s*A\s*COBRAR/i);
+            if (resumenLine) {
+                // La línea resumen puede estar dividida en 2 líneas, buscar en el entorno
+                const resumenIdx2 = text.indexOf(resumenLine);
+                const resumenBlock = text.substring(resumenIdx2, resumenIdx2 + 200);
+                const allAmounts = resumenBlock.match(euMoneyRe);
+                if (allAmounts && allAmounts.length >= 3) {
+                    data.liquidoTotal = this.limpiarNumero(allAmounts[2]); // 3rd = total a cobrar
+                    console.log(`✅ MERCADONA liquidoTotal: ${allAmounts[2]} -> ${data.liquidoTotal}`);
+                } else if (allAmounts && allAmounts.length >= 1) {
+                    data.liquidoTotal = this.limpiarNumero(allAmounts[allAmounts.length - 1]);
+                }
+            }
+
+            // Plus convenio si existe
+            const plusLine = findLine(/PLUS\s*CONVENIO/i);
+            if (plusLine) {
+                const val = lastMoney(plusLine);
+                if (val) { data.plusConvenio = this.limpiarNumero(val); }
+            }
+
+            // Categoría
             if (!data.categoria) {
                 data.categoria = this.detectarCategoriaDesdeTexto(text) || 'gerente';
             }
 
-            console.log('✅ MERCADONA: Solo datos reales extraídos');
+            console.log('✅ MERCADONA: Datos extraídos:', JSON.stringify(data, null, 2));
             return data;
         }
 
@@ -483,124 +559,89 @@ class NominaValidator {
         // === MODO GENERAL - EXTRACCIÓN 100% INFALIBLE ===
         console.log("🔍 MODO GENERAL - EXTRACCIÓN INFALIBLE");
 
+        // Patrón universal para montos europeos: captura 1.068,16 y 268,16
+        const EU = '(\\d{1,3}(?:\\.\\d{3})*,\\d{2})';
+
         // PATRONES COMPLETOS PARA TODOS LOS CAMPOS DE NÓMINA
         const universalPatterns = {
             // === DEVENGOS ===
             salarioBase: [
-                /Salario\s*Base[:\s]*(\d+[.,]\d{2})/i,
-                /Sueldo\s*Base[:\s]*(\d+[.,]\d{2})/i,
-                /Base[:\s]*(\d+[.,]\d{2})/i,
-                /Salario[:\s]*(\d+[.,]\d{2})/i,
-                /SUELDO\s*BASE.*?(\d+[.,]\d{2})/i,
-                /Salario\s*Base.*?(\d+[.,]\d{2})/i,
-                /Sueldo\s*Base.*?(\d+[.,]\d{2})/i
+                new RegExp(`SUELDO\\s*BASE[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Salario\\s*Base[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Sueldo\\s*Base[^\\n]*?${EU}`, 'i'),
             ],
             totalDevengado: [
-                /Total\s*Devengado[:\s]*(\d+[.,]\d{2})/i,
-                /TOTAL\s*DEVENGADO[:\s]*(\d+[.,]\d{2})/i,
-                /Total\s*a\s*Pagar[:\s]*(\d+[.,]\d{2})/i,
-                /L[ií]quido[:\s]*(\d+[.,]\d{2})/i,
-                /LIQUIDO.*?(\d+[.,]\d{2})/i,
-                /Devengado[:\s]*(\d+[.,]\d{2})/i
+                new RegExp(`Total\\s*Devengado[^\\n]*?${EU}`, 'i'),
+                new RegExp(`TOTAL\\s*DEVENGADO[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Total\\s*a\\s*Pagar[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Devengado[^\\n]*?${EU}`, 'i'),
             ],
             horasExtras: [
-                /Horas\s*Extras?[:\s]*(\d+[.,]\d{2})/i,
-                /EXTRAS?[:\s]*(\d+[,.]\d{2})/i,
-                /H\.?\s*E\.?[:\s]*(\d+[,.]\d{2})/i,
-                /Horas\s*Extras?[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Horas\\s*Extras?[^\\n]*?${EU}`, 'i'),
+                new RegExp(`H\\.?\\s*E\\.?[^\\n]*?${EU}`, 'i'),
             ],
             dietas: [
-                /Dietas?[:\s]*(\d+[,.]\d{2})/i,
-                /Complementos?[:\s]*(\d+[,.]\d{2})/i,
-                /DIETAS?[:\s]*(\d+[,.]\d{2})/i,
-                /Desplazamiento[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Dietas?[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Desplazamiento[^\\n]*?${EU}`, 'i'),
             ],
             plusConvenio: [
-                /Plus\s*Convenio[:\s]*(\d+[,.]\d{2})/i,
-                /PLUS[:\s]*(\d+[,.]\d{2})/i,
-                /Convenio[:\s]*(\d+[,.]\d{2})/i,
-                /Plus\s*de\s*Convenio[:\s]*(\d+[,.]\d{2})/i,
-                /Plus\s*Convenio.*?(\d+[,.]\d{2})/i
+                new RegExp(`Plus\\s*Convenio[^\\n]*?${EU}`, 'i'),
+                new RegExp(`PLUS\\s*CONVENIO[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Plus\\s*de\\s*Convenio[^\\n]*?${EU}`, 'i'),
             ],
             valorAntiguedad: [
-                /Antigüedad[:\s]*(\d+[,.]\d{2})/i,
-                /Trienios?[:\s]*(\d+[,.]\d{2})/i,
-                /ANTIGÜEDAD[:\s]*(\d+[,.]\d{2})/i,
-                /Plus\s*Antigüedad[:\s]*(\d+[,.]\d{2})/i,
-                /Antiguedad[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Antigüedad[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Antiguedad[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Trienios?[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Plus\\s*Antigüedad[^\\n]*?${EU}`, 'i'),
             ],
             valorNocturnidad: [
-                /Nocturnidad[:\s]*(\d+[,.]\d{2})/i,
-                /Nocturno[:\s]*(\d+[,.]\d{2})/i,
-                /NOCTURNIDAD[:\s]*(\d+[,.]\d{2})/i,
-                /Plus\s*Nocturno[:\s]*(\d+[,.]\d{2})/i,
-                /Plus\s*Nocturnidad[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Nocturnidad[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Nocturno[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Plus\\s*Nocturno[^\\n]*?${EU}`, 'i'),
             ],
             horasNocturnas: [
                 /Horas\s*Nocturnas?[:\s]*(\d+)/i,
                 /H\.?\s*N\.?[:\s]*(\d+)/i,
                 /Nocturnas?[:\s]*(\d+)/i,
-                /Horas\s*Nocturnas.*?(\d+)/i
             ],
 
             // === DEDUCCIONES ===
             totalDeducciones: [
-                /Total\s*Deducciones?[:\s]*(\d+[,.]\d{2})/i,
-                /DEDUCCIONES?[:\s]*(\d+[,.]\d{2})/i,
-                /A\s*Deducir[:\s]*(\d+[,.]\d{2})/i,
-                /Total\s*a\s*Deducir[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Total\\s*Deducciones?[^\\n]*?${EU}`, 'i'),
+                new RegExp(`A\\s*Deducir[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Total\\s*a\\s*Deducir[^\\n]*?${EU}`, 'i'),
             ],
-            // MEI (Mutualidad Empresarial de Instituciones Sanitarias) - 0.13%
             cotizacionMEI: [
-                /MEI[:\s]*(\d+[,.]\d{2})/i,
-                /Mutualidad\s*Empresarial[:\s]*(\d+[,.]\d{2})/i,
-                /Instituciones\s*Sanitarias[:\s]*(\d+[,.]\d{2})/i,
-                /M\.?\s*E\.?\s*I\.?[:\s]*(\d+[,.]\d{2})/i,
-                /Mutualidad[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`MEI[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Mutualidad\\s*Empresarial[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Equidad\\s*Intergeneracional[^\\n]*?${EU}`, 'i'),
             ],
             cotizacionContingenciasComunes: [
-                /Contingencias\s*Comunes[:\s]*(\d+[,.]\d{2})/i,
-                /C\.?\s*Comunes[:\s]*(\d+[,.]\d{2})/i,
-                /Contingencias[:\s]*(\d+[,.]\d{2})/i,
-                /CC[:\s]*(\d+[,.]\d{2})/i,
-                /Comunes[:\s]*(\d+[,.]\d{2})/i,
-                /Cont\.?\s*Com[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Contingencias\\s*Comunes[^\\n]*?${EU}`, 'i'),
+                new RegExp(`SEGURIDAD\\s*SOCIAL[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Cont\\.?\\s*Com[^\\n]*?${EU}`, 'i'),
             ],
             cotizacionDesempleo: [
-                /Desempleo[:\s]*(\d+[,.]\d{2})/i,
-                /Desemp[:\s]*(\d+[,.]\d{2})/i,
-                /Desempleo.*?(\d+[,.]\d{2})/i,
-                /Desempleo\s*Trabajadores[:\s]*(\d+[,.]\d{2})/i,
-                /D\.?\s*E\.?[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Desempleo[^\\n]*?${EU}`, 'i'),
             ],
             cotizacionFormacionProfesional: [
-                /Formación\s*Profesional[:\s]*(\d+[,.]\d{2})/i,
-                /Formación[:\s]*(\d+[,.]\d{2})/i,
-                /FP[:\s]*(\d+[,.]\d{2})/i,
-                /Formación\s*Prof.*?(\d+[,.]\d{2})/i,
-                /F\.?\s*P\.?[:\s]*(\d+[,.]\d{2})/i,
-                /Formac[ií]on\s*Prof[:\s]*(\d+[,.]\d{2})/i,
-                /Formac[ií]on[:\s]*(\d+[,.]\d{2})/i,
-                /Formac[ií]on\s*Profesional[:\s]*(\d+[,.]\d{2})/i,
-                /Educación[:\s]*(\d+[,.]\d{2})/i,
-                /Formación\s*Obligatoria[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`Formaci[oó]n\\s*Profesional[^\\n]*?${EU}`, 'i'),
+                new RegExp(`FORMACION\\s*PROFESIONAL[^\\n]*?${EU}`, 'i'),
+                new RegExp(`FP[^\\n]*?${EU}`, 'i'),
             ],
             cotizacionHorasExtras: [
-                /Cotización\s*Horas\s*Extras?[:\s]*(\d+[,.]\d{2})/i,
-                /C\.?\s*H\.?\s*E\.?[:\s]*(\d+[,.]\d{2})/i,
-                /Cotización\s*Horas\s*Extras.*?(\d+[,.]\d{2})/i
+                new RegExp(`Cotizaci[oó]n\\s*Horas\\s*Extras?[^\\n]*?${EU}`, 'i'),
             ],
             irpf: [
-                /IRPF[:\s]*(\d+[,.]\d{2})/i,
-                /Retención[:\s]*(\d+[,.]\d{2})/i,
-                /IRP[:\s]*(\d+[,.]\d{2})/i,
-                /Retención\s*IRPF[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`I\\.?R\\.?P\\.?F\\.?[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Retenci[oó]n[^\\n]*?${EU}`, 'i'),
+                new RegExp(`RENTA[^\\n]*?${EU}`, 'i'),
             ],
             liquidoTotal: [
-                /L[ií]quido\s*Total[:\s]*(\d+[,.]\d{2})/i,
-                /Neto[:\s]*(\d+[,.]\d{2})/i,
-                /L[ií]quido[:\s]*(\d+[,.]\d{2})/i,
-                /Líquido\s*a\s*Percibir[:\s]*(\d+[,.]\d{2})/i
+                new RegExp(`L[ií]quido\\s*(?:Total|a\\s*Percibir)[^\\n]*?${EU}`, 'i'),
+                new RegExp(`Neto[^\\n]*?${EU}`, 'i'),
+                new RegExp(`TOTAL\\s*A\\s*COBRAR[^\\n]*?${EU}`, 'i'),
             ]
         };
 

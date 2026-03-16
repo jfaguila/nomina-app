@@ -44,35 +44,48 @@ class OCRService {
             }
 
             console.log('⚠️ PDF sin texto nativo (probablemente imagen escaneada)');
-            console.log('🔄 Usando Tesseract OCR directamente en el PDF...');
+            console.log('🔄 Convirtiendo PDF a imagen para OCR...');
 
-            // PASO 2: Usar Tesseract.js para hacer OCR directamente del PDF
-            // Tesseract.js puede leer PDFs nativamente
-            const Tesseract = require('tesseract.js');
+            // PASO 2: Convertir PDF a imagen con pdftoppm (poppler-utils), luego OCR con Tesseract
             const path = require('path');
-            const tessdataDir = path.resolve(__dirname, '..', 'tessdata');
+            const { execSync } = require('child_process');
 
-            console.log('🔍 Iniciando OCR del PDF con Tesseract...');
+            const tempPrefix = filePath.replace(/\.pdf$/i, '') + '_ocr';
 
-            const result = await Tesseract.recognize(
-                filePath,  // Tesseract puede leer PDFs directamente
-                'spa',
-                {
-                    langPath: tessdataDir,
-                    gzip: false,
-                    logger: (m) => {
-                        if (m.status === 'recognizing text') {
-                            console.log(`  OCR Progreso: ${Math.round(m.progress * 100)}%`);
-                        }
-                    }
-                }
-            );
+            try {
+                // Convertir primera página del PDF a PNG de alta resolución (300 DPI)
+                execSync(
+                    `pdftoppm -png -r 300 -f 1 -l 1 "${filePath}" "${tempPrefix}"`,
+                    { timeout: 30000 }
+                );
+                console.log('✅ PDF convertido a imagen con pdftoppm');
+            } catch (convertError) {
+                console.error('❌ Error al convertir PDF a imagen:', convertError.message);
+                throw new Error('No se pudo convertir el PDF escaneado a imagen para OCR');
+            }
 
-            const extractedText = result.data.text;
-            console.log(`✅ OCR completo: ${extractedText.length} caracteres (confianza: ${result.data.confidence}%)`);
+            // pdftoppm genera archivos como prefix-1.png
+            const tempDir = path.dirname(tempPrefix);
+            const tempBasename = path.basename(tempPrefix);
+            const generatedFiles = fs.readdirSync(tempDir).filter(f => f.startsWith(tempBasename) && f.endsWith('.png'));
 
-            if (extractedText.trim().length === 0) {
-                throw new Error('No se pudo extraer texto del PDF (OCR devolvió texto vacío)');
+            if (generatedFiles.length === 0) {
+                throw new Error('pdftoppm no generó ninguna imagen');
+            }
+
+            const tempImagePath = path.join(tempDir, generatedFiles[0]);
+            console.log('📸 Imagen generada:', tempImagePath);
+
+            // Ahora hacer OCR sobre la imagen generada
+            const extractedText = await this.extractFromImage(tempImagePath);
+
+            // Limpiar imágenes temporales
+            for (const f of generatedFiles) {
+                try { fs.unlinkSync(path.join(tempDir, f)); } catch (e) { /* ignore */ }
+            }
+
+            if (!extractedText || extractedText.trim().length === 0) {
+                throw new Error('No se pudo extraer texto del PDF escaneado (OCR devolvió texto vacío)');
             }
 
             return extractedText;
