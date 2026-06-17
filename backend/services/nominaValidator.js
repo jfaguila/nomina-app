@@ -505,6 +505,7 @@ class NominaValidator {
             // 🔥 VALIDACIÓN ESPECÍFICA DE TASAS AMBULANCIAS PASQUAU
             if (data.cotizacionMEI || data.cotizacionDesempleo || data.cotizacionFormacionProfesional) {
                 console.log("🔍 AMBULANCIAS: Validando tasas específicas");
+                const checkTotalDevengado = data.totalDevengado ? parseFloat(this.limpiarNumero(data.totalDevengado)) : null;
 
                 // Tasas correctas para transporte sanitario (Ambulancias Pasquau)
                 const tasasCorrectas = {
