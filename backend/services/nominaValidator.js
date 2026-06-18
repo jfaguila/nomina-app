@@ -36,6 +36,10 @@ class NominaValidator {
 
         // 1. SALARIO BASE
         const salarioBaseReal = parseFloat(nominaData.salarioBase) || 0;
+        // FIX: en transporte sanitario, si la categoría no es TES, usar tes_conductor (DEFAULT TES)
+        if (convenioKey === 'transporte_sanitario_andalucia' && convenio.detallesSalariales && !convenio.detallesSalariales[nominaData.categoria]) {
+            nominaData.categoria = 'tes_conductor';
+        }
         let salarioBaseTeorico = convenio.salarioMinimo[nominaData.categoria] || convenio.salarioMinimo.empleado;
 
         // Ajuste específico para transporte sanitario (Base + Plus Convenio)
