@@ -7,18 +7,18 @@ const getApiUrl = () => process.env.REACT_APP_API_URL || (typeof window !== 'und
 const PLANS = [
   {
     id: 'gratis', name: 'Gratis', price: '0', period: '',
-    desc: 'Para probarlo', cta: 'Empezar gratis', highlight: false, free: true,
-    features: ['1 nómina al mes', 'Detección automática del convenio', 'Resultado al instante'],
+    desc: 'Descubre si hay un problema', cta: 'Probar gratis', highlight: false, free: true,
+    features: ['Veredicto al instante: ¿te pagan bien?', 'Detección automática del convenio', 'Verificaciones ilimitadas', 'Sin registro'],
   },
   {
     id: 'trabajador', name: 'Trabajador', price: '4,99', period: '/mes',
-    desc: 'Para tu propia nómina', cta: 'Suscribirme', highlight: true,
-    features: ['Verificaciones ilimitadas', 'Todos los convenios', 'Historial de tus nóminas', 'Soporte por email'],
+    desc: 'Descubre cuánto te deben', cta: 'Desbloquear desglose', highlight: true,
+    features: ['Desglose exacto línea por línea', 'El importe exacto que te deben', 'Informe PDF para reclamar', 'Historial de tus nóminas', 'Soporte por email'],
   },
   {
     id: 'asesoria', name: 'Asesoría / Gestoría', price: '39', period: '/mes',
     desc: 'Para despachos y gestorías', cta: 'Suscribirme', highlight: false,
-    features: ['Todo lo del plan Trabajador', 'Verificaciones ilimitadas de tus clientes', 'Exportar informes PDF', 'Soporte prioritario'],
+    features: ['Todo lo del plan Trabajador', 'Desgloses ilimitados de tus clientes', 'Informes PDF con tu marca', 'Soporte prioritario'],
   },
 ];
 

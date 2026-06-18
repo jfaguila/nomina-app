@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import ExportResults from './ExportResults';
 import { useLanguage } from '../i18n/LanguageProvider';
 
@@ -9,6 +10,9 @@ const ResultsDisplay = ({ results }) => {
     if (!results) return null;
 
     const { isValid, errors, warnings, details } = results;
+    // Modelo teaser: el veredicto es gratis; el desglose exacto y "cuánto te deben" requieren plan de pago.
+    const locked = !results.unlocked;
+    const nDiferencias = (errors && errors.length) || 0;
 
     return (
         <motion.div
@@ -38,15 +42,53 @@ const ResultsDisplay = ({ results }) => {
                     </div>
                     <div>
                         <h2 className="text-3xl font-bold text-gray-800">
-                            {isValid ? '✅ Nómina Correcta' : '❌ Nómina con Errores'}
+                            {isValid
+                                ? '✅ Nómina Correcta'
+                                : (locked ? '⚠️ Posibles diferencias a tu favor' : '❌ Nómina con Errores')}
                         </h2>
                         <p className="text-gray-600 mt-1">
-                            {isValid ? 'Tu nómina cumple con el convenio aplicable' : 'Se han detectado inconsistencias'}
+                            {isValid
+                                ? 'Tu nómina cumple con el convenio aplicable'
+                                : (locked
+                                    ? `Hemos detectado ${nDiferencias} ${nDiferencias === 1 ? 'concepto' : 'conceptos'} en los que podrían estar pagándote de menos.`
+                                    : 'Se han detectado inconsistencias')}
                         </p>
                     </div>
                 </div>
             </div>
 
+            {/* MURO TEASER: bloquea el desglose exacto para usuarios sin plan */}
+            {locked && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="glass-card p-8 text-center border-2 border-blue-200 dark:border-blue-900/40 relative overflow-hidden"
+                >
+                    <div className="absolute inset-0 pointer-events-none select-none opacity-[0.07] blur-sm flex flex-col items-center justify-center gap-2" aria-hidden="true">
+                        <div className="text-2xl font-bold">Salario Base · Plus Convenio · Antigüedad</div>
+                        <div className="text-4xl font-extrabold">1.405,33 € &nbsp; vs &nbsp; 1.253,26 €</div>
+                        <div className="text-2xl font-bold">Diferencia a tu favor: 152,07 €/mes</div>
+                    </div>
+                    <div className="relative">
+                        <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4">
+                            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            {isValid ? 'Ve el desglose completo de tu nómina' : 'Desbloquea cuánto dinero te deben'}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mt-2 max-w-md mx-auto">
+                            Accede al <strong>desglose línea por línea</strong> (salario base, plus convenio, antigüedad, complementos), el <strong>importe exacto</strong> de las diferencias y un <strong>informe PDF</strong> para reclamar.
+                        </p>
+                        <Link to="/precios" className="inline-flex items-center gap-2 mt-6 px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 transition-all">
+                            🔓 Ver el desglose — desde 4,99€/mes
+                        </Link>
+                        <p className="text-xs text-gray-400 mt-3">Sin permanencia · Cancela cuando quieras</p>
+                    </div>
+                </motion.div>
+            )}
+
+            {!locked && (<>
             {/* Errores */}
             {errors && errors.length > 0 && (
                 <motion.div
@@ -344,6 +386,7 @@ const ResultsDisplay = ({ results }) => {
 
             {/* Export Options */}
             <ExportResults results={results} />
+            </>)}
         </motion.div>
     );
 };
