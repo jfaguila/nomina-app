@@ -1,217 +1,310 @@
 {
-    "general": {
-        "nombre": "Convenio General",
-        "salarioMinimo": {
-            "empleado": 1200,
-            "tecnico": 1500,
-            "mando_intermedio": 2000,
-            "directivo": 3000
-        },
-        "horasExtrasMaxMes": 80,
-        "incrementoHoraExtra": 1.75,
-        "dietaMaxDiaria": 53.34,
-        "pagas": 14,
-        "vacaciones": 30,
-        "seguridadSocial": {
-            "contingenciasComunes": 4.70,
-            "desempleo": 1.55,
-            "formacionProfesional": 0.10
-        },
-        "descripcion": "Convenio colectivo general aplicable a la mayoría de sectores"
+  "general": {
+    "nombre": "Convenio General",
+    "salarioMinimo": {
+      "empleado": 1200,
+      "tecnico": 1500,
+      "mando_intermedio": 2000,
+      "directivo": 3000
     },
-    "hosteleria": {
-        "nombre": "Convenio de Hostelería",
-        "salarioMinimo": {
-            "empleado": 1108.33,
-            "tecnico": 1400,
-            "mando_intermedio": 1800,
-            "directivo": 2500
-        },
-        "horasExtrasMaxMes": 80,
-        "incrementoHoraExtra": 1.75,
-        "dietaMaxDiaria": 53.34,
-        "pagas": 14,
-        "vacaciones": 30,
-        "seguridadSocial": {
-            "contingenciasComunes": 4.70,
-            "desempleo": 1.55,
-            "formacionProfesional": 0.10
-        },
-        "descripcion": "Convenio específico para el sector de hostelería"
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "dietaMaxDiaria": 53.34,
+    "pagas": 14,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
     },
-    "comercio": {
-        "nombre": "Convenio de Comercio",
-        "salarioMinimo": {
-            "empleado": 1166.70,
-            "tecnico": 1450,
-            "mando_intermedio": 1900,
-            "directivo": 2800
-        },
-        "horasExtrasMaxMes": 80,
-        "incrementoHoraExtra": 1.75,
-        "dietaMaxDiaria": 53.34,
-        "pagas": 14,
-        "vacaciones": 30,
-        "seguridadSocial": {
-            "contingenciasComunes": 4.70,
-            "desempleo": 1.55,
-            "formacionProfesional": 0.10
-        },
-        "descripcion": "Convenio específico para el sector del comercio"
+    "descripcion": "Convenio colectivo general aplicable a la mayoría de sectores"
+  },
+  "hosteleria": {
+    "nombre": "Convenio de Hostelería",
+    "salarioMinimo": {
+      "empleado": 1108.33,
+      "tecnico": 1400,
+      "mando_intermedio": 1800,
+      "directivo": 2500
     },
-    "construccion": {
-        "nombre": "Convenio de Construcción",
-        "salarioMinimo": {
-            "empleado": 1323.00,
-            "tecnico": 1650,
-            "mando_intermedio": 2100,
-            "directivo": 3200
-        },
-        "horasExtrasMaxMes": 80,
-        "incrementoHoraExtra": 1.75,
-        "dietaMaxDiaria": 53.34,
-        "pagas": 14,
-        "vacaciones": 30,
-        "seguridadSocial": {
-            "contingenciasComunes": 4.70,
-            "desempleo": 1.55,
-            "formacionProfesional": 0.10
-        },
-        "descripcion": "Convenio específico para el sector de la construcción"
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "dietaMaxDiaria": 53.34,
+    "pagas": 14,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
     },
-    "transporte_sanitario_andalucia": {
-        "nombre": "IV Convenio Colectivo Transporte Sanitario Andalucía",
-        "salarioMinimo": {
-            "tes_conductor": 1405.33,
-            "tes_ayudante_camillero": 1220.43,
-            "tes_camillero": 1145.00,
-            "empleado": 1145.00,
-            "tecnico": 1405.33,
-            "mando_intermedio": 1800,
-            "directivo": 2500
-        },
-        "detallesSalariales": {
-            "tes_conductor": {
-                "salarioBase": 1239.63,
-                "plusConvenio": 165.70,
-                "total": 1405.33
-            },
-            "tes_ayudante_camillero": {
-                "salarioBase": 1080.01,
-                "plusConvenio": 140.42,
-                "total": 1220.43
-            },
-            "tes_camillero": {
-                "salarioBase": 1015.35,
-                "plusConvenio": 129.65,
-                "total": 1145.00
-            }
-        },
-        "horasExtrasMaxMes": 80,
-        "incrementoHoraExtra": 1.75,
-        "dietaMaxDiaria": 53.34,
-        "pagas": 14,
-        "vacaciones": 30,
-        "seguridadSocial": {
-            "contingenciasComunes": 4.70,
-            "desempleo": 1.55,
-            "formacionProfesional": 0.10
-        },
-        "vigencia": {
-            "inicio": "2020-01-01",
-            "fin": "2025-12-31",
-            "ultraactividad": true
-        },
-        "reglasAntiguedad": {
-            "tipo": "quinquenio",
-            "porcentajeBase": 0.05,
-            "descripcion": "5% del salario base por cada 5 años de servicio"
-        },
-        "reglasNocturnidad": {
-            "tipo": "hora_fija",
-            "valorHora": 1.18,
-            "descripcion": "Valor fijo por hora nocturna trabajada"
-        },
-        "incrementos": {
-            "2024": {
-                "porcentaje": 2.75,
-                "provincias": [
-                    "Almería",
-                    "Córdoba",
-                    "Málaga",
-                    "Sevilla"
-                ]
-            },
-            "2025": {
-                "porcentaje": 1.10,
-                "provincias": [
-                    "Todas"
-                ],
-                "aplicacion": "Desde 01/07/2025"
-            }
-        },
-        "descripcion": "IV Convenio Colectivo del Transporte Sanitario de Enfermos y Accidentados en Ambulancias de Andalucía. Vigente desde 2020 hasta 2025 con ultraactividad. Incluye categorías TES (Técnico en Emergencias Sanitarias): Conductor/a, Ayudante Camillero/a y Camillero/a. Código BOJA: 71001075012005",
-        "codigoBOJA": "71001075012005",
-        "publicacion": "BOJA 241 - 16/12/2020"
+    "descripcion": "Convenio específico para el sector de hostelería"
+  },
+  "comercio": {
+    "nombre": "Convenio de Comercio",
+    "salarioMinimo": {
+      "empleado": 1166.7,
+      "tecnico": 1450,
+      "mando_intermedio": 1900,
+      "directivo": 2800
     },
-    "mercadona": {
-        "nombre": "Convenio Colectivo Mercadona (2024-2028)",
-        "salarioMinimo": {
-            "gerente_a": 1553,
-            "gerente_b": 1700,
-            "gerente_c": 1900,
-            "coordinador": 2100,
-            "base": 1368
-        },
-        "detallesSalariales": {
-            "gerente_a": {
-                "salarioBase": 1368,
-                "plusConvenio": 185
-            },
-            "personal_base": {
-                "salarioBase": 1368,
-                "plusConvenio": 0
-            }
-        },
-        "pagasExtras": {
-            "regla": "prorrateo_opcional",
-            "cantidad": 3
-        },
-        "horasExtra": {
-            "tipo": "variable"
-        },
-        "reglasAntiguedad": {
-            "tipo": "cuatrienio",
-            "porcentajeBase": 0.05
-        },
-        "reglasNocturnidad": {
-            "valorHora": 2.25
-        }
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "dietaMaxDiaria": 53.34,
+    "pagas": 14,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
     },
-    "leroy_merlin": {
-        "nombre": "Convenio Grandes Almacenes (Leroy Merlin)",
-        "salarioMinimo": {
-            "profesional": 1277.25,
-            "coordinador": 1450.00,
-            "tecnico": 1600.00
-        },
-        "detallesSalariales": {
-            "profesional": {
-                "salarioBase": 1277.25,
-                "plusConvenio": 0
-            }
-        },
-        "incentivos": {
-            "nombre": "Prima de Progreso",
-            "descripcion": "Trimestral, ligada a resultados colectivos de tienda/sección."
-        },
-        "pagasExtras": {
-            "regla": "prorrateo_obligatorio",
-            "cantidad": 4
-        },
-        "reglasAntiguedad": {
-            "tipo": "cuatrienio",
-            "porcentajeBase": 0.03
-        }
+    "descripcion": "Convenio específico para el sector del comercio"
+  },
+  "construccion": {
+    "nombre": "Convenio de Construcción",
+    "salarioMinimo": {
+      "empleado": 1323.0,
+      "tecnico": 1650,
+      "mando_intermedio": 2100,
+      "directivo": 3200
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "dietaMaxDiaria": 53.34,
+    "pagas": 14,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    },
+    "descripcion": "Convenio específico para el sector de la construcción"
+  },
+  "transporte_sanitario_andalucia": {
+    "nombre": "IV Convenio Colectivo del Transporte Sanitario de Andalucía (enfermos/accidentados en ambulancias)",
+    "salarioMinimo": {
+      "tes_conductor": 1420.79,
+      "tes_ayudante_camillero": 1233.86,
+      "tes_camillero": 1157.6,
+      "jefe_equipo": 1393.48,
+      "jefe_trafico": 1525.6,
+      "oficial_admin": 1489.59,
+      "auxiliar_admin": 1261.38,
+      "ayudante_mecanico": 1201.25,
+      "mecanico": 1362.3,
+      "chapista": 1309.39,
+      "pintor": 1309.39,
+      "jefe_taller": 1458.95,
+      "telefonista": 1273.33,
+      "medico": 2498.63,
+      "ats_due": 1873.94,
+      "director_area": 2285.21,
+      "director": 2522.68,
+      "empleado": 1157.6,
+      "tecnico": 1420.79
+    },
+    "detallesSalariales": {
+      "tes_conductor": {
+        "salarioBase": 1253.26,
+        "plusConvenio": 167.52,
+        "total": 1420.79
+      },
+      "tes_ayudante_camillero": {
+        "salarioBase": 1091.89,
+        "plusConvenio": 141.97,
+        "total": 1233.86
+      },
+      "tes_camillero": {
+        "salarioBase": 1026.52,
+        "plusConvenio": 131.08,
+        "total": 1157.6
+      },
+      "jefe_equipo": {
+        "salarioBase": 1266.81,
+        "plusConvenio": 126.67,
+        "total": 1393.48
+      },
+      "jefe_trafico": {
+        "salarioBase": 1386.93,
+        "plusConvenio": 138.67,
+        "total": 1525.6
+      },
+      "oficial_admin": {
+        "salarioBase": 1354.16,
+        "plusConvenio": 135.42,
+        "total": 1489.59
+      },
+      "auxiliar_admin": {
+        "salarioBase": 1146.71,
+        "plusConvenio": 114.67,
+        "total": 1261.38
+      },
+      "ayudante_mecanico": {
+        "salarioBase": 1092.06,
+        "plusConvenio": 109.19,
+        "total": 1201.25
+      },
+      "mecanico": {
+        "salarioBase": 1238.44,
+        "plusConvenio": 123.85,
+        "total": 1362.3
+      },
+      "chapista": {
+        "salarioBase": 1190.34,
+        "plusConvenio": 119.05,
+        "total": 1309.39
+      },
+      "pintor": {
+        "salarioBase": 1190.34,
+        "plusConvenio": 119.05,
+        "total": 1309.39
+      },
+      "jefe_taller": {
+        "salarioBase": 1326.35,
+        "plusConvenio": 132.61,
+        "total": 1458.95
+      },
+      "telefonista": {
+        "salarioBase": 1157.61,
+        "plusConvenio": 115.72,
+        "total": 1273.33
+      },
+      "medico": {
+        "salarioBase": 2271.48,
+        "plusConvenio": 227.15,
+        "total": 2498.63
+      },
+      "ats_due": {
+        "salarioBase": 1703.62,
+        "plusConvenio": 170.32,
+        "total": 1873.94
+      },
+      "director_area": {
+        "salarioBase": 2077.47,
+        "plusConvenio": 207.74,
+        "total": 2285.21
+      },
+      "director": {
+        "salarioBase": 2293.36,
+        "plusConvenio": 229.32,
+        "total": 2522.68
+      }
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "dietaMaxDiaria": 53.34,
+    "pagas": 14,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    },
+    "vigencia": {
+      "inicio": "2020-01-01",
+      "fin": "2025-12-31",
+      "ultraactividad": true,
+      "tablaAplicada": "2025-2S"
+    },
+    "reglasAntiguedad": {
+      "tipo": "quinquenio",
+      "porcentajeBase": 0.05,
+      "descripcion": "5% del salario base por cada 5 años de servicio"
+    },
+    "reglasNocturnidad": {
+      "tipo": "hora_fija",
+      "valorHora": 1.18,
+      "descripcion": "Valor fijo por hora nocturna trabajada"
+    },
+    "incrementos": {
+      "2024": {
+        "porcentaje": 2.75,
+        "provincias": [
+          "Almería",
+          "Córdoba",
+          "Málaga",
+          "Sevilla"
+        ]
+      },
+      "2025": {
+        "porcentaje": 1.1,
+        "provincias": [
+          "Todas"
+        ],
+        "aplicacion": "Desde 01/07/2025"
+      }
+    },
+    "descripcion": "IV Convenio Colectivo del Transporte Sanitario de Enfermos y Accidentados en Ambulancias de Andalucía. Vigente desde 2020 hasta 2025 con ultraactividad. Incluye categorías TES (Técnico en Emergencias Sanitarias): Conductor/a, Ayudante Camillero/a y Camillero/a. Código BOJA: 71001075012005",
+    "codigoBOJA": "71001075012005",
+    "publicacion": "BOJA 241 - 16/12/2020",
+    "fuente": "BOJA nº241, 16-dic-2020 (Resolución 9-dic-2020, Dir. Gral. Trabajo). Tabla salarial vigente 2º semestre 2025 (en ultraactividad).",
+    "fuenteUrl": "https://www.juntadeandalucia.es/boja/2020/241/18",
+    "ambito": "Andalucía (todas las provincias; en 2025 la tabla es uniforme en los 3 grupos: Almería-Córdoba-Málaga-Sevilla, Granada-Huelva y Jaén).",
+    "dietas2025": {
+      "comida": 16.25,
+      "cena": 16.25,
+      "pernocta_desayuno": 22.1,
+      "total_dia": 54.61
+    },
+    "festividadEspecial2025": 43.88
+  },
+  "mercadona": {
+    "nombre": "Convenio Colectivo Mercadona (2024-2028)",
+    "salarioMinimo": {
+      "gerente_a": 1553,
+      "gerente_b": 1700,
+      "gerente_c": 1900,
+      "coordinador": 2100,
+      "base": 1368
+    },
+    "detallesSalariales": {
+      "gerente_a": {
+        "salarioBase": 1368,
+        "plusConvenio": 185
+      },
+      "personal_base": {
+        "salarioBase": 1368,
+        "plusConvenio": 0
+      }
+    },
+    "pagasExtras": {
+      "regla": "prorrateo_opcional",
+      "cantidad": 3
+    },
+    "horasExtra": {
+      "tipo": "variable"
+    },
+    "reglasAntiguedad": {
+      "tipo": "cuatrienio",
+      "porcentajeBase": 0.05
+    },
+    "reglasNocturnidad": {
+      "valorHora": 2.25
     }
+  },
+  "leroy_merlin": {
+    "nombre": "Convenio Grandes Almacenes (Leroy Merlin)",
+    "salarioMinimo": {
+      "profesional": 1277.25,
+      "coordinador": 1450.0,
+      "tecnico": 1600.0
+    },
+    "detallesSalariales": {
+      "profesional": {
+        "salarioBase": 1277.25,
+        "plusConvenio": 0
+      }
+    },
+    "incentivos": {
+      "nombre": "Prima de Progreso",
+      "descripcion": "Trimestral, ligada a resultados colectivos de tienda/sección."
+    },
+    "pagasExtras": {
+      "regla": "prorrateo_obligatorio",
+      "cantidad": 4
+    },
+    "reglasAntiguedad": {
+      "tipo": "cuatrienio",
+      "porcentajeBase": 0.03
+    }
+  }
 }

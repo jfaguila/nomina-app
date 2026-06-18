@@ -20,10 +20,25 @@ const CATEGORIAS_GENERICAS = [
 
 // Categorías milimétricas por convenio (deben coincidir con backend/data/convenios.json → detallesSalariales)
 const CATEGORIAS_POR_CONVENIO = {
+    // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
     transporte_sanitario_andalucia: [
-        { value: 'tes_conductor', label: 'TES / Conductor (base 1.239,63 €)' },
-        { value: 'tes_ayudante_camillero', label: 'Ayudante / Camillero TES (base 1.080,01 €)' },
-        { value: 'tes_camillero', label: 'Camillero (base 1.015,35 €)' },
+        { value: 'tes_conductor', label: 'TES Conductor/a (base 1.253,26 €)' },
+        { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero (base 1.091,89 €)' },
+        { value: 'tes_camillero', label: 'TES Camillero/a (base 1.026,52 €)' },
+        { value: 'jefe_equipo', label: 'Jefe/a de Equipo (base 1.266,81 €)' },
+        { value: 'jefe_trafico', label: 'Jefe/a de Tráfico (base 1.386,93 €)' },
+        { value: 'oficial_admin', label: 'Oficial 1ª Administrativo (base 1.354,16 €)' },
+        { value: 'auxiliar_admin', label: 'Auxiliar Administrativo (base 1.146,71 €)' },
+        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico (base 1.092,06 €)' },
+        { value: 'mecanico', label: 'Mecánico/a (base 1.238,44 €)' },
+        { value: 'chapista', label: 'Chapista (base 1.190,34 €)' },
+        { value: 'pintor', label: 'Pintor/a (base 1.190,34 €)' },
+        { value: 'jefe_taller', label: 'Jefe/a de Taller (base 1.326,35 €)' },
+        { value: 'telefonista', label: 'Telefonista (base 1.157,61 €)' },
+        { value: 'medico', label: 'Médico/a (base 2.271,48 €)' },
+        { value: 'ats_due', label: 'ATS/DUE Enfermería (base 1.703,62 €)' },
+        { value: 'director_area', label: 'Director/a de Área (base 2.077,47 €)' },
+        { value: 'director', label: 'Director/a (base 2.293,36 €)' },
     ],
 };
 
@@ -48,8 +63,8 @@ const HomePage = () => {
     // Pre-analysis options (Initial selection)
     const [uploadData, setUploadData] = useState({
         provincia: '',
-        convenio: 'general',
-        categoria: 'empleado'
+        convenio: 'transporte_sanitario_andalucia',
+        categoria: 'tes_conductor'
     });
 
     const handleFileSelect = (file) => {
@@ -390,12 +405,11 @@ const HomePage = () => {
                                                     }}
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
-                                                    <option value="general">Convenio General</option>
-                                                    <option value="hosteleria">Hostelería</option>
-                                                    <option value="comercio">Comercio</option>
-                                                    <option value="construccion">Construcción</option>
-                                                    <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía</option>
-                                                    <option value="mercadona">Mercadona (2024-2028)</option>
+                                                    <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
+                                                    <option value="hosteleria" disabled>Hostelería (en preparación)</option>
+                                                    <option value="comercio" disabled>Comercio (en preparación)</option>
+                                                    <option value="construccion" disabled>Construcción (en preparación)</option>
+                                                    <option value="general" disabled>Otros convenios (en preparación)</option>
                                                 </select>
                                             </div>
                                             <div>
