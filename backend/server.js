@@ -39,6 +39,25 @@ const app = express();
 const PORT = process.env.PORT || 5987;
 
 // Middleware
+// === STRIPE WEBHOOK (raw body, antes de express.json) ===
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+    const stripe2 = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
+    const sig = req.headers['stripe-signature'];
+    let event;
+    try {
+        event = stripe2.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+        console.error('webhook firma inválida:', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+    if (event.type === 'checkout.session.completed') {
+        const s = event.data.object;
+        console.log('✅ SUSCRIPCIÓN NominIA:', s.metadata?.plan, '| email:', s.customer_details?.email, '| sub:', s.subscription);
+        // (futuro: guardar el cliente/suscripción + dar acceso)
+    }
+    res.json({ received: true });
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
