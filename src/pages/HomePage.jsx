@@ -10,6 +10,7 @@ import ResultsDisplay from '../components/ResultsDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DarkModeToggle from '../components/DarkModeToggle';
 import InstructionsModal from '../components/InstructionsModal';
+import LeadForm from '../components/LeadForm';
 
 const CATEGORIAS_GENERICAS = [
     { value: 'empleado', label: 'Empleado' },
@@ -59,6 +60,7 @@ const HomePage = () => {
     const [step, setStep] = useState(1);
     const [reviewData, setReviewData] = useState(null);
     const [extractedText, setExtractedText] = useState('');
+    const [leadCaptured, setLeadCaptured] = useState(false);
 
     // Pre-analysis options (Initial selection)
     const [uploadData, setUploadData] = useState({
@@ -488,26 +490,41 @@ const HomePage = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="space-y-8"
                         >
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <div>
-                                    <h2 className="text-3xl font-bold tracking-tight">Tu Informe de Verificación</h2>
-                                    <p className="text-gray-600 dark:text-gray-400 mt-1">Resultados basados en tu convenio colectivo.</p>
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        setStep(1);
-                                        setResults(null);
-                                        setSelectedFile(null);
+                            {!leadCaptured ? (
+                                <LeadForm
+                                    apiUrl={getApiUrl()}
+                                    defaults={{
+                                        provincia: uploadData.provincia,
+                                        convenio: uploadData.convenio,
+                                        resultado: results && results.isValid ? 'Nómina correcta' : 'Posibles diferencias a favor'
                                     }}
-                                    className="px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 font-bold transition-all flex items-center gap-2"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                    Nueva verificación
-                                </button>
-                            </div>
-                            <ResultsDisplay results={results} />
+                                    onCaptured={() => setLeadCaptured(true)}
+                                />
+                            ) : (
+                                <>
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                        <div>
+                                            <h2 className="text-3xl font-bold tracking-tight">Tu Informe de Verificación</h2>
+                                            <p className="text-gray-600 dark:text-gray-400 mt-1">Resultados basados en tu convenio colectivo.</p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setStep(1);
+                                                setResults(null);
+                                                setSelectedFile(null);
+                                                setLeadCaptured(false);
+                                            }}
+                                            className="px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 font-bold transition-all flex items-center gap-2"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Nueva verificación
+                                        </button>
+                                    </div>
+                                    <ResultsDisplay results={results} />
+                                </>
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>

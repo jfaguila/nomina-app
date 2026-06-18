@@ -298,6 +298,50 @@ app.post('/api/checkout', async (req, res) => {
     }
 });
 
+// === LEAD: captura RGPD del plan gratis → Brevo (lista NominIA Leads) ===
+const BREVO_KEY = process.env.BREVO_API_KEY || null;
+const BREVO_LIST_ID = 3; // "NominIA Leads"
+app.post('/api/lead', async (req, res) => {
+    try {
+        const { email, nombre, provincia, convenio, resultado, consent } = req.body || {};
+        if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+            return res.status(400).json({ error: 'Email no válido' });
+        }
+        if (!consent) {
+            return res.status(400).json({ error: 'Debes aceptar la política de privacidad' });
+        }
+        if (!BREVO_KEY) {
+            console.warn('lead recibido pero BREVO_API_KEY no configurada:', email);
+            return res.json({ ok: true, stored: false });
+        }
+        const r = await fetch('https://api.brevo.com/v3/contacts', {
+            method: 'POST',
+            headers: { 'api-key': BREVO_KEY, 'Content-Type': 'application/json', 'accept': 'application/json' },
+            body: JSON.stringify({
+                email,
+                attributes: {
+                    NOMBRE: nombre || '',
+                    PROVINCIA: provincia || '',
+                    CONVENIO: convenio || '',
+                    RESULTADO: resultado || ''
+                },
+                listIds: [BREVO_LIST_ID],
+                updateEnabled: true
+            })
+        });
+        if (r.ok || r.status === 204) {
+            return res.json({ ok: true, stored: true });
+        }
+        const body = await r.text();
+        console.error('Brevo lead error:', r.status, body);
+        // si el contacto ya existe Brevo da 400 duplicate_parameter pero con updateEnabled no debería; devolvemos ok para no romper UX
+        return res.json({ ok: true, stored: false });
+    } catch (e) {
+        console.error('lead error:', e.message);
+        return res.status(500).json({ error: 'No se pudo registrar el email' });
+    }
+});
+
 app.get('*', (req, res) => {
     if (req.path.startsWith('/api')) {
         return res.status(404).json({
