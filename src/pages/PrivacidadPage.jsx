@@ -38,7 +38,10 @@ export default function PrivacidadPage() {
           <h2 className="text-xl font-bold">5. Tus derechos (RGPD / LOPDGDD)</h2>
           <p>Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a href="mailto:info@nominia.es" className="text-blue-600">info@nominia.es</a>. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
 
-          <h2 className="text-xl font-bold">6. Aviso importante</h2>
+          <h2 id="cookies" className="text-xl font-bold">7. Política de cookies</h2>
+          <p>Usamos <strong>únicamente cookies técnicas</strong> necesarias para el funcionamiento del sitio (por ejemplo, recordar tu preferencia de modo oscuro o que ya aceptaste este aviso). <strong>No usamos cookies de publicidad, analítica de terceros ni de seguimiento</strong>, y no vendemos tus datos. Puedes borrar las cookies desde la configuración de tu navegador en cualquier momento.</p>
+
+          <h2 className="text-xl font-bold">8. Aviso importante</h2>
           <p>NominIA es una <strong>herramienta de ayuda</strong>: el resultado es orientativo y no sustituye el asesoramiento de un graduado social o abogado laboralista. Verifica siempre con un profesional antes de tomar decisiones.</p>
         </div>
 

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import CookieBanner from '../components/CookieBanner';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -9,6 +10,22 @@ import ResultsDisplay from '../components/ResultsDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DarkModeToggle from '../components/DarkModeToggle';
 import InstructionsModal from '../components/InstructionsModal';
+
+const CATEGORIAS_GENERICAS = [
+    { value: 'empleado', label: 'Empleado' },
+    { value: 'tecnico', label: 'Técnico' },
+    { value: 'mando_intermedio', label: 'Mando Intermedio' },
+    { value: 'directivo', label: 'Directivo' },
+];
+
+// Categorías milimétricas por convenio (deben coincidir con backend/data/convenios.json → detallesSalariales)
+const CATEGORIAS_POR_CONVENIO = {
+    transporte_sanitario_andalucia: [
+        { value: 'tes_conductor', label: 'TES / Conductor (base 1.239,63 €)' },
+        { value: 'tes_ayudante_camillero', label: 'Ayudante / Camillero TES (base 1.080,01 €)' },
+        { value: 'tes_camillero', label: 'Camillero (base 1.015,35 €)' },
+    ],
+};
 
 const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Baleares','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','A Coruña','Cuenca','Girona','Granada','Guadalajara','Gipuzkoa','Huelva','Huesca','Jaén','León','Lleida','Lugo','Madrid','Málaga','Murcia','Navarra','Ourense','Palencia','Las Palmas','Pontevedra','La Rioja','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Bizkaia','Zamora','Zaragoza','Ceuta','Melilla'];
 
@@ -257,9 +274,9 @@ const HomePage = () => {
             <div className="relative max-w-6xl mx-auto px-4 py-8 md:py-12">
                 <nav className="flex justify-between items-center mb-12 animate-fade-in">
                     <div className="flex items-center gap-3">
-                        <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-500/20">
+                        <div className="p-2.5 rounded-2xl shadow-lg shadow-blue-500/30" style={{ background: 'linear-gradient(135deg,#2563eb,#0ea5e9)' }}>
                             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </div>
                         <div>
@@ -268,7 +285,7 @@ const HomePage = () => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Link to="/precios" className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors">Planes</Link>
+                        <Link to="/precios" className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors">Precios</Link>
                         <button
                             onClick={() => setShowInstructions(true)}
                             className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
@@ -366,7 +383,11 @@ const HomePage = () => {
                                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Convenio Aplicable</label>
                                                 <select
                                                     value={uploadData.convenio}
-                                                    onChange={(e) => setUploadData({ ...uploadData, convenio: e.target.value })}
+                                                    onChange={(e) => {
+                                                        const nuevo = e.target.value;
+                                                        const catPorDefecto = CATEGORIAS_POR_CONVENIO[nuevo] ? CATEGORIAS_POR_CONVENIO[nuevo][0].value : 'empleado';
+                                                        setUploadData({ ...uploadData, convenio: nuevo, categoria: catPorDefecto });
+                                                    }}
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
                                                     <option value="general">Convenio General</option>
@@ -384,11 +405,15 @@ const HomePage = () => {
                                                     onChange={(e) => setUploadData({ ...uploadData, categoria: e.target.value })}
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
-                                                    <option value="empleado">Empleado</option>
-                                                    <option value="tecnico">Técnico</option>
-                                                    <option value="mando_intermedio">Mando Intermedio</option>
-                                                    <option value="directivo">Directivo</option>
+                                                    {(CATEGORIAS_POR_CONVENIO[uploadData.convenio] || CATEGORIAS_GENERICAS).map((c) => (
+                                                        <option key={c.value} value={c.value}>{c.label}</option>
+                                                    ))}
                                                 </select>
+                                                {CATEGORIAS_POR_CONVENIO[uploadData.convenio] && (
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                        ⚖️ Comparamos tu nómina con la tabla salarial exacta de esta categoría según el convenio vigente.
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
 
@@ -468,6 +493,24 @@ const HomePage = () => {
                     )}
                 </AnimatePresence>
             </div>
+            <footer className="border-t border-gray-100 dark:border-gray-800 mt-16">
+                <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-gray-700 dark:text-gray-300">NominIA</span>
+                        <span>© 2026 · Verificador de nóminas con IA</span>
+                    </div>
+                    <nav className="flex items-center gap-5">
+                        <Link to="/precios" className="hover:text-blue-600">Precios</Link>
+                        <Link to="/privacidad" className="hover:text-blue-600">Privacidad</Link>
+                        <Link to="/privacidad#cookies" className="hover:text-blue-600">Cookies</Link>
+                        <a href="https://github.com/jfaguila/nomina-app" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                            GitHub
+                        </a>
+                    </nav>
+                </div>
+            </footer>
+            <CookieBanner />
         </div>
     );
 };
