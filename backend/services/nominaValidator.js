@@ -390,7 +390,7 @@ class NominaValidator {
         if (text.includes('AMBULANCIAS') || text.includes('TRANSPORTE SANITARIO') || text.includes('PASQUAU')) {
             console.log("🚑 MODO AMBULANCIAS PASQUAU - VALIDACIÓN ESPECÍFICA DE TASAS");
             data.empresa = 'AMBULANCIAS M.PASQUAU S.L';
-            data.convenio = 'ambulancias';
+            data.convenio = 'transporte_sanitario_andalucia';
             console.log("📄 ========== TEXTO EXTRAÍDO DEL PDF (PRIMEROS 2000 CARACTERES) ==========");
             console.log(text.substring(0, 2000));
             console.log("📄 ========== FIN TEXTO EXTRAÍDO ==========\n");
