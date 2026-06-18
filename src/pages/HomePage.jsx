@@ -65,7 +65,7 @@ const HomePage = () => {
         if (apiUrl) return apiUrl;
         // En produccion (Vercel), usar el backend de Railway
         if (window.location.hostname !== 'localhost') {
-            return 'https://nomina-app-production-653f.up.railway.app';
+            return 'https://nomina-backend-production-57d2.up.railway.app';
         }
         return 'http://localhost:5987';
     };
