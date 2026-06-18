@@ -258,7 +258,10 @@ const HomePage = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                         </div>
-                        <h1 className="text-2xl font-bold tracking-tight">NominIA</h1>
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight leading-none">NominIA</h1>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Verificador inteligente de nóminas</p>
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <button
@@ -302,8 +305,13 @@ const HomePage = () => {
                                     Verifica tu nómina en <span className="text-blue-600 dark:text-blue-400">segundos</span>
                                 </h2>
                                 <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                                    Sube tu archivo y nuestra IA detectará si te están pagando correctamente según tu convenio.
+                                    Sube tu nómina (PDF o foto) y nuestra IA comprueba en segundos si te están pagando correctamente según tu convenio colectivo.
                                 </p>
+                                <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <span>✅ Transporte sanitario, comercio, hostelería y más</span>
+                                    <span>🔒 100% privado — tu nómina no se guarda</span>
+                                    <span>⚡ Resultado al instante</span>
+                                </div>
                             </div>
 
                             {error && (
