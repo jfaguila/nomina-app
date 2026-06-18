@@ -244,6 +244,41 @@ app.use((error, req, res, next) => {
 
 // Manejo de rutas no encontradas (SPA fallback)
 // Manejo de rutas no encontradas
+
+// === STRIPE: planes de pago ===
+const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
+const FRONTEND = process.env.FRONTEND_URL || 'https://nomina-app-chi.vercel.app';
+app.post('/api/checkout', async (req, res) => {
+    try {
+        if (!stripe) return res.status(503).json({ error: 'Pagos no configurados todavía' });
+        const { plan } = req.body || {};
+        const planes = {
+            trabajador: { amount: 499, name: 'NominIA — Plan Trabajador' },
+            asesoria:   { amount: 3900, name: 'NominIA — Plan Asesoría' }
+        };
+        if (!planes[plan]) return res.status(400).json({ error: 'Plan no válido' });
+        const session = await stripe.checkout.sessions.create({
+            mode: 'subscription',
+            line_items: [{
+                price_data: {
+                    currency: 'eur',
+                    product_data: { name: planes[plan].name },
+                    unit_amount: planes[plan].amount,
+                    recurring: { interval: 'month' }
+                },
+                quantity: 1
+            }],
+            success_url: `${FRONTEND}/?suscrito=true`,
+            cancel_url: `${FRONTEND}/precios`,
+            metadata: { plan, producto: 'nominia' }
+        });
+        res.json({ url: session.url });
+    } catch (e) {
+        console.error('checkout error:', e.message);
+        res.status(500).json({ error: 'Error al crear el pago', details: e.message });
+    }
+});
+
 app.get('*', (req, res) => {
     if (req.path.startsWith('/api')) {
         return res.status(404).json({

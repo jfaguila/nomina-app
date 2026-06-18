@@ -4,6 +4,8 @@ import { LanguageProvider } from './i18n/LanguageProvider';
 import SkipLinks from './components/SkipLinks';
 import LanguageSelector from './components/LanguageSelector';
 import HomePage from './pages/HomePage';
+import PreciosPage from './pages/PreciosPage';
+import PrivacidadPage from './pages/PrivacidadPage';
 import './index.css';
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
           <LanguageSelector />
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/precios" element={<PreciosPage />} />
+            <Route path="/privacidad" element={<PrivacidadPage />} />
           </Routes>
         </div>
       </Router>

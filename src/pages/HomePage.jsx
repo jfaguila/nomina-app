@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -8,6 +9,8 @@ import ResultsDisplay from '../components/ResultsDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DarkModeToggle from '../components/DarkModeToggle';
 import InstructionsModal from '../components/InstructionsModal';
+
+const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Baleares','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','A Coruña','Cuenca','Girona','Granada','Guadalajara','Gipuzkoa','Huelva','Huesca','Jaén','León','Lleida','Lugo','Madrid','Málaga','Murcia','Navarra','Ourense','Palencia','Las Palmas','Pontevedra','La Rioja','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Bizkaia','Zamora','Zaragoza','Ceuta','Melilla'];
 
 const HomePage = () => {
     const { t } = useLanguage();
@@ -27,6 +30,7 @@ const HomePage = () => {
 
     // Pre-analysis options (Initial selection)
     const [uploadData, setUploadData] = useState({
+        provincia: '',
         convenio: 'general',
         categoria: 'empleado'
     });
@@ -264,6 +268,7 @@ const HomePage = () => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <Link to="/precios" className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors">Planes</Link>
                         <button
                             onClick={() => setShowInstructions(true)}
                             className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
@@ -347,6 +352,17 @@ const HomePage = () => {
 
                                         <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
                                             <div>
+                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Provincia / Región</label>
+                                                <select
+                                                    value={uploadData.provincia}
+                                                    onChange={(e) => setUploadData({ ...uploadData, provincia: e.target.value })}
+                                                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                                >
+                                                    <option value="">Selecciona tu provincia…</option>
+                                                    {PROVINCIAS.map((p) => <option key={p} value={p}>{p}</option>)}
+                                                </select>
+                                            </div>
+                                            <div>
                                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Convenio Aplicable</label>
                                                 <select
                                                     value={uploadData.convenio}
@@ -386,6 +402,9 @@ const HomePage = () => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                             </svg>
                                         </button>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
+                                            🔒 Tu nómina es confidencial y no se guarda. <Link to="/privacidad" className="text-blue-600 hover:underline">Más info</Link>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
