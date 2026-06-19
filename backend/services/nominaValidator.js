@@ -179,7 +179,9 @@ class NominaValidator {
         const n = (v) => (v !== null && v !== undefined && v !== '' && !isNaN(parseFloat(v))) ? parseFloat(v) : 0;
         const checkPPExtras = n(nominaData.horasExtras); // "P.P. Extras" (prorrateo pagas) u horas extra
         // Total Devengado: si el OCR no lo extrajo, lo CALCULAMOS de la suma de conceptos (nunca queda vacío).
-        const sumaDevengos = n(checkSalarioBase) + n(checkPlusConvenio) + n(checkAntiguedad) + n(checkNocturnidad) + n(checkDietas) + checkPPExtras;
+        // Sumar TODOS los conceptos de devengo conocidos (incl. los específicos de cada convenio: complemento puesto, prorrateo pagas…)
+        const sumaDevengos = n(checkSalarioBase) + n(checkPlusConvenio) + n(checkAntiguedad) + n(checkNocturnidad) + n(checkDietas) + checkPPExtras
+            + n(nominaData.complementoPuesto) + n(nominaData.pagas) + n(nominaData.complementoSalarial) + n(nominaData.otrosDevengos);
         const totalDevengadoEff = (checkTotalDevengado && checkTotalDevengado > 0) ? checkTotalDevengado : (sumaDevengos > 0 ? sumaDevengos : null);
         const totalDevengadoCalculado = parseFloat(sumaDevengos.toFixed(2));
 

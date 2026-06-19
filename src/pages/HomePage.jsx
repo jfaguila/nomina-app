@@ -431,11 +431,11 @@ const HomePage = () => {
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
                                                     <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
-                                                    <option value="mercadona">Mercadona (Convenio 2024-2028, tabla 2023)</option>
-                                                    <option value="leroy_merlin">Leroy Merlin (Grandes Almacenes)</option>
-                                                    <option value="el_corte_ingles">El Corte Inglés (Grandes Almacenes)</option>
-                                                    <option value="ikea">Ikea (Grandes Almacenes)</option>
-                                                    <option value="obramat">Obramat / Bricomart (Grandes Almacenes)</option>
+                                                    <option value="mercadona" disabled>Mercadona (en preparación)</option>
+                                                    <option value="leroy_merlin" disabled>Leroy Merlin (en preparación)</option>
+                                                    <option value="el_corte_ingles" disabled>El Corte Inglés (en preparación)</option>
+                                                    <option value="ikea" disabled>Ikea (en preparación)</option>
+                                                    <option value="obramat" disabled>Obramat / Bricomart (en preparación)</option>
                                                     <option value="hosteleria" disabled>Hostelería (en preparación)</option>
                                                     <option value="comercio" disabled>Comercio (en preparación)</option>
                                                     <option value="construccion" disabled>Construcción (en preparación)</option>
