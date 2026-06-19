@@ -11,6 +11,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import DarkModeToggle from '../components/DarkModeToggle';
 import InstructionsModal from '../components/InstructionsModal';
 import LeadForm from '../components/LeadForm';
+import SimuladorHoras from '../components/SimuladorHoras';
 
 const CATEGORIAS_GENERICAS = [
     { value: 'empleado', label: 'Empleado' },
@@ -522,6 +523,7 @@ const HomePage = () => {
                                         </button>
                                     </div>
                                     <ResultsDisplay results={results} />
+                                    <SimuladorHoras results={results} />
                                 </>
                             )}
                         </motion.div>
