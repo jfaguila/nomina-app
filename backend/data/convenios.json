@@ -248,22 +248,30 @@
     "festividadEspecial2025": 43.88
   },
   "mercadona": {
-    "nombre": "Convenio Colectivo Mercadona (2024-2028)",
+    "nombre": "Convenio Colectivo de Mercadona, S.A. (2024-2028)",
     "salarioMinimo": {
-      "gerente_a": 1553,
-      "gerente_b": 1700,
-      "gerente_c": 1900,
-      "coordinador": 2100,
-      "base": 1368
+      "gerente_a_menos3": 1191.07,
+      "gerente_a_mas3": 1202.43,
+      "gerente_b": 1213.46,
+      "gerente_c": 1864.73,
+      "empleado": 1191.07
     },
     "detallesSalariales": {
-      "gerente_a": {
-        "salarioBase": 1368,
-        "plusConvenio": 185
+      "gerente_a_menos3": {
+        "salarioBase": 1191.07,
+        "anual": 17866.05
       },
-      "personal_base": {
-        "salarioBase": 1368,
-        "plusConvenio": 0
+      "gerente_a_mas3": {
+        "salarioBase": 1202.43,
+        "anual": 18036.45
+      },
+      "gerente_b": {
+        "salarioBase": 1213.46,
+        "anual": 18201.9
+      },
+      "gerente_c": {
+        "salarioBase": 1864.73,
+        "anual": 27970.95
       }
     },
     "pagasExtras": {
@@ -279,6 +287,15 @@
     },
     "reglasNocturnidad": {
       "valorHora": 2.25
+    },
+    "fuente": "BOE-A-2024-3851 (Resolución 16-feb-2024). Anexo 2: Tabla Salarial 2023 (salario base de grupo). El convenio sube por IPC anual hasta 2028.",
+    "fuenteUrl": "https://www.boe.es/buscar/doc.php?id=BOE-A-2024-3851",
+    "ambito": "Nacional (convenio de empresa, uniforme en toda España).",
+    "pagas": 15,
+    "vigencia": {
+      "inicio": "2024-01-01",
+      "fin": "2028-12-31",
+      "tablaAplicada": "2023"
     }
   },
   "leroy_merlin": {

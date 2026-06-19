@@ -23,6 +23,12 @@ const CATEGORIAS_GENERICAS = [
 // Categorías milimétricas por convenio (deben coincidir con backend/data/convenios.json → detallesSalariales)
 const CATEGORIAS_POR_CONVENIO = {
     // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
+    mercadona: [
+        { value: 'gerente_a_menos3', label: 'Gerente A · Cajas/Reposición/Venta (menos de 3 años)' },
+        { value: 'gerente_a_mas3', label: 'Gerente A · Cajas/Reposición/Venta (3 o más años)' },
+        { value: 'gerente_b', label: 'Gerente B · Ayte coordinación / Chofer / Admin' },
+        { value: 'gerente_c', label: 'Gerente C y Coordinadores' },
+    ],
     transporte_sanitario_andalucia: [
         { value: 'tes_conductor', label: 'TES Conductor/a' },
         { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero' },
@@ -413,6 +419,7 @@ const HomePage = () => {
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
                                                     <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
+                                                    <option value="mercadona">Mercadona (Convenio 2024-2028, tabla 2023)</option>
                                                     <option value="hosteleria" disabled>Hostelería (en preparación)</option>
                                                     <option value="comercio" disabled>Comercio (en preparación)</option>
                                                     <option value="construccion" disabled>Construcción (en preparación)</option>
