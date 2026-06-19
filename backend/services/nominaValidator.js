@@ -36,6 +36,18 @@ class NominaValidator {
 
         // 1. SALARIO BASE
         const salarioBaseReal = parseFloat(nominaData.salarioBase) || 0;
+        // Convenios con estructura base + complementos fijos (Mercadona, Grandes Almacenes):
+        // la nómina parte el sueldo en "Salario Base" + "Complemento de puesto/salarial", así que comparar
+        // SOLO la línea base contra el grupo da falsos. Comparamos el SALARIO FIJO TOTAL (base + complementos).
+        let salarioBaseRealEfectivo = salarioBaseReal;
+        let conceptoBaseLabel = 'Salario Base';
+        if (convenio.comparaConComplementos) {
+            const comps = convenio.complementosFijos || ['complementoPuesto', 'complementoSalarial'];
+            let sumaComp = 0;
+            comps.forEach(c => { sumaComp += parseFloat(nominaData[c]) || 0; });
+            salarioBaseRealEfectivo = salarioBaseReal + sumaComp;
+            conceptoBaseLabel = 'Salario base + complementos';
+        }
         // FIX: en transporte sanitario, si la categoría no es TES, usar tes_conductor (DEFAULT TES)
         if (convenioKey === 'transporte_sanitario_andalucia' && convenio.detallesSalariales && !convenio.detallesSalariales[nominaData.categoria]) {
             nominaData.categoria = 'tes_conductor';
@@ -57,10 +69,10 @@ class NominaValidator {
             }
         }
 
-        details.salario_base_comparativa = this.compararValores('Salario Base', salarioBaseReal, salarioBaseTeorico);
+        details.salario_base_comparativa = this.compararValores(conceptoBaseLabel, salarioBaseRealEfectivo, salarioBaseTeorico);
 
-        if (details.salario_base_comparativa.estado === 'REVISAR' && salarioBaseReal < salarioBaseTeorico) {
-            errors.push(`El Salario Base (${salarioBaseReal}€) es inferior al convenio (${salarioBaseTeorico}€).`);
+        if (details.salario_base_comparativa.estado === 'REVISAR' && salarioBaseRealEfectivo < salarioBaseTeorico) {
+            errors.push(`El ${conceptoBaseLabel.toLowerCase()} (${salarioBaseRealEfectivo.toFixed(2)}€) es inferior al convenio (${salarioBaseTeorico}€).`);
         }
 
         // 2. ANTIGÜEDAD

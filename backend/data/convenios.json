@@ -296,7 +296,14 @@
       "inicio": "2024-01-01",
       "fin": "2028-12-31",
       "tablaAplicada": "2023"
-    }
+    },
+    "comparaConComplementos": true,
+    "complementosFijos": [
+      "complementoPuesto",
+      "complementoSalarial",
+      "plusConvenio",
+      "complementoVoluntario"
+    ]
   },
   "leroy_merlin": {
     "nombre": "Leroy Merlin (Convenio Grandes Almacenes 2024)",
@@ -346,7 +353,14 @@
       "contingenciasComunes": 4.7,
       "desempleo": 1.55,
       "formacionProfesional": 0.1
-    }
+    },
+    "comparaConComplementos": true,
+    "complementosFijos": [
+      "complementoPuesto",
+      "complementoSalarial",
+      "plusConvenio",
+      "complementoVoluntario"
+    ]
   },
   "grandes_almacenes": {
     "nombre": "Convenio de Grandes Almacenes",
@@ -396,7 +410,14 @@
       "contingenciasComunes": 4.7,
       "desempleo": 1.55,
       "formacionProfesional": 0.1
-    }
+    },
+    "comparaConComplementos": true,
+    "complementosFijos": [
+      "complementoPuesto",
+      "complementoSalarial",
+      "plusConvenio",
+      "complementoVoluntario"
+    ]
   },
   "el_corte_ingles": {
     "nombre": "El Corte Inglés (Convenio Grandes Almacenes 2024)",
@@ -446,7 +467,14 @@
       "contingenciasComunes": 4.7,
       "desempleo": 1.55,
       "formacionProfesional": 0.1
-    }
+    },
+    "comparaConComplementos": true,
+    "complementosFijos": [
+      "complementoPuesto",
+      "complementoSalarial",
+      "plusConvenio",
+      "complementoVoluntario"
+    ]
   },
   "ikea": {
     "nombre": "Ikea (Convenio Grandes Almacenes 2024)",
@@ -496,7 +524,14 @@
       "contingenciasComunes": 4.7,
       "desempleo": 1.55,
       "formacionProfesional": 0.1
-    }
+    },
+    "comparaConComplementos": true,
+    "complementosFijos": [
+      "complementoPuesto",
+      "complementoSalarial",
+      "plusConvenio",
+      "complementoVoluntario"
+    ]
   },
   "obramat": {
     "nombre": "Obramat / Bricomart (Convenio Grandes Almacenes 2024)",
@@ -546,6 +581,13 @@
       "contingenciasComunes": 4.7,
       "desempleo": 1.55,
       "formacionProfesional": 0.1
-    }
+    },
+    "comparaConComplementos": true,
+    "complementosFijos": [
+      "complementoPuesto",
+      "complementoSalarial",
+      "plusConvenio",
+      "complementoVoluntario"
+    ]
   }
 }
