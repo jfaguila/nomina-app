@@ -384,6 +384,37 @@ class NominaValidator {
             return data;
         }
 
+        // LEROY MERLIN / GRANDES ALMACENES — conceptos propios ("Salario Convenio", "Complemento Personal", "Complemento Puesto")
+        if (text.includes('LEROY') || text.includes('Leroy Merlin') || /Salario\s*Convenio/i.test(text)) {
+            console.log("🏬 MODO GRANDES ALMACENES (Leroy/ECI/Ikea…) — EXTRAER DATOS REALES");
+            const lines = text.split('\n');
+            const findLine = (kw) => lines.find(l => l.match(kw));
+            // último importe de la línea con 2 decimales (no seguido de otro dígito): coge el devengo, no las unidades/valor-hora
+            const lastAmount = (line) => {
+                if (!line) return null;
+                const m = line.match(/\d+[.,]\d{2}(?!\d)/g);
+                return m ? m[m.length - 1] : null;
+            };
+            const set = (kw, field) => { const l = findLine(kw); if (l) { const v = lastAmount(l); if (v) { data[field] = this.limpiarNumero(v); console.log(`✅ GA ${field}: ${v} -> ${data[field]}`); } } };
+            set(/Salario\s*Convenio/i, 'salarioBase');
+            set(/Complemento\s*Personal/i, 'complementoPuesto');
+            set(/Complemento\s*Puesto/i, 'complementoSalarial');
+            set(/Plus\s*Convenio/i, 'plusConvenio');
+            set(/Nocturnidad/i, 'valorNocturnidad');
+            set(/Antig/i, 'valorAntiguedad');
+            // Total remuneración / devengado
+            const totalLine = findLine(/Total\s*remuneraci/i) || findLine(/Total\s*devengad/i);
+            if (totalLine) { const v = lastAmount(totalLine); if (v) data.totalDevengado = this.limpiarNumero(v); }
+            // Deducciones (línea con el % y el importe al final)
+            set(/Régimen\s*General|Contingencias\s*Comunes/i, 'cotizacionContingenciasComunes');
+            set(/Desempleo|D\+F\+P/i, 'cotizacionDesempleo');
+            set(/Formaci/i, 'cotizacionFormacionProfesional');
+            set(/IRPF/i, 'irpf');
+            if (!data.categoria) data.categoria = this.detectarCategoriaDesdeTexto(text);
+            console.log('✅ GRANDES ALMACENES: Datos extraídos:', JSON.stringify(data, null, 2));
+            return data;
+        }
+
         // AMBULANCIAS - EXTRAER SOLO DATOS REALES CON VALIDACIÓN ESPECÍFICA
         if (text.includes('AMBULANCIAS') || text.includes('TRANSPORTE SANITARIO') || text.includes('PASQUAU')) {
             console.log("🚑 MODO AMBULANCIAS PASQUAU - VALIDACIÓN ESPECÍFICA DE TASAS");
