@@ -301,6 +301,35 @@ app.post('/api/checkout', async (req, res) => {
 // === LEAD: captura RGPD del plan gratis → Brevo (lista NominIA Leads) ===
 const BREVO_KEY = process.env.BREVO_API_KEY || null;
 const BREVO_LIST_ID = 3; // "NominIA Leads"
+const SENDER = { name: 'NominIA', email: 'hola@nominia.app' };
+
+// Email día 0: confirma el resultado + gancho de venta. Requiere dominio nominia.app verificado en Brevo.
+async function enviarEmailDia0(email, nombre, resultado) {
+    if (!BREVO_KEY) return;
+    const hayDiferencias = (resultado || '').toLowerCase().includes('diferencia');
+    const saludo = nombre ? `Hola ${nombre},` : 'Hola,';
+    const titular = hayDiferencias
+        ? '⚠️ Hemos detectado posibles diferencias a tu favor'
+        : '✅ Tu nómina cumple con el convenio';
+    const cuerpo = hayDiferencias
+        ? 'Según tu convenio, podría haber conceptos en los que te están pagando de menos. Desbloquea el <strong>desglose exacto</strong> y el <strong>importe que te deben</strong> para poder reclamarlo.'
+        : 'Tu nómina cuadra con tu convenio. Te avisaremos si la tabla cambia o si detectamos algo en próximas verificaciones.';
+    const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#0E1A2B">
+      <h2 style="color:#0E2438">${titular}</h2>
+      <p>${saludo}</p>
+      <p>${cuerpo}</p>
+      <p style="text-align:center;margin:28px 0">
+        <a href="https://nominia.app/precios" style="background:#84CC16;color:#0A1A2B;font-weight:bold;padding:14px 28px;border-radius:14px;text-decoration:none">Ver el desglose completo</a>
+      </p>
+      <p style="font-size:12px;color:#64748b">NominIA · Verificador de nóminas. Recibes este email porque verificaste tu nómina y diste tu consentimiento. Puedes darte de baja respondiendo a este correo.</p>
+    </div>`;
+    const r = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: { 'api-key': BREVO_KEY, 'Content-Type': 'application/json', 'accept': 'application/json' },
+        body: JSON.stringify({ sender: SENDER, to: [{ email, name: nombre || undefined }], subject: titular, htmlContent: html })
+    });
+    if (!r.ok) console.warn('Brevo email día0 status', r.status, (await r.text()).slice(0, 160));
+}
 app.post('/api/lead', async (req, res) => {
     try {
         const { email, nombre, provincia, convenio, resultado, consent } = req.body || {};
@@ -330,6 +359,8 @@ app.post('/api/lead', async (req, res) => {
             })
         });
         if (r.ok || r.status === 204) {
+            // Email día 0 (no bloquea la respuesta). Se enviará en cuanto el dominio nominia.app esté verificado en Brevo.
+            enviarEmailDia0(email, nombre, resultado).catch(e => console.warn('email día0:', e.message));
             return res.json({ ok: true, stored: true });
         }
         const body = await r.text();
