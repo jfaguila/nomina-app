@@ -41,6 +41,10 @@ const CATEGORIAS_POR_CONVENIO = {
     el_corte_ingles: GA_CATS,
     ikea: GA_CATS,
     obramat: GA_CATS,
+    hipercor: GA_CATS,
+    bricomart: GA_CATS,
+    makro: GA_CATS,
+    decathlon: GA_CATS,
     transporte_sanitario_andalucia: [
         { value: 'tes_conductor', label: 'TES Conductor/a' },
         { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero' },
@@ -441,11 +445,15 @@ const HomePage = () => {
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
                                                     <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
-                                                    <option value="mercadona" disabled>Mercadona (en preparación)</option>
-                                                    <option value="leroy_merlin" disabled>Leroy Merlin (en preparación)</option>
-                                                    <option value="el_corte_ingles" disabled>El Corte Inglés (en preparación)</option>
-                                                    <option value="ikea" disabled>Ikea (en preparación)</option>
-                                                    <option value="obramat" disabled>Obramat / Bricomart (en preparación)</option>
+                                                    <option value="mercadona">Mercadona</option>
+                                                    <option value="leroy_merlin">Leroy Merlin</option>
+                                                    <option value="el_corte_ingles">El Corte Inglés</option>
+                                                    <option value="ikea">Ikea</option>
+                                                    <option value="obramat">Obramat</option>
+                                                    <option value="hipercor">Hipercor</option>
+                                                    <option value="bricomart">Bricomart</option>
+                                                    <option value="makro">Makro</option>
+                                                    <option value="decathlon">Decathlon</option>
                                                     <option value="hosteleria" disabled>Hostelería (en preparación)</option>
                                                     <option value="comercio" disabled>Comercio (en preparación)</option>
                                                     <option value="construccion" disabled>Construcción (en preparación)</option>
