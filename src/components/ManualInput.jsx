@@ -103,27 +103,29 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
         const extras = num(formData.horasExtras);
         const devengos = base + plus + ant + noct + dietas + extras;
         if (devengos <= 0) return;
-        // base de cotización ≈ devengos menos dietas (las dietas, dentro de límite, no cotizan)
-        const baseCot = Math.max(devengos - dietas, 0);
-        const cc = baseCot * 0.0470;
-        const mei = baseCot * 0.0013;
-        const des = baseCot * 0.0155;
-        const fp = baseCot * 0.0010;
-        const irpf = num(formData.irpf);
-        const totalDed = cc + mei + des + fp + irpf;
         const r2 = (x) => (Math.round(x * 100) / 100).toFixed(2);
-        setFormData(prev => ({
-            ...prev,
+        // Base de cotización = total devengado (es lo que usan las nóminas reales; las cotizaciones se calculan sobre el total).
+        const baseCot = devengos;
+        // Para cada deducción: si el OCR/usuario YA tiene un valor, se RESPETA (es el real de la nómina); si no, se estima.
+        const ccV  = num(formData.cotizacionContingenciasComunes) || baseCot * 0.0470;
+        const meiV = num(formData.cotizacionMEI) || baseCot * 0.0013;
+        const desV = num(formData.cotizacionDesempleo) || baseCot * 0.0155;
+        const fpV  = num(formData.cotizacionFormacionProfesional) || baseCot * 0.0010;
+        const irpf = num(formData.irpf);
+        const totalDed = ccV + meiV + desV + fpV + irpf;
+        const patch = {
             totalDevengado: r2(devengos),
-            cotizacionContingenciasComunes: r2(cc),
-            cotizacionMEI: r2(mei),
-            cotizacionDesempleo: r2(des),
-            cotizacionFormacionProfesional: r2(fp),
             totalDeducciones: r2(totalDed),
             liquidoTotal: r2(devengos - totalDed)
-        }));
+        };
+        // Rellenar SOLO las deducciones que estuvieran vacías (no pisar las reales del OCR)
+        if (!num(formData.cotizacionContingenciasComunes)) patch.cotizacionContingenciasComunes = r2(ccV);
+        if (!num(formData.cotizacionMEI)) patch.cotizacionMEI = r2(meiV);
+        if (!num(formData.cotizacionDesempleo)) patch.cotizacionDesempleo = r2(desV);
+        if (!num(formData.cotizacionFormacionProfesional)) patch.cotizacionFormacionProfesional = r2(fpV);
+        setFormData(prev => ({ ...prev, ...patch }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [formData.salarioBase, formData.plusConvenio, formData.valorAntiguedad, formData.valorNocturnidad, formData.dietas, formData.horasExtras, formData.irpf]);
+    }, [formData.salarioBase, formData.plusConvenio, formData.valorAntiguedad, formData.valorNocturnidad, formData.dietas, formData.horasExtras, formData.irpf, formData.cotizacionContingenciasComunes, formData.cotizacionMEI, formData.cotizacionDesempleo, formData.cotizacionFormacionProfesional]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

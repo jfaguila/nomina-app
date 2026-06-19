@@ -176,61 +176,41 @@ class NominaValidator {
             console.log('⚠️ No se detectó convenio específico, usando genérico.');
         }
 
-        // Solo procesar si hay datos reales
-        let seguridadSocial = null;
-        let irpf = null;
+        const n = (v) => (v !== null && v !== undefined && v !== '' && !isNaN(parseFloat(v))) ? parseFloat(v) : 0;
+        const checkPPExtras = n(nominaData.horasExtras); // "P.P. Extras" (prorrateo pagas) u horas extra
+        // Total Devengado: si el OCR no lo extrajo, lo CALCULAMOS de la suma de conceptos (nunca queda vacío).
+        const sumaDevengos = n(checkSalarioBase) + n(checkPlusConvenio) + n(checkAntiguedad) + n(checkNocturnidad) + n(checkDietas) + checkPPExtras;
+        const totalDevengadoEff = (checkTotalDevengado && checkTotalDevengado > 0) ? checkTotalDevengado : (sumaDevengos > 0 ? sumaDevengos : null);
+        const totalDevengadoCalculado = parseFloat(sumaDevengos.toFixed(2));
+
         let totalDeducciones = null;
         let liquidoTotal = null;
-
-        if (checkTotalDevengado && checkTotalDevengado > 0) {
-
-            // OBTENER TASAS DE LA ESTRATEGIA (o por defecto)
-            const rates = strategy ? strategy.getDeductionRates() : {
-                contingenciasComunes: 4.70,
-                desempleo: 1.55,
-                formacionProfesional: 0.10,
-                mei: 0.13 // Asumimos 0.13 por defecto actual
-            };
-
-            // Cálculos más precisos
-            const baseCC = checkTotalDevengado; // Simplificación: Base CC suele ser Total Devengado (ajustar si hay dietas exentas)
-
-            // Contingencias Comunes
-            seguridadSocial = baseCC * (rates.contingenciasComunes / 100);
-
-            // MEI + Desempleo + FP (A menudo agrupados o separados)
-            const otrasDeducciones = baseCC * ((rates.desempleo + rates.formacionProfesional + (rates.mei || 0)) / 100);
-
-            // IRPF (Variable)
-            irpf = this.calcularIRPF(checkTotalDevengado); // Este método sigue siendo una estimación básica
-
-            totalDeducciones = seguridadSocial + otrasDeducciones + irpf;
-            liquidoTotal = checkTotalDevengado - totalDeducciones;
-
-            console.log(`📊 Cálculos Estrategia (${strategy ? strategy.name : 'Genérico'}):`);
-            console.log(`- Base: ${baseCC.toFixed(2)}`);
-            console.log(`- CC (${rates.contingenciasComunes}%): ${seguridadSocial.toFixed(2)}`);
-            console.log(`- Desempleo/FP/MEI: ${otrasDeducciones.toFixed(2)}`);
-            console.log(`- Total Deducciones Calc: ${totalDeducciones.toFixed(2)}`);
-        }
-
-        // SOLO incluir cálculos si hay datos reales
         const calculosFinales = {};
 
-        if (checkTotalDevengado) {
-            calculosFinales.total_devengado = parseFloat(checkTotalDevengado.toFixed(2));
-        }
-        if (seguridadSocial) {
-            calculosFinales.seguridad_social_estimada = parseFloat(seguridadSocial.toFixed(2));
-        }
-        if (irpf) {
-            calculosFinales.irpf_estimado = parseFloat(irpf.toFixed(2));
-        }
-        if (totalDeducciones) {
+        if (totalDevengadoEff && totalDevengadoEff > 0) {
+            const rates = strategy ? strategy.getDeductionRates() : {
+                contingenciasComunes: 4.70, desempleo: 1.55, formacionProfesional: 0.10, mei: 0.13
+            };
+            const baseCC = totalDevengadoEff; // base de cotización ≈ total devengado
+            // Usar deducciones REALES del OCR si existen; si no, estimar.
+            const cc  = n(nominaData.cotizacionContingenciasComunes) || baseCC * (rates.contingenciasComunes / 100);
+            const mei = n(nominaData.cotizacionMEI) || baseCC * ((rates.mei || 0) / 100);
+            const des = n(nominaData.cotizacionDesempleo) || baseCC * (rates.desempleo / 100);
+            const fp  = n(nominaData.cotizacionFormacionProfesional) || baseCC * (rates.formacionProfesional / 100);
+            const irpf = n(nominaData.irpf) || this.calcularIRPF(totalDevengadoEff);
+            totalDeducciones = cc + mei + des + fp + irpf;
+            liquidoTotal = totalDevengadoEff - totalDeducciones;
+
+            calculosFinales.total_devengado = parseFloat(totalDevengadoEff.toFixed(2));
             calculosFinales.total_deducciones = parseFloat(totalDeducciones.toFixed(2));
-        }
-        if (liquidoTotal) {
             calculosFinales.liquido_estimado = parseFloat(liquidoTotal.toFixed(2));
+            if (!checkTotalDevengado) calculosFinales.total_devengado_calculado = true; // se calculó de la suma
+
+            // Verificación cruzada: si el OCR leyó un total devengado y NO cuadra con la suma de conceptos → avisar
+            if (checkTotalDevengado && sumaDevengos > 0 && Math.abs(checkTotalDevengado - sumaDevengos) > 1) {
+                warnings.push(`El Total Devengado de la nómina (${checkTotalDevengado.toFixed(2)}€) no cuadra con la suma de los conceptos (${sumaDevengos.toFixed(2)}€). Revísalo.`);
+            }
+            console.log(`📊 Total devengado=${totalDevengadoEff.toFixed(2)} | deducciones=${totalDeducciones.toFixed(2)} | líquido=${liquidoTotal.toFixed(2)}`);
         }
 
         details.calculos_finales = calculosFinales;
