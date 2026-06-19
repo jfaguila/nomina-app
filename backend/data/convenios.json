@@ -299,29 +299,253 @@
     }
   },
   "leroy_merlin": {
-    "nombre": "Convenio Grandes Almacenes (Leroy Merlin)",
+    "nombre": "Leroy Merlin (Convenio Grandes Almacenes 2024)",
+    "fuente": "Convenio Colectivo Estatal de Grandes Almacenes. Tabla salarial 2024 (BOE-A-2024-3524, rev. salarial; convenio base BOE-A-2023-13740).",
+    "fuenteUrl": "https://www.boe.es/buscar/doc.php?id=BOE-A-2024-3524",
+    "ambito": "Nacional. Cubre Leroy Merlin, El Corte Inglés, Ikea, Obramat y otros grandes almacenes.",
+    "pagas": 16,
     "salarioMinimo": {
-      "profesional": 1277.25,
-      "coordinador": 1450.0,
-      "tecnico": 1600.0
+      "base": 1025.78,
+      "profesional": 1056.55,
+      "coordinador": 1151.64,
+      "tecnicos": 1255.29,
+      "empleado": 1025.78
     },
     "detallesSalariales": {
+      "base": {
+        "salarioBase": 1025.78,
+        "anual": 16412.4
+      },
       "profesional": {
-        "salarioBase": 1277.25,
-        "plusConvenio": 0
+        "salarioBase": 1056.55,
+        "anual": 16904.78
+      },
+      "coordinador": {
+        "salarioBase": 1151.64,
+        "anual": 18426.18
+      },
+      "tecnicos": {
+        "salarioBase": 1255.29,
+        "anual": 20084.57
       }
     },
-    "incentivos": {
-      "nombre": "Prima de Progreso",
-      "descripcion": "Trimestral, ligada a resultados colectivos de tienda/sección."
+    "vigencia": {
+      "inicio": "2023-01-01",
+      "fin": "2026-12-31",
+      "tablaAplicada": "2024"
     },
-    "pagasExtras": {
-      "regla": "prorrateo_obligatorio",
-      "cantidad": 4
-    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "pagasExtra": 4,
     "reglasAntiguedad": {
-      "tipo": "cuatrienio",
-      "porcentajeBase": 0.03
+      "tipo": "trienio",
+      "porcentajeBase": 0.0,
+      "descripcion": "Antigüedad según convenio"
+    },
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    }
+  },
+  "grandes_almacenes": {
+    "nombre": "Convenio de Grandes Almacenes",
+    "fuente": "Convenio Colectivo Estatal de Grandes Almacenes. Tabla salarial 2024 (BOE-A-2024-3524, rev. salarial; convenio base BOE-A-2023-13740).",
+    "fuenteUrl": "https://www.boe.es/buscar/doc.php?id=BOE-A-2024-3524",
+    "ambito": "Nacional. Cubre Leroy Merlin, El Corte Inglés, Ikea, Obramat y otros grandes almacenes.",
+    "pagas": 16,
+    "salarioMinimo": {
+      "base": 1025.78,
+      "profesional": 1056.55,
+      "coordinador": 1151.64,
+      "tecnicos": 1255.29,
+      "empleado": 1025.78
+    },
+    "detallesSalariales": {
+      "base": {
+        "salarioBase": 1025.78,
+        "anual": 16412.4
+      },
+      "profesional": {
+        "salarioBase": 1056.55,
+        "anual": 16904.78
+      },
+      "coordinador": {
+        "salarioBase": 1151.64,
+        "anual": 18426.18
+      },
+      "tecnicos": {
+        "salarioBase": 1255.29,
+        "anual": 20084.57
+      }
+    },
+    "vigencia": {
+      "inicio": "2023-01-01",
+      "fin": "2026-12-31",
+      "tablaAplicada": "2024"
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "pagasExtra": 4,
+    "reglasAntiguedad": {
+      "tipo": "trienio",
+      "porcentajeBase": 0.0,
+      "descripcion": "Antigüedad según convenio"
+    },
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    }
+  },
+  "el_corte_ingles": {
+    "nombre": "El Corte Inglés (Convenio Grandes Almacenes 2024)",
+    "fuente": "Convenio Colectivo Estatal de Grandes Almacenes. Tabla salarial 2024 (BOE-A-2024-3524, rev. salarial; convenio base BOE-A-2023-13740).",
+    "fuenteUrl": "https://www.boe.es/buscar/doc.php?id=BOE-A-2024-3524",
+    "ambito": "Nacional. Cubre Leroy Merlin, El Corte Inglés, Ikea, Obramat y otros grandes almacenes.",
+    "pagas": 16,
+    "salarioMinimo": {
+      "base": 1025.78,
+      "profesional": 1056.55,
+      "coordinador": 1151.64,
+      "tecnicos": 1255.29,
+      "empleado": 1025.78
+    },
+    "detallesSalariales": {
+      "base": {
+        "salarioBase": 1025.78,
+        "anual": 16412.4
+      },
+      "profesional": {
+        "salarioBase": 1056.55,
+        "anual": 16904.78
+      },
+      "coordinador": {
+        "salarioBase": 1151.64,
+        "anual": 18426.18
+      },
+      "tecnicos": {
+        "salarioBase": 1255.29,
+        "anual": 20084.57
+      }
+    },
+    "vigencia": {
+      "inicio": "2023-01-01",
+      "fin": "2026-12-31",
+      "tablaAplicada": "2024"
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "pagasExtra": 4,
+    "reglasAntiguedad": {
+      "tipo": "trienio",
+      "porcentajeBase": 0.0,
+      "descripcion": "Antigüedad según convenio"
+    },
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    }
+  },
+  "ikea": {
+    "nombre": "Ikea (Convenio Grandes Almacenes 2024)",
+    "fuente": "Convenio Colectivo Estatal de Grandes Almacenes. Tabla salarial 2024 (BOE-A-2024-3524, rev. salarial; convenio base BOE-A-2023-13740).",
+    "fuenteUrl": "https://www.boe.es/buscar/doc.php?id=BOE-A-2024-3524",
+    "ambito": "Nacional. Cubre Leroy Merlin, El Corte Inglés, Ikea, Obramat y otros grandes almacenes.",
+    "pagas": 16,
+    "salarioMinimo": {
+      "base": 1025.78,
+      "profesional": 1056.55,
+      "coordinador": 1151.64,
+      "tecnicos": 1255.29,
+      "empleado": 1025.78
+    },
+    "detallesSalariales": {
+      "base": {
+        "salarioBase": 1025.78,
+        "anual": 16412.4
+      },
+      "profesional": {
+        "salarioBase": 1056.55,
+        "anual": 16904.78
+      },
+      "coordinador": {
+        "salarioBase": 1151.64,
+        "anual": 18426.18
+      },
+      "tecnicos": {
+        "salarioBase": 1255.29,
+        "anual": 20084.57
+      }
+    },
+    "vigencia": {
+      "inicio": "2023-01-01",
+      "fin": "2026-12-31",
+      "tablaAplicada": "2024"
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "pagasExtra": 4,
+    "reglasAntiguedad": {
+      "tipo": "trienio",
+      "porcentajeBase": 0.0,
+      "descripcion": "Antigüedad según convenio"
+    },
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    }
+  },
+  "obramat": {
+    "nombre": "Obramat / Bricomart (Convenio Grandes Almacenes 2024)",
+    "fuente": "Convenio Colectivo Estatal de Grandes Almacenes. Tabla salarial 2024 (BOE-A-2024-3524, rev. salarial; convenio base BOE-A-2023-13740).",
+    "fuenteUrl": "https://www.boe.es/buscar/doc.php?id=BOE-A-2024-3524",
+    "ambito": "Nacional. Cubre Leroy Merlin, El Corte Inglés, Ikea, Obramat y otros grandes almacenes.",
+    "pagas": 16,
+    "salarioMinimo": {
+      "base": 1025.78,
+      "profesional": 1056.55,
+      "coordinador": 1151.64,
+      "tecnicos": 1255.29,
+      "empleado": 1025.78
+    },
+    "detallesSalariales": {
+      "base": {
+        "salarioBase": 1025.78,
+        "anual": 16412.4
+      },
+      "profesional": {
+        "salarioBase": 1056.55,
+        "anual": 16904.78
+      },
+      "coordinador": {
+        "salarioBase": 1151.64,
+        "anual": 18426.18
+      },
+      "tecnicos": {
+        "salarioBase": 1255.29,
+        "anual": 20084.57
+      }
+    },
+    "vigencia": {
+      "inicio": "2023-01-01",
+      "fin": "2026-12-31",
+      "tablaAplicada": "2024"
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "pagasExtra": 4,
+    "reglasAntiguedad": {
+      "tipo": "trienio",
+      "porcentajeBase": 0.0,
+      "descripcion": "Antigüedad según convenio"
+    },
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
     }
   }
 }

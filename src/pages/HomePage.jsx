@@ -21,6 +21,13 @@ const CATEGORIAS_GENERICAS = [
 ];
 
 // Categorías milimétricas por convenio (deben coincidir con backend/data/convenios.json → detallesSalariales)
+const GA_CATS = [
+    { value: 'base', label: 'Grupo Base · cajas, reposición, ventas, almacén…' },
+    { value: 'profesional', label: 'Grupo Profesional' },
+    { value: 'coordinador', label: 'Coordinador/a' },
+    { value: 'tecnicos', label: 'Técnicos/as' },
+];
+
 const CATEGORIAS_POR_CONVENIO = {
     // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
     mercadona: [
@@ -29,6 +36,11 @@ const CATEGORIAS_POR_CONVENIO = {
         { value: 'gerente_b', label: 'Gerente B · Ayte coordinación / Chofer / Admin' },
         { value: 'gerente_c', label: 'Gerente C y Coordinadores' },
     ],
+    grandes_almacenes: GA_CATS,
+    leroy_merlin: GA_CATS,
+    el_corte_ingles: GA_CATS,
+    ikea: GA_CATS,
+    obramat: GA_CATS,
     transporte_sanitario_andalucia: [
         { value: 'tes_conductor', label: 'TES Conductor/a' },
         { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero' },
@@ -420,6 +432,10 @@ const HomePage = () => {
                                                 >
                                                     <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
                                                     <option value="mercadona">Mercadona (Convenio 2024-2028, tabla 2023)</option>
+                                                    <option value="leroy_merlin">Leroy Merlin (Grandes Almacenes)</option>
+                                                    <option value="el_corte_ingles">El Corte Inglés (Grandes Almacenes)</option>
+                                                    <option value="ikea">Ikea (Grandes Almacenes)</option>
+                                                    <option value="obramat">Obramat / Bricomart (Grandes Almacenes)</option>
                                                     <option value="hosteleria" disabled>Hostelería (en preparación)</option>
                                                     <option value="comercio" disabled>Comercio (en preparación)</option>
                                                     <option value="construccion" disabled>Construcción (en preparación)</option>

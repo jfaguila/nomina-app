@@ -88,6 +88,43 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
         }
     }, [initialData]);
 
+    // Autocálculo: Total Devengado, deducciones SS y líquido (para que NUNCA salgan en 0,00)
+    const num = (v) => {
+        if (v === null || v === undefined || v === '') return 0;
+        const n = parseFloat(String(v).replace(/\./g, '').replace(',', '.'));
+        return isNaN(n) ? (parseFloat(v) || 0) : (String(v).includes(',') ? n : (parseFloat(v) || 0));
+    };
+    useEffect(() => {
+        const base = num(formData.salarioBase);
+        const plus = num(formData.plusConvenio);
+        const ant = num(formData.valorAntiguedad);
+        const noct = num(formData.valorNocturnidad);
+        const dietas = num(formData.dietas);
+        const extras = num(formData.horasExtras);
+        const devengos = base + plus + ant + noct + dietas + extras;
+        if (devengos <= 0) return;
+        // base de cotización ≈ devengos menos dietas (las dietas, dentro de límite, no cotizan)
+        const baseCot = Math.max(devengos - dietas, 0);
+        const cc = baseCot * 0.0470;
+        const mei = baseCot * 0.0013;
+        const des = baseCot * 0.0155;
+        const fp = baseCot * 0.0010;
+        const irpf = num(formData.irpf);
+        const totalDed = cc + mei + des + fp + irpf;
+        const r2 = (x) => (Math.round(x * 100) / 100).toFixed(2);
+        setFormData(prev => ({
+            ...prev,
+            totalDevengado: r2(devengos),
+            cotizacionContingenciasComunes: r2(cc),
+            cotizacionMEI: r2(mei),
+            cotizacionDesempleo: r2(des),
+            cotizacionFormacionProfesional: r2(fp),
+            totalDeducciones: r2(totalDed),
+            liquidoTotal: r2(devengos - totalDed)
+        }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData.salarioBase, formData.plusConvenio, formData.valorAntiguedad, formData.valorNocturnidad, formData.dietas, formData.horasExtras, formData.irpf]);
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
 
