@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import ExportResults from './ExportResults';
 import { useLanguage } from '../i18n/LanguageProvider';
 
-const ResultsDisplay = ({ results }) => {
+const ResultsDisplay = ({ results, usos = 0 }) => {
     const { t } = useLanguage();
 
     if (!results) return null;
@@ -74,6 +74,11 @@ const ResultsDisplay = ({ results }) => {
                         <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4">
                             <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                         </div>
+                        {usos >= 2 && (
+                            <div className="mx-auto mb-4 inline-block rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-sm font-semibold px-4 py-1.5">
+                                👋 Ya has verificado {usos} nóminas con NominIA. ¿Hacemos que te salga a cuenta?
+                            </div>
+                        )}
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             {isValid ? 'Ve el desglose completo de tu nómina' : 'Desbloquea cuánto dinero te deben'}
                         </h3>

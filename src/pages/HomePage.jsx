@@ -80,6 +80,10 @@ const HomePage = () => {
     const [reviewData, setReviewData] = useState(null);
     const [extractedText, setExtractedText] = useState('');
     const [leadCaptured, setLeadCaptured] = useState(false);
+    // Detección de uso repetido (Opción A: nudge suave, no muro)
+    const [usos, setUsos] = useState(() => {
+        try { return parseInt(localStorage.getItem('nominia_usos') || '0', 10) || 0; } catch (e) { return 0; }
+    });
 
     // Pre-analysis options (Initial selection)
     const [uploadData, setUploadData] = useState({
@@ -253,6 +257,12 @@ const HomePage = () => {
 
             setResults(response.data);
             setLoadingProgress(100);
+            // Contar uso (nudge suave en visitas repetidas)
+            try {
+                const nuevo = (parseInt(localStorage.getItem('nominia_usos') || '0', 10) || 0) + 1;
+                localStorage.setItem('nominia_usos', String(nuevo));
+                setUsos(nuevo);
+            } catch (e) { /* ignore */ }
 
             setTimeout(() => {
                 setLoading(false);
@@ -545,7 +555,7 @@ const HomePage = () => {
                                             Nueva verificación
                                         </button>
                                     </div>
-                                    <ResultsDisplay results={results} />
+                                    <ResultsDisplay results={results} usos={usos} />
                                     <SimuladorHoras results={results} />
                                 </>
                             )}
