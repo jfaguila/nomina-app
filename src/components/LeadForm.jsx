@@ -26,6 +26,7 @@ export default function LeadForm({ apiUrl, defaults = {}, onCaptured }) {
             });
         } catch (_) { /* no bloqueamos el veredicto si el guardado falla */ }
         finally {
+            try { if (window.gtag) window.gtag('event', 'conversion', { send_to: 'AW-18208622022/ua98COfA0cEcEMaLxupD' }); } catch (e) {}
             setLoading(false);
             onCaptured && onCaptured({ email, nombre, provincia });
         }

@@ -23,23 +23,23 @@ const CATEGORIAS_GENERICAS = [
 const CATEGORIAS_POR_CONVENIO = {
     // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
     transporte_sanitario_andalucia: [
-        { value: 'tes_conductor', label: 'TES Conductor/a (base 1.253,26 €)' },
-        { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero (base 1.091,89 €)' },
-        { value: 'tes_camillero', label: 'TES Camillero/a (base 1.026,52 €)' },
-        { value: 'jefe_equipo', label: 'Jefe/a de Equipo (base 1.266,81 €)' },
-        { value: 'jefe_trafico', label: 'Jefe/a de Tráfico (base 1.386,93 €)' },
-        { value: 'oficial_admin', label: 'Oficial 1ª Administrativo (base 1.354,16 €)' },
-        { value: 'auxiliar_admin', label: 'Auxiliar Administrativo (base 1.146,71 €)' },
-        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico (base 1.092,06 €)' },
-        { value: 'mecanico', label: 'Mecánico/a (base 1.238,44 €)' },
-        { value: 'chapista', label: 'Chapista (base 1.190,34 €)' },
-        { value: 'pintor', label: 'Pintor/a (base 1.190,34 €)' },
-        { value: 'jefe_taller', label: 'Jefe/a de Taller (base 1.326,35 €)' },
-        { value: 'telefonista', label: 'Telefonista (base 1.157,61 €)' },
-        { value: 'medico', label: 'Médico/a (base 2.271,48 €)' },
-        { value: 'ats_due', label: 'ATS/DUE Enfermería (base 1.703,62 €)' },
-        { value: 'director_area', label: 'Director/a de Área (base 2.077,47 €)' },
-        { value: 'director', label: 'Director/a (base 2.293,36 €)' },
+        { value: 'tes_conductor', label: 'TES Conductor/a' },
+        { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero' },
+        { value: 'tes_camillero', label: 'TES Camillero/a' },
+        { value: 'jefe_equipo', label: 'Jefe/a de Equipo' },
+        { value: 'jefe_trafico', label: 'Jefe/a de Tráfico' },
+        { value: 'oficial_admin', label: 'Oficial 1ª Administrativo' },
+        { value: 'auxiliar_admin', label: 'Auxiliar Administrativo' },
+        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico' },
+        { value: 'mecanico', label: 'Mecánico/a' },
+        { value: 'chapista', label: 'Chapista' },
+        { value: 'pintor', label: 'Pintor/a' },
+        { value: 'jefe_taller', label: 'Jefe/a de Taller' },
+        { value: 'telefonista', label: 'Telefonista' },
+        { value: 'medico', label: 'Médico/a' },
+        { value: 'ats_due', label: 'ATS/DUE Enfermería' },
+        { value: 'director_area', label: 'Director/a de Área' },
+        { value: 'director', label: 'Director/a' },
     ],
 };
 
@@ -538,10 +538,6 @@ const HomePage = () => {
                         <Link to="/precios" className="hover:text-blue-600">Precios</Link>
                         <Link to="/privacidad" className="hover:text-blue-600">Privacidad</Link>
                         <Link to="/privacidad#cookies" className="hover:text-blue-600">Cookies</Link>
-                        <a href="https://github.com/jfaguila/nomina-app" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 flex items-center gap-1">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-                            GitHub
-                        </a>
                     </nav>
                 </div>
             </footer>
