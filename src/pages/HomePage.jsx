@@ -291,12 +291,8 @@ const HomePage = () => {
             <div className="relative max-w-6xl mx-auto px-4 py-8 md:py-12">
                 <nav className="flex justify-between items-center mb-12 animate-fade-in">
                     <div className="flex items-center gap-3">
-                        <img src="/logo.svg" alt="NominIA" className="w-12 h-12 rounded-2xl shadow-lg shadow-blue-500/30" />
-
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight leading-none">NominIA</h1>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Verificador inteligente de nóminas</p>
-                        </div>
+                        <img src="/logo-full.svg" alt="nominia.app" className="h-9 md:h-10 w-auto" />
+                        <h1 className="sr-only">NominIA</h1>
                     </div>
                     <div className="flex items-center gap-2">
                         <Link to="/precios" className="px-4 py-2 rounded-full bg-[#0E2438] text-white text-sm font-bold hover:bg-[#0A1A2B] transition-colors">Precios</Link>
@@ -337,23 +333,23 @@ const HomePage = () => {
                             className="space-y-12"
                         >
                             <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0E2438] to-[#0A1A2B] px-7 py-12 md:px-14 md:py-16 text-white shadow-2xl shadow-[#0E2438]/30">
-                                <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full bg-lime-400/10 blur-3xl" aria-hidden="true"></div>
+                                <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full bg-[#14C2A0]/10 blur-3xl" aria-hidden="true"></div>
                                 <div className="absolute -left-16 bottom-0 w-56 h-56 rounded-full bg-cyan-400/5 blur-3xl" aria-hidden="true"></div>
                                 <div className="relative max-w-2xl">
-                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-lime-300 ring-1 ring-inset ring-white/15">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-lime-400"></span>
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-[#14C2A0] ring-1 ring-inset ring-white/15">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#14C2A0]"></span>
                                         Convenio TES Andalucía · tabla oficial 2025
                                     </span>
                                     <h2 className="mt-5 text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05]">
-                                        ¿Te están pagando <span className="text-lime-400">lo que marca tu convenio?</span>
+                                        ¿Te están pagando <span className="text-[#14C2A0]">lo que marca tu convenio?</span>
                                     </h2>
                                     <p className="mt-5 text-lg text-slate-300 max-w-xl">
                                         Sube tu nómina y en 10 segundos la comparamos con tu convenio colectivo y te decimos si te están pagando de menos.
                                     </p>
                                     <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-300">
-                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> 100% privado — no se guarda</span>
-                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> Resultado al instante</span>
-                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> Gratis para empezar</span>
+                                        <span className="flex items-center gap-2"><span className="text-[#14C2A0] font-bold">✓</span> 100% privado — no se guarda</span>
+                                        <span className="flex items-center gap-2"><span className="text-[#14C2A0] font-bold">✓</span> Resultado al instante</span>
+                                        <span className="flex items-center gap-2"><span className="text-[#14C2A0] font-bold">✓</span> Gratis para empezar</span>
                                     </div>
                                 </div>
                             </div>
@@ -377,7 +373,7 @@ const HomePage = () => {
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                                     <div className="space-y-6">
                                         <h3 className="text-xl font-bold flex items-center gap-3">
-                                            <span className="flex-none bg-[#0E2438] text-lime-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                                            <span className="flex-none bg-[#0E2438] text-[#14C2A0] w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
                                             Sube tu archivo
                                         </h3>
                                         <FileUpload onFileSelect={handleFileSelect} selectedFile={selectedFile} />
@@ -385,7 +381,7 @@ const HomePage = () => {
 
                                     <div className="space-y-6">
                                         <h3 className="text-xl font-bold flex items-center gap-3">
-                                            <span className="flex-none bg-[#0E2438] text-lime-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                                            <span className="flex-none bg-[#0E2438] text-[#14C2A0] w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
                                             Configuración
                                         </h3>
 
@@ -441,7 +437,7 @@ const HomePage = () => {
                                         <button
                                             onClick={handleAnalyze}
                                             disabled={!selectedFile || loading}
-                                            className="w-full py-4 px-6 rounded-2xl bg-lime-400 hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed text-[#0A1A2B] font-extrabold text-lg shadow-lg shadow-lime-500/20 transition-all flex items-center justify-center gap-3"
+                                            className="w-full py-4 px-6 rounded-2xl bg-[#14C2A0] hover:bg-[#10A88B] disabled:opacity-50 disabled:cursor-not-allowed text-[#0A1A2B] font-extrabold text-lg shadow-lg shadow-[#14C2A0]/20 transition-all flex items-center justify-center gap-3"
                                         >
                                             <span>Analizar mi nómina gratis</span>
                                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
