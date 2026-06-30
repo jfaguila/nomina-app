@@ -1,12 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import LanguageSelector from '../components/LanguageSelector';
 
 export default function PrivacidadPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
       <header className="max-w-3xl mx-auto px-6 py-6 flex items-center justify-between">
         <Link to="/" className="text-2xl font-bold tracking-tight">NominIA</Link>
-        <Link to="/" className="text-sm font-semibold text-blue-600 hover:underline">← Volver</Link>
+        <div className="flex items-center gap-3">
+          <LanguageSelector />
+          <Link to="/" className="text-sm font-semibold text-blue-600 hover:underline">← Volver</Link>
+        </div>
       </header>
 
       <article className="max-w-3xl mx-auto px-6 pb-20 prose dark:prose-invert">

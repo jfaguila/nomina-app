@@ -9,6 +9,7 @@ import ManualInput from '../components/ManualInput';
 import ResultsDisplay from '../components/ResultsDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DarkModeToggle from '../components/DarkModeToggle';
+import LanguageSelector from '../components/LanguageSelector';
 import InstructionsModal from '../components/InstructionsModal';
 import LeadForm from '../components/LeadForm';
 import SimuladorHoras from '../components/SimuladorHoras';
@@ -331,6 +332,7 @@ const HomePage = () => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <LanguageSelector />
                         <Link to="/precios" className="px-4 py-2 rounded-full bg-[#0E2438] text-white text-sm font-bold hover:bg-[#0A1A2B] transition-colors">Precios</Link>
                         <button
                             onClick={() => setShowInstructions(true)}

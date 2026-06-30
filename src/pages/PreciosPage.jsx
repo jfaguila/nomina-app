@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import LanguageSelector from '../components/LanguageSelector';
 
 const getApiUrl = () => process.env.REACT_APP_API_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5987' : 'https://nomina-backend-production-57d2.up.railway.app');
 
@@ -48,7 +49,10 @@ export default function PreciosPage() {
             <p className="text-xs text-gray-500 dark:text-gray-400">Verificador inteligente de nóminas</p>
           </div>
         </Link>
-        <Link to="/" className="text-sm font-semibold text-blue-600 hover:underline">← Volver</Link>
+        <div className="flex items-center gap-3">
+          <LanguageSelector />
+          <Link to="/" className="text-sm font-semibold text-blue-600 hover:underline">← Volver</Link>
+        </div>
       </header>
 
       <section className="max-w-6xl mx-auto px-6 pt-8 pb-20 text-center">
