@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './i18n/LanguageProvider';
 import SkipLinks from './components/SkipLinks';
-import LanguageSelector from './components/LanguageSelector';
 import HomePage from './pages/HomePage';
 import PreciosPage from './pages/PreciosPage';
 import PrivacidadPage from './pages/PrivacidadPage';
@@ -14,7 +13,6 @@ function App() {
       <Router>
         <div className="min-h-screen">
           <SkipLinks />
-          <LanguageSelector />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/precios" element={<PreciosPage />} />
