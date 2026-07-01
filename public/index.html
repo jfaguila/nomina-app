@@ -14,39 +14,55 @@
       gtag('js', new Date());
       gtag('config', 'AW-18208622022');
     </script>
-    <meta
-      name="description"
-      content="NominIA - Verifica tu nómina en segundos con IA"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>NominIA - Verificador de Nóminas</title>
+    <title>NominIA · Verifica si te pagan lo que marca tu convenio</title>
+    <meta name="description" content="Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre gratis si te están pagando de menos. 100% privado, sin registro." />
+    <link rel="canonical" href="https://nominia.app/" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NominIA" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content="https://nominia.app/" />
+    <meta property="og:title" content="¿Te están pagando lo que marca tu convenio?" />
+    <meta property="og:description" content="Sube tu nómina y en segundos NominIA te dice, gratis, si te pagan de menos según tu convenio colectivo." />
+    <meta property="og:image" content="https://nominia.app/logo192.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="¿Te están pagando lo que marca tu convenio?" />
+    <meta name="twitter:description" content="Sube tu nómina y descubre gratis si te pagan de menos según tu convenio." />
+    <meta name="twitter:image" content="https://nominia.app/logo192.png" />
+
+    <!-- Datos estructurados -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "NominIA",
+      "url": "https://nominia.app/",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "description": "Verificador de nóminas con IA: compara tu nómina con tu convenio colectivo y te dice si te pagan de menos.",
+      "inLanguage": "es-ES",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+    }
+    </script>
+
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <div id="root">
+      <!-- Contenido estático de respaldo: visible para buscadores y en el primer pintado. React lo sustituye al cargar. -->
+      <main style="max-width:680px;margin:64px auto;padding:24px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;text-align:center;color:#0E2438;">
+        <h1 style="font-size:32px;line-height:1.2;">¿Te están pagando lo que marca tu convenio?</h1>
+        <p style="font-size:18px;color:#334155;">Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre <strong>gratis</strong> si te están pagando de menos.</p>
+        <p style="color:#64748b;">100% privado · Resultado al instante · Sin registro</p>
+        <p><a href="https://nominia.app/" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600;">Verificar mi nómina</a></p>
+      </main>
+    </div>
+    <noscript>NominIA verifica tu nómina contra tu convenio colectivo. Activa JavaScript para usar la aplicación, o visita https://nominia.app.</noscript>
   </body>
 </html>
