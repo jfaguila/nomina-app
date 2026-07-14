@@ -370,26 +370,34 @@ const HomePage = () => {
                             exit={{ opacity: 0, scale: 0.98 }}
                             className="space-y-12"
                         >
-                            <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0E2438] to-[#0A1A2B] px-7 py-12 md:px-14 md:py-16 text-white shadow-2xl shadow-[#0E2438]/30">
-                                <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full bg-lime-400/10 blur-3xl" aria-hidden="true"></div>
-                                <div className="absolute -left-16 bottom-0 w-56 h-56 rounded-full bg-cyan-400/5 blur-3xl" aria-hidden="true"></div>
-                                <div className="relative max-w-2xl">
-                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-lime-400 ring-1 ring-inset ring-white/15">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-lime-400"></span>
-                                        Convenio TES Andalucía · tabla oficial 2025
+                            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0E2438] via-[#0c2033] to-[#0A1A2B] px-7 py-14 md:px-16 md:py-20 text-white shadow-2xl shadow-[#0E2438]/40 ring-1 ring-white/5">
+                                <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-lime-400/12 blur-3xl animate-pulse-slow" aria-hidden="true"></div>
+                                <div className="absolute -left-20 bottom-0 w-64 h-64 rounded-full bg-cyan-400/[0.06] blur-3xl" aria-hidden="true"></div>
+                                <div className="relative max-w-3xl">
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-3.5 py-1.5 text-[11px] font-mono uppercase tracking-[0.18em] text-lime-300 ring-1 ring-inset ring-white/10 backdrop-blur">
+                                        <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-lime-400"></span></span>
+                                        Convenios oficiales · tablas 2025
                                     </span>
-                                    <h2 className="mt-5 text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05]">
-                                        ¿Te están pagando <span className="text-lime-400">lo que marca tu convenio?</span>
+                                    <h2 className="mt-6 text-[2.6rem] leading-[1.02] md:text-[4.6rem] md:leading-[0.98] font-extrabold tracking-tight">
+                                        ¿Te pagan <span className="text-lime-400 italic font-serif font-normal">lo que te toca?</span>
                                     </h2>
-                                    <p className="mt-5 text-lg text-slate-300 max-w-xl">
-                                        Sube tu nómina y en 10 segundos la comparamos con tu convenio colectivo y te decimos si te están pagando de menos.
+                                    <p className="mt-6 text-lg md:text-xl text-slate-300/90 max-w-xl leading-relaxed">
+                                        Sube tu nómina y en <b className="text-white font-semibold">10 segundos</b> la comparamos con tu convenio colectivo. Si te pagan de menos, lo verás claro.
                                     </p>
-                                    <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-300">
+                                    <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm text-slate-300">
                                         <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> 100% privado — no se guarda</span>
                                         <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> Resultado al instante</span>
                                         <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> Gratis para empezar</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center text-xs font-mono uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
+                                <span>Basado en convenios oficiales (BOE/BOJA)</span>
+                                <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
+                                <span>Tus datos no se almacenan</span>
+                                <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
+                                <span>Hecho en España</span>
                             </div>
 
                             {error && (
