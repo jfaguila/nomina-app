@@ -1,0 +1,27 @@
+{
+  "muestra": "actividades_nominas_espacioformacion.pdf",
+  "ok": true,
+  "camposClave": {
+    "salarioBase": "841.42",
+    "totalDevengado": null,
+    "totalDeducciones": null,
+    "liquidoTotal": "996.88",
+    "irpf": "94.24"
+  },
+  "cobertura": "3/5",
+  "error": null,
+  "segundos": 0.102,
+  "caracteresTexto": 44591,
+  "datos": {
+    "categoria": "mando_intermedio",
+    "salarioBase": "841.42",
+    "horasExtras": "210.5",
+    "plusConvenio": "174.29",
+    "valorAntiguedad": "126.21",
+    "valorNocturnidad": "98",
+    "cotizacionContingenciasComunes": "2281.32",
+    "cotizacionDesempleo": "1.55",
+    "irpf": "94.24",
+    "liquidoTotal": "996.88"
+  }
+}

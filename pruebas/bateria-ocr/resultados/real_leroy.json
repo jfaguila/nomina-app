@@ -1,0 +1,24 @@
+{
+  "muestra": "real_leroy.pdf",
+  "ok": true,
+  "camposClave": {
+    "salarioBase": "1090.86",
+    "totalDevengado": null,
+    "totalDeducciones": null,
+    "liquidoTotal": null,
+    "irpf": "288.72"
+  },
+  "cobertura": "2/5",
+  "error": null,
+  "segundos": 0.004,
+  "caracteresTexto": 1732,
+  "datos": {
+    "categoria": null,
+    "salarioBase": "1090.86",
+    "complementoPuesto": "379.95",
+    "complementoSalarial": "218.17",
+    "cotizacionContingenciasComunes": "104.02",
+    "cotizacionDesempleo": "36.52",
+    "irpf": "288.72"
+  }
+}

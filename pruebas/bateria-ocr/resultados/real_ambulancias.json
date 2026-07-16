@@ -1,0 +1,30 @@
+{
+  "muestra": "real_ambulancias.pdf",
+  "ok": true,
+  "camposClave": {
+    "salarioBase": "1253.26",
+    "totalDevengado": null,
+    "totalDeducciones": null,
+    "liquidoTotal": null,
+    "irpf": "405.01"
+  },
+  "cobertura": "2/5",
+  "error": null,
+  "segundos": 3.618,
+  "caracteresTexto": 883,
+  "datos": {
+    "categoria": "tes_conductor",
+    "empresa": "AMBULANCIAS M.PASQUAU S.L",
+    "convenio": "transporte_sanitario_andalucia",
+    "salarioBase": "1253.26",
+    "plusConvenio": "167.52",
+    "valorAntiguedad": "313.32",
+    "valorNocturnidad": "37.76",
+    "dietas": "230",
+    "horasExtras": "433.53",
+    "cotizacionContingenciasComunes": "114.45",
+    "cotizacionMEI": "3.17",
+    "cotizacionDesempleo": "37.75",
+    "irpf": "405.01"
+  }
+}

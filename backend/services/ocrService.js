@@ -102,6 +102,7 @@ class OCRService {
      * @returns {Promise<string>} - Texto extraído
      */
     async extractFromImage(filePath) {
+        let preprocessedPath = null;
         try {
             const path = require('path');
             console.log('🚀 INICIANDO OCR ROBUSTO en:', filePath);
@@ -110,8 +111,11 @@ class OCRService {
             const tessdataDir = path.resolve(__dirname, '..', 'tessdata');
             console.log('📂 Usando tessdata local:', tessdataDir);
 
+            preprocessedPath = await this.preprocesarImagen(filePath);
+            const ocrInput = preprocessedPath || filePath;
+
             const result = await Tesseract.recognize(
-                filePath,
+                ocrInput,
                 'spa',
                 {
                     langPath: tessdataDir,
@@ -141,6 +145,10 @@ class OCRService {
         } catch (error) {
             console.error('🔥 Error CRÍTICO en OCR:', error);
             throw new Error(`Error al procesar la imagen con OCR: ${error.message}`);
+        } finally {
+            if (preprocessedPath && preprocessedPath !== filePath) {
+                try { fs.unlinkSync(preprocessedPath); } catch (e) { /* ignore */ }
+            }
         }
     }
 
@@ -165,13 +173,14 @@ class OCRService {
                 console.log(`🔧 Decimal simple: ${match} -> ${resultado}`);
                 return resultado;
             })
-            // Corregir errores comunes de OCR
-            .replace(/O/g, '0')
-            .replace(/l/g, '1')
-            .replace(/I/g, '1')
-            .replace(/S/g, '5')
-            .replace(/Z/g, '2')
-            .replace(/G/g, '6')
+            // Corregir errores comunes de OCR SOLO dentro de tokens con dígitos
+            // (un reemplazo global convierte "Salario" en "5a1ari0" y rompe la extracción)
+            .replace(/\b[\dOlISZG.,]*\d[\dOlISZG.,]*\b/g, (token) => token
+                .replace(/O/g, '0')
+                .replace(/[lI]/g, '1')
+                .replace(/S/g, '5')
+                .replace(/Z/g, '2')
+                .replace(/G/g, '6'))
             // Limpiar caracteres problemáticos
             .replace(/[│├┤┬┴┼]/g, '|')
             .replace(/[─═]/g, '-')
@@ -185,14 +194,36 @@ class OCRService {
     }
 
     /**
-     * Preprocesamiento de imagen para mejorar OCR (configuración de Tesseract)
-     * Esto mejora drásticamente la precisión del OCR
+     * Preprocesamiento de imagen para mejorar OCR: rotación EXIF (fotos de móvil),
+     * escala de grises, estirado de contraste, reducción de ruido, nitidez y
+     * reescalado a un ancho legible para Tesseract.
+     * @param {string} filePath - Ruta de la imagen original
+     * @returns {Promise<string|null>} - Ruta del PNG preprocesado, o null si falla (se usa la original)
      */
     async preprocesarImagen(filePath) {
-        // Simulación de preprocesamiento - en producción usaríamos sharp o similar
-        console.log('🔧 Preprocesando imagen para OCR óptimo...');
-        // Tesseract ya aplica mejoras internas con la configuración avanzada
-        return true;
+        try {
+            const sharp = require('sharp');
+            console.log('🔧 Preprocesando imagen para OCR óptimo...');
+            const outPath = filePath + '.prep.png';
+            const meta = await sharp(filePath).metadata();
+            // Ancho objetivo ~2500px: sube la resolución efectiva de fotos de móvil
+            // sin disparar el tiempo de OCR en escaneos ya grandes
+            const targetWidth = Math.min(Math.max(meta.width || 0, 2000), 3000);
+            await sharp(filePath)
+                .rotate()          // aplica la orientación EXIF (foto de móvil en vertical)
+                .grayscale()
+                .normalize()       // estira el contraste (papel gris / sombra de foto)
+                .median(1)         // quita ruido sal-pimienta sin comerse los trazos
+                .sharpen()
+                .resize({ width: targetWidth, withoutEnlargement: false })
+                .png()
+                .toFile(outPath);
+            console.log(`✅ Imagen preprocesada: ${outPath} (${meta.width}x${meta.height} → ancho ${targetWidth})`);
+            return outPath;
+        } catch (error) {
+            console.error('⚠️ Preprocesado falló, se usa la imagen original:', error.message);
+            return null;
+        }
     }
 
     /**

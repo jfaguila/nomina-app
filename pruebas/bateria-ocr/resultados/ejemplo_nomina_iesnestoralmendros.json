@@ -1,0 +1,20 @@
+{
+  "muestra": "ejemplo_nomina_iesnestoralmendros.pdf",
+  "ok": true,
+  "camposClave": {
+    "salarioBase": "838.64",
+    "totalDevengado": null,
+    "totalDeducciones": null,
+    "liquidoTotal": null,
+    "irpf": null
+  },
+  "cobertura": "1/5",
+  "error": null,
+  "segundos": 0.005,
+  "caracteresTexto": 2968,
+  "datos": {
+    "categoria": null,
+    "salarioBase": "838.64",
+    "cotizacionDesempleo": "1.6"
+  }
+}

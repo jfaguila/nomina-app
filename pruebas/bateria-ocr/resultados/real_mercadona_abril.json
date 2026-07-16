@@ -1,0 +1,29 @@
+{
+  "muestra": "real_mercadona_abril.pdf",
+  "ok": true,
+  "camposClave": {
+    "salarioBase": "1068.16",
+    "totalDevengado": "1815.31",
+    "totalDeducciones": "375.6",
+    "liquidoTotal": "1439.71",
+    "irpf": "260.32"
+  },
+  "cobertura": "5/5",
+  "error": null,
+  "segundos": 0.004,
+  "caracteresTexto": 2886,
+  "datos": {
+    "categoria": "gerente",
+    "salarioBase": "1068.16",
+    "pagas": "267.04",
+    "complementoPuesto": "475.76",
+    "valorNocturnidad": "4.35",
+    "totalDevengado": "1815.31",
+    "cotizacionContingenciasComunes": "85.32",
+    "cotizacionDesempleo": "28.14",
+    "cotizacionFormacionProfesional": "1.82",
+    "irpf": "260.32",
+    "totalDeducciones": "375.6",
+    "liquidoTotal": "1439.71"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "muestra": "guia_nomina_ccoo.pdf",
+  "ok": true,
+  "camposClave": {
+    "salarioBase": null,
+    "totalDevengado": null,
+    "totalDeducciones": null,
+    "liquidoTotal": null,
+    "irpf": null
+  },
+  "cobertura": "0/5",
+  "error": null,
+  "segundos": 0.009,
+  "caracteresTexto": 7136,
+  "datos": {
+    "categoria": null
+  }
+}
