@@ -243,6 +243,48 @@ class NominaValidator {
     }
 
     /**
+     * Fallback genérico basado en el modelo oficial de recibo de salarios del BOE
+     * (Orden ESS/2098/2014). Trabaja línea a línea: etiqueta + exclusión + último importe.
+     * Solo rellena campos que aún no existen en `data` — nunca pisa lo extraído
+     * por las ramas específicas de empresa.
+     */
+    extraerGenericoBOE(text, data) {
+        // Importes: 1.253,26 · 268,16 · 1090.86 · 2.44 · 2.190 (entero con miles, típico de "TOTAL DEVENGADO... 2.190")
+        const MONEY = /\d{1,3}(?:\.\d{3})*,\d{2}(?!\d)|\d+\.\d{2}(?!\d)|\d{1,3}(?:\.\d{3})+/g;
+        const lastMoney = (line) => {
+            const m = line.match(MONEY);
+            return m ? m[m.length - 1] : null;
+        };
+        // [campo, etiqueta (sinónimos BOE), exclusión (líneas que NO son el concepto: bases, tipos, prosa)]
+        const CAMPOS_BOE = [
+            ['salarioBase', /(?:sueldo|salario)\s*(?:base|convenio)/i, /base\s*de\s*cotizaci|m[aá]s\s|por\s*trienio/i],
+            ['totalDevengado', /total\s*devengado|t\.?\s*devengado|total\s*remuneraci|rem\.?\s*total|total\s*devengos/i, /calcula|sumando|diferencia/i],
+            ['totalDeducciones', /total\s*a\s*deducir|t\.?\s*a\s*deducir|total\s*deducciones|total\s*a\s*descontar/i, /calcula|diferencia/i],
+            ['liquidoTotal', /l[ií]quido\s*(?:total\s*)?a\s*percibir|l[ií]quido\s*total|total\s*a\s*cobrar|importe\s*abonado|neto\s*a\s*percibir/i, /calcula|diferencia|regularizar/i],
+            ['irpf', /tributaci[oó]n\s*(?:del\s*)?irpf|retenci[oó]n\s*(?:a\s*cuenta\s*)?(?:del\s*)?irpf|irpf|impuesto\s*(?:sobre\s*)?(?:la\s*)?renta/i, /base\s|tipo\s*de|porcentaje|pagos?\b/i],
+            ['cotizacionContingenciasComunes', /contingencias\s*comunes|cont\.?\s*com\b|r[ée]gimen\s*general/i, /base\s|profesionales|empresa/i],
+            ['cotizacionDesempleo', /desempleo/i, /base\s|empresa|prestaci[oó]n/i],
+            ['cotizacionFormacionProfesional', /formaci[oó]n\s*profesional/i, /base\s|empresa/i],
+            ['cotizacionMEI', /\bMEI\b|equidad\s*intergeneracional/i, /base\s|empresa/i],
+        ];
+        const lines = text.split('\n');
+        for (const [campo, etiqueta, exclusion] of CAMPOS_BOE) {
+            if (data[campo]) continue;
+            for (const line of lines) {
+                if (!etiqueta.test(line)) continue;
+                if (exclusion && exclusion.test(line)) continue;
+                const val = lastMoney(line);
+                if (val) {
+                    data[campo] = this.limpiarNumero(val);
+                    console.log(`✅ BOE genérico ${campo}: "${val}" -> ${data[campo]}`);
+                    break;
+                }
+            }
+        }
+        return data;
+    }
+
+    /**
      * Extrae datos relevantes del texto de la nómina - VERSIÓN 100% INFALIBLE
      */
     extractDataFromText(text) {
@@ -380,6 +422,7 @@ class NominaValidator {
                 data.categoria = this.detectarCategoriaDesdeTexto(text) || 'gerente';
             }
 
+            this.extraerGenericoBOE(text, data); // fallback BOE para lo que la rama no cazó
             console.log('✅ MERCADONA: Datos extraídos:', JSON.stringify(data, null, 2));
             return data;
         }
@@ -411,6 +454,7 @@ class NominaValidator {
             set(/Formaci/i, 'cotizacionFormacionProfesional');
             set(/IRPF/i, 'irpf');
             if (!data.categoria) data.categoria = this.detectarCategoriaDesdeTexto(text);
+            this.extraerGenericoBOE(text, data); // fallback BOE para lo que la rama no cazó
             console.log('✅ GRANDES ALMACENES: Datos extraídos:', JSON.stringify(data, null, 2));
             return data;
         }
@@ -585,11 +629,16 @@ class NominaValidator {
                 }
             }
 
+            this.extraerGenericoBOE(text, data); // fallback BOE para lo que la rama no cazó
             return data;
         }
 
         // === MODO GENERAL - EXTRACCIÓN 100% INFALIBLE ===
         console.log("🔍 MODO GENERAL - EXTRACCIÓN INFALIBLE");
+
+        // Primero el extractor genérico BOE (línea a línea, con exclusiones anti-falsos-positivos);
+        // los universalPatterns de abajo solo rellenan lo que quede vacío.
+        this.extraerGenericoBOE(text, data);
 
         // Patrón universal para montos europeos: captura 1.068,16 y 268,16
         const EU = '(\\d{1,3}(?:\\.\\d{3})*,\\d{2})';
@@ -665,11 +714,8 @@ class NominaValidator {
             cotizacionHorasExtras: [
                 new RegExp(`Cotizaci[oó]n\\s*Horas\\s*Extras?[^\\n]*?${EU}`, 'i'),
             ],
-            irpf: [
-                new RegExp(`I\\.?R\\.?P\\.?F\\.?[^\\n]*?${EU}`, 'i'),
-                new RegExp(`Retenci[oó]n[^\\n]*?${EU}`, 'i'),
-                new RegExp(`RENTA[^\\n]*?${EU}`, 'i'),
-            ],
+            // irpf: lo lleva extraerGenericoBOE (los patrones planos de aquí capturaban
+            // "Base sujeta a retención del IRPF ... 1.870,00" — una BASE, no la retención)
             liquidoTotal: [
                 new RegExp(`L[ií]quido\\s*(?:Total|a\\s*Percibir)[^\\n]*?${EU}`, 'i'),
                 new RegExp(`Neto[^\\n]*?${EU}`, 'i'),

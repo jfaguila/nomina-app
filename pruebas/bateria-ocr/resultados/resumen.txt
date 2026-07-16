@@ -1,5 +1,5 @@
-OK   actividades_nominas_espacioformacion.pdf  cobertura=3/5  
-OK   casos_practicos_resueltos_rrhh.pdf  cobertura=1/5  
+OK   actividades_nominas_espacioformacion.pdf  cobertura=4/5  
+OK   casos_practicos_resueltos_rrhh.pdf  cobertura=3/5  
 OK   ejemplo_nomina_iesnestoralmendros.pdf  cobertura=1/5  
 OK   guia_nomina_ccoo.pdf  cobertura=0/5  
 OK   real_ambulancias.pdf  cobertura=2/5  

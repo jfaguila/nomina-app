@@ -19,6 +19,7 @@
     "complementoSalarial": "218.17",
     "cotizacionContingenciasComunes": "104.02",
     "cotizacionDesempleo": "36.52",
-    "irpf": "288.72"
+    "irpf": "288.72",
+    "cotizacionMEI": "2.88"
   }
 }

@@ -3,25 +3,26 @@
   "ok": true,
   "camposClave": {
     "salarioBase": "841.42",
-    "totalDevengado": null,
+    "totalDevengado": "1177",
     "totalDeducciones": null,
     "liquidoTotal": "996.88",
     "irpf": "94.24"
   },
-  "cobertura": "3/5",
+  "cobertura": "4/5",
   "error": null,
-  "segundos": 0.102,
+  "segundos": 0.085,
   "caracteresTexto": 44591,
   "datos": {
     "categoria": "mando_intermedio",
     "salarioBase": "841.42",
+    "totalDevengado": "1177",
+    "liquidoTotal": "996.88",
+    "irpf": "94.24",
+    "cotizacionContingenciasComunes": "125.61",
+    "cotizacionDesempleo": "1.55",
     "horasExtras": "210.5",
     "plusConvenio": "174.29",
     "valorAntiguedad": "126.21",
-    "valorNocturnidad": "98",
-    "cotizacionContingenciasComunes": "2281.32",
-    "cotizacionDesempleo": "1.55",
-    "irpf": "94.24",
-    "liquidoTotal": "996.88"
+    "valorNocturnidad": "98"
   }
 }

@@ -44,6 +44,25 @@ Resultado re-ejecutando la batería completa:
 
 Lectura: **el agujero de OCR de foto está cerrado** — la foto ya rinde igual que el PDF limpio. El techo de 2/5 en ambos es el problema nº2 (regex genéricos), no la imagen. Siguiente: generalizar regex con sinónimos del modelo BOE.
 
+## Pase 3 — 16-jul-2026 noche: regex generalizados con el modelo BOE (agujero nº2)
+
+Cambios en `backend/services/nominaValidator.js`:
+1. Nuevo `extraerGenericoBOE(text, data)`: extractor línea a línea con los sinónimos del modelo oficial BOE (Orden ESS/2098/2014) — "A. TOTAL DEVENGADO", "B. TOTAL A DEDUCIR", "LIQUIDO TOTAL A PERCIBIR (A-B)", "Total remuneración", "Tributación IRPF", "Impuesto sobre la renta"… — con **regex de exclusión anti-falsos-positivos** (no confundir "Base sujeta a retención del IRPF" con la retención, ni "Base de cotización" con el salario base). Solo rellena campos vacíos.
+2. El patrón de importes acepta ahora **punto decimal** ("2.44", "1090.86") y **enteros con punto de miles** ("2.500 €", "2.190"), no solo coma europea.
+3. El fallback se ejecuta al final de las 3 ramas de empresa (Mercadona, Grandes Almacenes, Ambulancias) y al principio del modo general.
+4. Eliminados los patrones planos de IRPF de `universalPatterns` (capturaban la BASE "1.870,00" como si fuera la retención).
+
+| Muestra | Antes | Ahora |
+|---|---|---|
+| actividades_nominas_espacioformacion.pdf | 3/5 | **4/5** |
+| casos_practicos_resueltos_rrhh.pdf | 1/5 | **3/5** (y el irpf ya apunta a la fila de deducción, no a una base) |
+| real_ambulancias.pdf / foto | 2/5 | 2/5 (+ gana `cotizacionFormacionProfesional` 2,44 — importe con punto decimal) |
+| real_mercadona_abril.pdf | 5/5 | 5/5 (sin regresión) |
+| real_leroy.pdf | 2/5 | 2/5 — limitación conocida: PDF columnar, los importes de los totales salen en líneas separadas de sus etiquetas |
+| ejemplo_nomina_iesnestoralmendros.pdf | 1/5 | 1/5 — es un ejercicio en prosa: los totales no llevan importe en la misma línea |
+
+Total campos clave: 18/40 → **21/40**. Siguiente: **ground-truth** (valores esperados por muestra) para medir precisión, no solo cobertura — es lo que destapará los cruces de valores en los PDFs multi-ejercicio.
+
 ## Lectura del baseline
 
 1. El extractor está muy afinado para Mercadona (5/5) pero el **caso genérico cojea** (1-3/5): los regex de `nominaValidator.js` dependen de literales concretos.

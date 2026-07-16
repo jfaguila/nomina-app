@@ -10,7 +10,7 @@
   },
   "cobertura": "2/5",
   "error": null,
-  "segundos": 3.618,
+  "segundos": 4.418,
   "caracteresTexto": 883,
   "datos": {
     "categoria": "tes_conductor",
@@ -25,6 +25,7 @@
     "cotizacionContingenciasComunes": "114.45",
     "cotizacionMEI": "3.17",
     "cotizacionDesempleo": "37.75",
-    "irpf": "405.01"
+    "irpf": "405.01",
+    "cotizacionFormacionProfesional": "2.44"
   }
 }

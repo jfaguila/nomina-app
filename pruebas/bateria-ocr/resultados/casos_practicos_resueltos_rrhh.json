@@ -2,22 +2,24 @@
   "muestra": "casos_practicos_resueltos_rrhh.pdf",
   "ok": true,
   "camposClave": {
-    "salarioBase": null,
-    "totalDevengado": null,
+    "salarioBase": "2500",
+    "totalDevengado": "2190",
     "totalDeducciones": null,
     "liquidoTotal": null,
-    "irpf": "1870"
+    "irpf": "2190"
   },
-  "cobertura": "1/5",
+  "cobertura": "3/5",
   "error": null,
-  "segundos": 0.09,
+  "segundos": 0.062,
   "caracteresTexto": 34329,
   "datos": {
     "categoria": "empleado",
-    "horasExtras": "300",
-    "cotizacionContingenciasComunes": "166.67",
+    "salarioBase": "2500",
+    "totalDevengado": "2190",
+    "irpf": "2190",
+    "cotizacionContingenciasComunes": "2026.67",
     "cotizacionDesempleo": "2456.67",
     "cotizacionFormacionProfesional": "2456.67",
-    "irpf": "1870"
+    "horasExtras": "300"
   }
 }
