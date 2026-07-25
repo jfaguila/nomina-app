@@ -1,8 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
+import useSeo from '../hooks/useSeo';
 
 export default function PrivacidadPage() {
+  useSeo({
+    title: 'Privacidad y cookies · NominIA',
+    description: 'Cómo trata NominIA tu nómina: no se guarda, no se vende y solo usamos cookies técnicas. Política de privacidad y de cookies.',
+    path: '/privacidad',
+  });
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
       <header className="max-w-3xl mx-auto px-6 py-6 flex items-center justify-between">

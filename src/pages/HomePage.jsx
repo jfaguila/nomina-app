@@ -10,6 +10,7 @@ import ResultsDisplay from '../components/ResultsDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DarkModeToggle from '../components/DarkModeToggle';
 import LanguageSelector from '../components/LanguageSelector';
+import useSeo from '../hooks/useSeo';
 import InstructionsModal from '../components/InstructionsModal';
 import LeadForm from '../components/LeadForm';
 import SimuladorHoras from '../components/SimuladorHoras';
@@ -70,6 +71,12 @@ const CATEGORIAS_POR_CONVENIO = {
 const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Baleares','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','A Coruña','Cuenca','Girona','Granada','Guadalajara','Gipuzkoa','Huelva','Huesca','Jaén','León','Lleida','Lugo','Madrid','Málaga','Murcia','Navarra','Ourense','Palencia','Las Palmas','Pontevedra','La Rioja','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Bizkaia','Zamora','Zaragoza','Ceuta','Melilla'];
 
 const HomePage = () => {
+    useSeo({
+        title: 'NominIA · Verifica si te pagan lo que marca tu convenio',
+        description: 'Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre gratis si te están pagando de menos. 100% privado, sin registro.',
+        path: '/',
+    });
+
     const { t } = useLanguage();
     const [selectedFile, setSelectedFile] = useState(null);
     const [results, setResults] = useState(null);

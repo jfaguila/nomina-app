@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LanguageSelector from '../components/LanguageSelector';
+import useSeo from '../hooks/useSeo';
 
-const getApiUrl = () => process.env.REACT_APP_API_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5987' : 'https://nomina-backend-production-57d2.up.railway.app');
+const getApiUrl =() => process.env.REACT_APP_API_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5987' : 'https://nomina-backend-production-57d2.up.railway.app');
 
 const PLANS = [
   {
@@ -25,6 +26,12 @@ const PLANS = [
 
 export default function PreciosPage() {
   const [loading, setLoading] = useState(null);
+
+  useSeo({
+    title: 'Precios de NominIA · Gratis, 4,99 €/mes o 39 €/mes para asesorías',
+    description: 'Comprueba gratis si te pagan de menos. Por 4,99 €/mes desbloqueas el desglose línea por línea y el informe PDF para reclamar. Plan de asesoría 39 €/mes. Sin permanencia.',
+    path: '/precios',
+  });
 
   async function suscribir(plan) {
     setLoading(plan);
