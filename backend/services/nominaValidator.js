@@ -208,21 +208,41 @@ class NominaValidator {
             const baseCC = totalDevengadoEff; // base de cotización ≈ total devengado
             // Usar deducciones REALES del OCR si existen; si no, estimar.
             const cc  = n(nominaData.cotizacionContingenciasComunes) || baseCC * (rates.contingenciasComunes / 100);
-            const mei = n(nominaData.cotizacionMEI) || baseCC * ((rates.mei || 0) / 100);
+            // MEI: NO estimar. El MEI no existe en nóminas anteriores a 2023; estimarlo por
+            // fallback inventaba una deducción fantasma (p.ej. Mercadona 2021: +2,36€ inexistentes).
+            // Solo se cuenta si la propia nómina lo trae explícito (lo habrá extraído el OCR).
+            const mei = n(nominaData.cotizacionMEI);
             const des = n(nominaData.cotizacionDesempleo) || baseCC * (rates.desempleo / 100);
             const fp  = n(nominaData.cotizacionFormacionProfesional) || baseCC * (rates.formacionProfesional / 100);
             const irpf = n(nominaData.irpf) || this.calcularIRPF(totalDevengadoEff);
-            totalDeducciones = cc + mei + des + fp + irpf;
-            liquidoTotal = totalDevengadoEff - totalDeducciones;
+            const deduccionesCalculadas = cc + mei + des + fp + irpf;
+            const liquidoCalculado = totalDevengadoEff - deduccionesCalculadas;
+
+            // PRIORIDAD A LO EXTRAÍDO: si el OCR leyó los totales que imprime la propia nómina,
+            // esos son la verdad. El cálculo solo sirve para verificación cruzada (avisar si
+            // descuadra), nunca para sustituir la cifra real impresa en el recibo.
+            const totalDedExtraido = n(nominaData.totalDeducciones);
+            const liquidoExtraido  = n(nominaData.liquidoTotal);
+            totalDeducciones = totalDedExtraido > 0 ? totalDedExtraido : deduccionesCalculadas;
+            liquidoTotal     = liquidoExtraido  > 0 ? liquidoExtraido  : liquidoCalculado;
 
             calculosFinales.total_devengado = parseFloat(totalDevengadoEff.toFixed(2));
             calculosFinales.total_deducciones = parseFloat(totalDeducciones.toFixed(2));
             calculosFinales.liquido_estimado = parseFloat(liquidoTotal.toFixed(2));
             if (!checkTotalDevengado) calculosFinales.total_devengado_calculado = true; // se calculó de la suma
+            if (totalDedExtraido > 0) calculosFinales.total_deducciones_extraido = true;
+            if (liquidoExtraido  > 0) calculosFinales.liquido_extraido = true;
 
             // Verificación cruzada: si el OCR leyó un total devengado y NO cuadra con la suma de conceptos → avisar
             if (checkTotalDevengado && sumaDevengos > 0 && Math.abs(checkTotalDevengado - sumaDevengos) > 1) {
                 warnings.push(`El Total Devengado de la nómina (${checkTotalDevengado.toFixed(2)}€) no cuadra con la suma de los conceptos (${sumaDevengos.toFixed(2)}€). Revísalo.`);
+            }
+            // Verificación cruzada de deducciones y líquido extraídos vs calculados
+            if (totalDedExtraido > 0 && Math.abs(totalDedExtraido - deduccionesCalculadas) > 1) {
+                warnings.push(`El Total a deducir de la nómina (${totalDedExtraido.toFixed(2)}€) no cuadra con el cálculo (${deduccionesCalculadas.toFixed(2)}€). Revísalo.`);
+            }
+            if (liquidoExtraido > 0 && Math.abs(liquidoExtraido - liquidoCalculado) > 1) {
+                warnings.push(`El Líquido a percibir de la nómina (${liquidoExtraido.toFixed(2)}€) no cuadra con el cálculo (${liquidoCalculado.toFixed(2)}€). Revísalo.`);
             }
             console.log(`📊 Total devengado=${totalDevengadoEff.toFixed(2)} | deducciones=${totalDeducciones.toFixed(2)} | líquido=${liquidoTotal.toFixed(2)}`);
         }
