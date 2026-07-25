@@ -49,8 +49,13 @@ export default function PrivacidadPage() {
           <h2 className="text-xl font-bold">5. Tus derechos (RGPD / LOPDGDD)</h2>
           <p>Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a href="mailto:info@nominia.es" className="text-blue-600">info@nominia.es</a>. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
 
+          <h2 className="text-xl font-bold">6. Encargados y terceros</h2>
+          <p>Para prestar el servicio nos apoyamos en <strong>Stripe</strong> (cobro de las suscripciones) y, solo si aceptas las cookies, en <strong>Google</strong> (medición de las campañas). Google puede tratar datos fuera del Espacio Económico Europeo amparándose en las cláusulas contractuales tipo de la Comisión Europea. No vendemos tus datos a nadie.</p>
+
           <h2 id="cookies" className="text-xl font-bold">7. Política de cookies</h2>
-          <p>Usamos <strong>únicamente cookies técnicas</strong> necesarias para el funcionamiento del sitio (por ejemplo, recordar tu preferencia de modo oscuro o que ya aceptaste este aviso). <strong>No usamos cookies de publicidad, analítica de terceros ni de seguimiento</strong>, y no vendemos tus datos. Puedes borrar las cookies desde la configuración de tu navegador en cualquier momento.</p>
+          <p><strong>Cookies técnicas (siempre activas).</strong> Son imprescindibles y no requieren consentimiento: recordar tu preferencia de modo oscuro, tu idioma y si ya has respondido al aviso de cookies (<code>nominia_consent</code>).</p>
+          <p><strong>Cookies de publicidad y medición (solo si las aceptas).</strong> Usamos <strong>Google Ads</strong> (identificador AW-18208622022) para saber qué anuncios traen visitas. Están <strong>bloqueadas por defecto</strong> mediante Google Consent Mode v2: hasta que pulsas «Aceptar» no se instala ninguna. Si pulsas «Rechazar» no se activan y la web funciona igual.</p>
+          <p>Puedes cambiar de opinión cuando quieras borrando los datos de este sitio desde la configuración de privacidad de tu navegador: volverá a aparecer el aviso para que elijas de nuevo.</p>
 
           <h2 className="text-xl font-bold">8. Aviso importante</h2>
           <p>NominIA es una <strong>herramienta de ayuda</strong>: el resultado es orientativo y no sustituye el asesoramiento de un graduado social o abogado laboralista. Verifica siempre con un profesional antes de tomar decisiones.</p>

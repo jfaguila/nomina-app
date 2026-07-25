@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import CookieBanner from '../components/CookieBanner';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -596,12 +595,13 @@ const HomePage = () => {
                     </div>
                     <nav className="flex items-center gap-5">
                         <Link to="/precios" className="hover:text-blue-600">Precios</Link>
+                        <Link to="/aviso-legal" className="hover:text-blue-600">Aviso legal</Link>
                         <Link to="/privacidad" className="hover:text-blue-600">Privacidad</Link>
                         <Link to="/privacidad#cookies" className="hover:text-blue-600">Cookies</Link>
+                        <Link to="/terminos" className="hover:text-blue-600">Condiciones</Link>
                     </nav>
                 </div>
             </footer>
-            <CookieBanner />
         </div>
     );
 };
