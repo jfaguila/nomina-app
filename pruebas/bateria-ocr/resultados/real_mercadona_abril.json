@@ -13,7 +13,10 @@
   "segundos": 0.004,
   "caracteresTexto": 2886,
   "datos": {
-    "categoria": "gerente",
+    "categoria": "gerente_a",
+    "fechaAntiguedad": "2016-10-03",
+    "fechaAntiguedadOrigen": "cabecera",
+    "fechaNomina": "2021-12-31",
     "salarioBase": "1068.16",
     "pagas": "267.04",
     "complementoPuesto": "475.76",

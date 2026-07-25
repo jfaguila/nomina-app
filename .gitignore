@@ -34,3 +34,6 @@ backend/.env
 *.swp
 *.swo
 *~
+
+# Datos de Tesseract descargados en tiempo de ejecución (no versionar)
+*.traineddata

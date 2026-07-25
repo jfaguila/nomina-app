@@ -10,10 +10,12 @@
   },
   "cobertura": "4/5",
   "error": null,
-  "segundos": 0.085,
+  "segundos": 0.103,
   "caracteresTexto": 44591,
   "datos": {
     "categoria": "mando_intermedio",
+    "fechaAntiguedad": "1990-01-01",
+    "fechaAntiguedadOrigen": "etiqueta",
     "salarioBase": "841.42",
     "totalDevengado": "1177",
     "liquidoTotal": "996.88",

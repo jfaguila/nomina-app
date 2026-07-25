@@ -10,10 +10,12 @@
   },
   "cobertura": "2/5",
   "error": null,
-  "segundos": 0.004,
+  "segundos": 0.006,
   "caracteresTexto": 1732,
   "datos": {
     "categoria": null,
+    "fechaAntiguedad": "2024-07-22",
+    "fechaAntiguedadOrigen": "cabecera",
     "salarioBase": "1090.86",
     "complementoPuesto": "379.95",
     "complementoSalarial": "218.17",

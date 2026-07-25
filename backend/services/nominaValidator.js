@@ -52,7 +52,37 @@ class NominaValidator {
         if (convenioKey === 'transporte_sanitario_andalucia' && convenio.detallesSalariales && !convenio.detallesSalariales[nominaData.categoria]) {
             nominaData.categoria = 'tes_conductor';
         }
-        let salarioBaseTeorico = convenio.salarioMinimo[nominaData.categoria] || convenio.salarioMinimo.empleado;
+        // Resolver la categoría contra las claves REALES de la tabla del convenio
+        // (p. ej. "gerente_a" -> "gerente_a_mas3" según antigüedad). Si no hay
+        // equivalencia se avisa: antes caía en silencio a "empleado".
+        const resolucionCategoria = this.resolverCategoriaConvenio(nominaData.categoria, convenio, nominaData);
+        let salarioBaseTeorico;
+        if (resolucionCategoria.clave) {
+            salarioBaseTeorico = convenio.salarioMinimo[resolucionCategoria.clave];
+            details.categoria_aplicada = {
+                detectada: nominaData.categoria,
+                aplicada: resolucionCategoria.clave,
+                motivo: resolucionCategoria.motivo
+            };
+            if (resolucionCategoria.motivo === 'supuesto_sin_antiguedad') {
+                warnings.push(`No consta la fecha de antigüedad: se compara contra "${resolucionCategoria.clave}" (el tramo más bajo). Indícala para afinar la comparación.`);
+            }
+            // La fecha deducida de la cabecera (sin etiqueta) puede no ser la de antigüedad:
+            // si por ella se sube de tramo, se avisa en vez de darlo por bueno.
+            if (resolucionCategoria.motivo === 'por_antiguedad' &&
+                nominaData.fechaAntiguedadOrigen === 'cabecera' &&
+                /mas3/i.test(resolucionCategoria.clave)) {
+                warnings.push(`Se ha tomado ${nominaData.fechaAntiguedad} como fecha de antigüedad (leída de la cabecera). Si no es correcta, corrígela: cambia la tabla de convenio aplicada.`);
+            }
+        } else {
+            salarioBaseTeorico = convenio.salarioMinimo.empleado;
+            details.categoria_aplicada = {
+                detectada: nominaData.categoria || null,
+                aplicada: 'empleado',
+                motivo: resolucionCategoria.motivo
+            };
+            warnings.push(`No se ha podido identificar tu categoría en la tabla del convenio: la comparación usa la referencia general ("empleado"). Revísala a mano.`);
+        }
 
         // Ajuste específico para transporte sanitario (Base + Plus Convenio)
         if (convenioKey === 'transporte_sanitario_andalucia' && convenio.detallesSalariales && convenio.detallesSalariales[nominaData.categoria]) {
@@ -315,6 +345,17 @@ class NominaValidator {
 
         // === DETECCIÓN DE CATEGORÍA PROFESIONAL ===
         data.categoria = this.detectarCategoriaDesdeTexto(text);
+
+        // === CABECERA: fecha de antigüedad y ejercicio de la nómina ===
+        // Necesarias para elegir el tramo correcto de la tabla del convenio.
+        const fechaAntiguedad = this.extraerFechaAntiguedad(text);
+        if (fechaAntiguedad) {
+            data.fechaAntiguedad = fechaAntiguedad.fecha;
+            data.fechaAntiguedadOrigen = fechaAntiguedad.origen;
+            console.log(`✅ FECHA DE ANTIGÜEDAD: ${fechaAntiguedad.fecha} (${fechaAntiguedad.origen})`);
+        }
+        const fechaNomina = this.extraerFechaNomina(text);
+        if (fechaNomina) data.fechaNomina = fechaNomina;
 
         // === MODO ESTRICTO POR EMPRESA - SOLO DATOS REALES ===
 
@@ -936,6 +977,16 @@ class NominaValidator {
      * Detecta categoría profesional desde el texto
      */
     detectarCategoriaDesdeTexto(text) {
+        // Grado de gerente (GERENTE A / B / C). Las tablas de convenio se indexan por
+        // sub-clave (gerente_a_menos3, gerente_b…), así que devolver sólo "gerente"
+        // hacía caer la comparación al fallback "empleado" — referencia equivocada.
+        const grado = text.match(/GERENTE\s*[-–—]?\s*([ABC])(?![A-Za-zÁÉÍÓÚÑ])/i);
+        if (grado) {
+            const categoria = `gerente_${grado[1].toLowerCase()}`;
+            console.log(`✅ CATEGORÍA DETECTADA (con grado): ${categoria}`);
+            return categoria;
+        }
+
         const categoriaPatterns = [
             { pattern: /GERENTE/i, categoria: 'gerente' },
             { pattern: /ENCARGADO/i, categoria: 'mando_intermedio' },
@@ -956,6 +1007,68 @@ class NominaValidator {
         }
 
         return null; // NO inventar categoría si no se detecta
+    }
+
+    /**
+     * Fecha de antigüedad (dd-mm-aaaa / dd/mm/aaaa) en la cabecera de la nómina.
+     * Devuelve { fecha: 'aaaa-mm-dd', origen: 'etiqueta'|'cabecera' } o null.
+     */
+    extraerFechaAntiguedad(text) {
+        if (!text) return null;
+        const etiquetada = text.match(/ANTIG[ÜU]EDAD[^\d]{0,30}(\d{2})[-\/.](\d{2})[-\/.](\d{4})/i);
+        // Sin etiqueta, en el modelo oficial la fecha de antigüedad va en la cabecera:
+        // se busca sólo ahí para no confundirla con fechas del periodo liquidado.
+        const cabecera = text.split('\n').slice(0, 12).join('\n');
+        const m = etiquetada || cabecera.match(/(\d{2})[-\/.](\d{2})[-\/.](\d{4})/);
+        if (!m) return null;
+        const [, d, mes, a] = m;
+        if (+mes < 1 || +mes > 12 || +d < 1 || +d > 31) return null;
+        if (+a < 1950 || +a > new Date().getFullYear()) return null;
+        return { fecha: `${a}-${mes}-${d}`, origen: etiquetada ? 'etiqueta' : 'cabecera' };
+    }
+
+    /**
+     * Fecha de referencia de la nómina (fin del periodo liquidado). ISO o null.
+     */
+    extraerFechaNomina(text) {
+        if (!text) return null;
+        const m = text.match(/Periodo\s*de\s*liquidaci[óo]n[^\n]*?de\s*(\d{4})/i) ||
+                  text.match(/al\s+\d{1,2}\s+de\s+\w+\s+de\s+(\d{4})/i);
+        return m ? `${m[1]}-12-31` : null;
+    }
+
+    /**
+     * Años de servicio en la fecha de la nómina (o hoy si no consta).
+     */
+    aniosDeServicio(nominaData) {
+        const inicio = new Date(nominaData.antiguedad || nominaData.fechaAntiguedad || '');
+        if (isNaN(inicio.getTime())) return null;
+        const ref = new Date(nominaData.fechaNomina || Date.now());
+        const fin = isNaN(ref.getTime()) ? new Date() : ref;
+        return (fin - inicio) / (1000 * 60 * 60 * 24 * 365.25);
+    }
+
+    /**
+     * Traduce la categoría detectada a una clave real de la tabla del convenio.
+     * Si la tabla usa sub-claves por antigüedad (…_menos3 / …_mas3) elige la que
+     * corresponde a los años de servicio; si no consta la antigüedad usa la
+     * conservadora (menor) y lo deja marcado como supuesto.
+     */
+    resolverCategoriaConvenio(categoria, convenio, nominaData = {}) {
+        const tabla = (convenio && convenio.salarioMinimo) || {};
+        if (!categoria) return { clave: null, motivo: 'sin_categoria' };
+        if (tabla[categoria] !== undefined) return { clave: categoria, motivo: 'exacta' };
+
+        const subs = Object.keys(tabla).filter(k => k.startsWith(`${categoria}_`));
+        if (!subs.length) return { clave: null, motivo: 'sin_equivalencia' };
+
+        const anios = this.aniosDeServicio(nominaData);
+        const conMas3 = subs.find(k => /mas3/i.test(k));
+        const conMenos3 = subs.find(k => /menos3/i.test(k));
+        if (anios !== null && conMas3 && conMenos3) {
+            return { clave: anios >= 3 ? conMas3 : conMenos3, motivo: 'por_antiguedad', anios };
+        }
+        return { clave: conMenos3 || subs[0], motivo: 'supuesto_sin_antiguedad' };
     }
 }
 
