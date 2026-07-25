@@ -271,8 +271,14 @@ class NominaValidator {
             const des = n(nominaData.cotizacionDesempleo) || baseCC * (rates.desempleo / 100);
             const fp  = n(nominaData.cotizacionFormacionProfesional) || baseCC * (rates.formacionProfesional / 100);
             const irpf = n(nominaData.irpf) || this.calcularIRPF(totalDevengadoEff);
+            // Deducciones que la nómina trae y el estimador no modela (cuota sindical, seguros,
+            // anticipos…): si la propia nómina imprime su total, la diferencia es real y hay que
+            // contarla, no avisar de un descuadre que no existe.
             const deduccionesCalculadas = cc + mei + des + fp + irpf;
-            const liquidoCalculado = totalDevengadoEff - deduccionesCalculadas;
+            // La retribución en especie se devenga y cotiza, pero NO se paga en dinero: si no se
+            // resta, el líquido teórico sale inflado (Leroy: 1.778,94 € en vez de 1.637,33 €).
+            const especieNoDineraria = n(nominaData.retribucionEspecie);
+            const liquidoCalculado = totalDevengadoEff - deduccionesCalculadas - especieNoDineraria;
 
             // PRIORIDAD A LO EXTRAÍDO: si el OCR leyó los totales que imprime la propia nómina,
             // esos son la verdad. El cálculo solo sirve para verificación cruzada (avisar si
@@ -293,12 +299,25 @@ class NominaValidator {
             if (checkTotalDevengado && sumaDevengos > 0 && Math.abs(checkTotalDevengado - sumaDevengos) > 1) {
                 warnings.push(`El Total Devengado de la nómina (${checkTotalDevengado.toFixed(2)}€) no cuadra con la suma de los conceptos (${sumaDevengos.toFixed(2)}€). Revísalo.`);
             }
-            // Verificación cruzada de deducciones y líquido extraídos vs calculados
-            if (totalDedExtraido > 0 && Math.abs(totalDedExtraido - deduccionesCalculadas) > 1) {
-                warnings.push(`El Total a deducir de la nómina (${totalDedExtraido.toFixed(2)}€) no cuadra con el cálculo (${deduccionesCalculadas.toFixed(2)}€). Revísalo.`);
-            }
-            if (liquidoExtraido > 0 && Math.abs(liquidoExtraido - liquidoCalculado) > 1) {
-                warnings.push(`El Líquido a percibir de la nómina (${liquidoExtraido.toFixed(2)}€) no cuadra con el cálculo (${liquidoCalculado.toFixed(2)}€). Revísalo.`);
+            // Cuando los totales se han reconstruido concepto a concepto Y la propia nómina los
+            // repite en el pie, el recibo ya cuadra consigo mismo: se comprueba esa identidad
+            // (devengado − deducciones − especie = líquido) en vez de contra el estimador, que no
+            // modela conceptos como la cuota sindical o el desempleo agrupado con formación y
+            // avisaba de descuadres inexistentes.
+            const totalesReconstruidos = nominaData.totalesOrigen === 'columnar' && nominaData.totalesConfirmadosEnPie === true;
+            if (totalesReconstruidos) {
+                const identidad = totalDevengadoEff - totalDedExtraido - especieNoDineraria;
+                if (liquidoExtraido > 0 && Math.abs(liquidoExtraido - identidad) > 0.02) {
+                    warnings.push(`Los totales de la nómina no cuadran entre sí: ${totalDevengadoEff.toFixed(2)}€ devengados − ${totalDedExtraido.toFixed(2)}€ deducidos − ${especieNoDineraria.toFixed(2)}€ en especie = ${identidad.toFixed(2)}€, pero el líquido impreso es ${liquidoExtraido.toFixed(2)}€. Revísalo.`);
+                }
+            } else {
+                // Verificación cruzada de deducciones y líquido extraídos vs calculados
+                if (totalDedExtraido > 0 && Math.abs(totalDedExtraido - deduccionesCalculadas) > 1) {
+                    warnings.push(`El Total a deducir de la nómina (${totalDedExtraido.toFixed(2)}€) no cuadra con el cálculo (${deduccionesCalculadas.toFixed(2)}€). Revísalo.`);
+                }
+                if (liquidoExtraido > 0 && Math.abs(liquidoExtraido - liquidoCalculado) > 1) {
+                    warnings.push(`El Líquido a percibir de la nómina (${liquidoExtraido.toFixed(2)}€) no cuadra con el cálculo (${liquidoCalculado.toFixed(2)}€). Revísalo.`);
+                }
             }
             console.log(`📊 Total devengado=${totalDevengadoEff.toFixed(2)} | deducciones=${totalDeducciones.toFixed(2)} | líquido=${liquidoTotal.toFixed(2)}`);
         }
@@ -358,6 +377,111 @@ class NominaValidator {
             }
         }
         return data;
+    }
+
+    /**
+     * Nóminas a dos columnas (Leroy Merlin y demás grandes almacenes): el pie imprime
+     * primero TODAS las etiquetas ("Total remuneración :", "Base C. Comunes :"…) y después
+     * todos los importes, así que ninguna etiqueta de total lleva su cifra al lado y los
+     * totales se quedaban sin extraer. Las líneas de concepto, en cambio, sí traen importe
+     * ("30.00   36.3621Salario Convenio   1090.86"), de modo que los totales se reconstruyen
+     * sumándolas. Solo se escriben los campos que sigan vacíos.
+     */
+    extraerTotalesColumnar(text, data) {
+        // El pie de etiquetas sueltas es puro ruido numérico: se corta ahí.
+        const corte = text.search(/Total\s*remuneraci[oó]n\s*:/i);
+        const region = corte > 0 ? text.substring(0, corte) : text;
+
+        // "<concepto>   <importe>" al final de línea. El importe usa punto decimal en estas
+        // nóminas; el concepto empieza en la primera letra (los dígitos pegados delante son
+        // días/precio unitario y quedan fuera).
+        const LINEA = /([A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ+.,/º ]*?)\s+(-?\d+\.\d{2})\s*$/;
+        // Se comprueba DEDUCCIÓN primero: "Devolución Prima SS" es una deducción, no una prima.
+        const DEDUCCION = /retenci[oó]n|cotizaci[oó]n|cuota\s*sindical|devoluci[oó]n|anticipo|embargo|pr[eé]stamo|seguridad\s*social|desempleo|\bmei\b|solidaridad|\birpf\b/i;
+        const DEVENGO = /salario|sueldo|complement|plus|paga\s*extra|prorrat|antig|nocturnidad|hora[s]?\s*extra|incentivo|comisi|variable|dieta|gratificaci|mejora|ayuda|pol[ií]ticas|seguro\s*vida|productividad|festivo|domingo|transporte|vestuario|especie|kilometraje/i;
+        // Devengos que NO se pagan en dinero: se devengan y cotizan, pero se restan del líquido.
+        const ESPECIE = /pol[ií]ticas\s*p\.?\s*cotizaci|seguro\s*vida|en\s*especie/i;
+
+        let devengos = 0, deducciones = 0, especie = 0, nDevengos = 0, nDeducciones = 0;
+        for (const linea of region.split('\n')) {
+            const m = linea.match(LINEA);
+            if (!m) continue;
+            const concepto = m[1].trim();
+            const importe = parseFloat(m[2]);
+            if (!concepto || !isFinite(importe)) continue;
+            // La especie va PRIMERO: "Políticas P. Cotización" lleva la palabra "Cotización"
+            // y se contaba como deducción, cuando es un devengo en especie.
+            if (ESPECIE.test(concepto)) {
+                devengos += importe; nDevengos++; especie += importe;
+            } else if (DEDUCCION.test(concepto)) {
+                deducciones += importe; nDeducciones++;   // con signo: las devoluciones restan
+            } else if (DEVENGO.test(concepto)) {
+                devengos += importe; nDevengos++;
+            }
+        }
+
+        // Con menos de 3 conceptos de devengo no hay nómina que reconstruir: no se inventa nada.
+        if (nDevengos < 3) return data;
+
+        const r2 = (n) => parseFloat(n.toFixed(2));
+        const totalDevengado = r2(devengos);
+        const totalDeducciones = r2(deducciones);
+        const liquido = r2(devengos - deducciones - especie);
+
+        // Confirmación: el propio pie repite el total devengado (base de cotización) y el
+        // líquido. Si aparecen, la reconstrucción es correcta y no una casualidad.
+        const pie = corte > 0 ? text.substring(corte) : '';
+        const apareceEnPie = (n) => {
+            const conPunto = n.toFixed(2);
+            const conComa = conPunto.replace('.', ',');
+            const milesComa = conPunto.replace(/^(\d+)(\d{3})\./, '$1.$2,');
+            return pie.includes(conPunto) || pie.includes(conComa) || pie.includes(milesComa);
+        };
+        data.totalesOrigen = 'columnar';
+        data.totalesConfirmadosEnPie = apareceEnPie(totalDevengado) && apareceEnPie(liquido);
+
+        if (!data.totalDevengado) { data.totalDevengado = String(totalDevengado); }
+        if (!data.totalDeducciones && nDeducciones > 0) { data.totalDeducciones = String(totalDeducciones); }
+        if (!data.liquidoTotal) { data.liquidoTotal = String(liquido); }
+        if (especie > 0) data.retribucionEspecie = String(r2(especie));
+
+        // El resto de devengos (pagas prorrateadas, variables, especie…) va a "otrosDevengos"
+        // para que la suma de conceptos del validador cuadre con el total y no avise en falso.
+        const YA_MAPEADOS = ['salarioBase', 'plusConvenio', 'valorAntiguedad', 'valorNocturnidad',
+            'dietas', 'horasExtras', 'complementoPuesto', 'pagas', 'complementoSalarial'];
+        if (!data.otrosDevengos) {
+            const mapeado = YA_MAPEADOS.reduce((s, k) => s + (parseFloat(data[k]) || 0), 0);
+            const resto = r2(devengos - mapeado);
+            if (resto > 0.01) {
+                data.otrosDevengos = String(resto);
+                console.log(`🧾 COLUMNAR otrosDevengos (resto no mapeado): ${resto}`);
+            }
+        }
+
+        console.log(`🧾 COLUMNAR: devengado=${totalDevengado} (${nDevengos} conceptos) · deducciones=${totalDeducciones} (${nDeducciones}) · especie=${r2(especie)} · líquido=${liquido} · confirmado en pie=${data.totalesConfirmadosEnPie}`);
+        return data;
+    }
+
+    /**
+     * Grupo profesional de las nóminas de grandes almacenes ("Grupo Convenio: Profesional").
+     * Se resuelve contra las claves reales de la tabla del convenio para no inventar categorías.
+     */
+    detectarGrupoGrandesAlmacenes(text) {
+        if (!text) return null;
+        const tabla = (convenios.grandes_almacenes || convenios.leroy_merlin || {}).salarioMinimo || {};
+        const GRUPOS = [
+            ['tecnicos', /\bt[eé]cnicos?\b/i],
+            ['coordinador', /\bcoordinador(?:a)?\b/i],
+            ['profesional', /\bprofesional\b/i],
+            ['base', /\bgrupo\s*base\b/i],
+        ];
+        for (const [clave, patron] of GRUPOS) {
+            if (tabla[clave] !== undefined && patron.test(text)) {
+                console.log(`✅ GRUPO GRANDES ALMACENES DETECTADO: ${clave}`);
+                return clave;
+            }
+        }
+        return null;
     }
 
     /**
@@ -540,7 +664,11 @@ class NominaValidator {
             set(/Desempleo|D\+F\+P/i, 'cotizacionDesempleo');
             set(/Formaci/i, 'cotizacionFormacionProfesional');
             set(/IRPF/i, 'irpf');
-            if (!data.categoria) data.categoria = this.detectarCategoriaDesdeTexto(text);
+            // Estos PDF sacan el pie a dos columnas (etiquetas sueltas y luego los importes),
+            // así que "Total remuneración :" viene SIN importe y los totales se perdían.
+            // Se reconstruyen sumando las líneas de concepto, que sí traen su importe.
+            this.extraerTotalesColumnar(text, data);
+            if (!data.categoria) data.categoria = this.detectarCategoriaDesdeTexto(text) || this.detectarGrupoGrandesAlmacenes(text);
             this.extraerGenericoBOE(text, data); // fallback BOE para lo que la rama no cazó
             console.log('✅ GRANDES ALMACENES: Datos extraídos:', JSON.stringify(data, null, 2));
             return data;
@@ -1057,6 +1185,20 @@ class NominaValidator {
                 console.log(`✅ CONVENIO DETECTADO EN LA NÓMINA: ${convenio}`);
                 return convenio;
             }
+        }
+        // Muchas nóminas de grandes almacenes solo llevan el CIF, no el nombre de la empresa
+        // (la de Leroy es así), y sin nombre se comparaban contra el convenio preseleccionado
+        // en la web. La huella de conceptos del convenio de Grandes Almacenes sí identifica
+        // el ámbito: se exige coincidencia TRIPLE para no arrastrar nóminas de otros sectores.
+        const huellaGA = [
+            /grupo\s*convenio/i,
+            /salario\s*convenio/i,
+            /complemento\s*(?:personal|puesto)/i,
+            /paga\s*extra\s*prorr/i
+        ].filter(p => p.test(text)).length;
+        if (huellaGA >= 3 && convenios.grandes_almacenes) {
+            console.log(`✅ CONVENIO DETECTADO POR CONCEPTOS (huella ${huellaGA}/4): grandes_almacenes`);
+            return 'grandes_almacenes';
         }
         return null;
     }

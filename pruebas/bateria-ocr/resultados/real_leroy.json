@@ -3,17 +3,17 @@
   "ok": true,
   "camposClave": {
     "salarioBase": "1090.86",
-    "totalDevengado": null,
-    "totalDeducciones": null,
-    "liquidoTotal": null,
+    "totalDevengado": "2213.29",
+    "totalDeducciones": "429.4",
+    "liquidoTotal": "1637.33",
     "irpf": "288.72"
   },
-  "cobertura": "2/5",
+  "cobertura": "5/5",
   "error": null,
-  "segundos": 0.006,
+  "segundos": 0.051,
   "caracteresTexto": 1732,
   "datos": {
-    "categoria": null,
+    "categoria": "profesional",
     "fechaAntiguedad": "2024-07-22",
     "fechaAntiguedadOrigen": "cabecera",
     "salarioBase": "1090.86",
@@ -22,6 +22,13 @@
     "cotizacionContingenciasComunes": "104.02",
     "cotizacionDesempleo": "36.52",
     "irpf": "288.72",
+    "totalesOrigen": "columnar",
+    "totalesConfirmadosEnPie": true,
+    "totalDevengado": "2213.29",
+    "totalDeducciones": "429.4",
+    "liquidoTotal": "1637.33",
+    "retribucionEspecie": "146.56",
+    "otrosDevengos": "524.31",
     "cotizacionMEI": "2.88"
   }
 }
