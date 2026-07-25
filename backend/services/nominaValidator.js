@@ -28,6 +28,32 @@ class NominaValidator {
         console.log('🔍 DATOS FINALES COMBINADOS:');
         console.log('📋 Combinados:', JSON.stringify(nominaData, null, 2));
 
+        // Si la nómina identifica la empresa, manda su convenio: el desplegable viene
+        // preseleccionado y comparar contra el convenio equivocado daba falsas alarmas
+        // ("cobras menos de lo que deberías") en nóminas correctas.
+        const convenioDetectado = this.detectarConvenioDesdeTexto(extractedText);
+        if (convenioDetectado && convenioDetectado !== nominaData.convenio) {
+            const tablaDetectada = (convenios[convenioDetectado] || {}).salarioMinimo || {};
+            const categoriaEncaja = nominaData.categoria && (
+                tablaDetectada[nominaData.categoria] !== undefined ||
+                Object.keys(tablaDetectada).some(k => k.startsWith(`${nominaData.categoria}_`))
+            );
+            // La categoría elegida a mano puede ser de otro convenio: si allí no existe,
+            // vale más la que se lee en la propia nómina.
+            if (!categoriaEncaja && extractedData.categoria) {
+                nominaData.categoria = extractedData.categoria;
+            }
+            details.convenio_aplicado = {
+                seleccionado: manualData && manualData.convenio ? manualData.convenio : null,
+                aplicado: convenioDetectado,
+                motivo: 'detectado_en_la_nomina'
+            };
+            if (manualData && manualData.convenio && manualData.convenio !== convenioDetectado) {
+                warnings.push(`La nómina es de ${(convenios[convenioDetectado] || {}).nombre || convenioDetectado}: se ha comparado con ese convenio, no con el seleccionado ("${manualData.convenio}").`);
+            }
+            nominaData.convenio = convenioDetectado;
+        }
+
         // Obtener convenio aplicable
         const convenioKey = nominaData.convenio || 'general';
         const convenio = convenios[convenioKey] || convenios.general;
@@ -1007,6 +1033,32 @@ class NominaValidator {
         }
 
         return null; // NO inventar categoría si no se detecta
+    }
+
+    /**
+     * Convenio deducido de la empresa que firma la nómina. null si no es concluyente.
+     */
+    detectarConvenioDesdeTexto(text) {
+        if (!text) return null;
+        const patrones = [
+            { pattern: /MERCADONA/i, convenio: 'mercadona' },
+            { pattern: /LEROY\s*MERL[IÍ]N/i, convenio: 'leroy_merlin' },
+            { pattern: /OBRAMAT/i, convenio: 'obramat' },
+            { pattern: /BRICOMART/i, convenio: 'bricomart' },
+            { pattern: /HIPERCOR/i, convenio: 'hipercor' },
+            { pattern: /EL\s*CORTE\s*INGL[EÉ]S/i, convenio: 'el_corte_ingles' },
+            { pattern: /DECATHLON/i, convenio: 'decathlon' },
+            { pattern: /\bIKEA\b/i, convenio: 'ikea' },
+            { pattern: /\bMAKRO\b/i, convenio: 'makro' },
+            { pattern: /AMBULANCIAS|TRANSPORTE\s*SANITARIO|PASQUAU/i, convenio: 'transporte_sanitario_andalucia' }
+        ];
+        for (const { pattern, convenio } of patrones) {
+            if (convenios[convenio] && pattern.test(text)) {
+                console.log(`✅ CONVENIO DETECTADO EN LA NÓMINA: ${convenio}`);
+                return convenio;
+            }
+        }
+        return null;
     }
 
     /**
