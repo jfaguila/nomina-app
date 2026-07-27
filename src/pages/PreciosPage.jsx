@@ -10,17 +10,17 @@ const PLANS = [
   {
     id: 'gratis', name: 'Gratis', price: '0', period: '',
     desc: 'Descubre si hay un problema', cta: 'Probar gratis', highlight: false, free: true,
-    features: ['Veredicto al instante: ¿te pagan bien?', 'Detección automática del convenio', 'Verificaciones ilimitadas', 'Sin registro'],
+    features: ['Veredicto al instante: ¿te pagan bien?', 'Detección automática del convenio', 'Nóminas ilimitadas al mes', 'Sin registro'],
   },
   {
     id: 'trabajador', name: 'Trabajador', price: '4,99', period: '/mes',
     desc: 'Descubre cuánto te deben', cta: 'Desbloquear desglose', highlight: true,
-    features: ['Desglose exacto línea por línea', 'El importe exacto que te deben', 'Informe PDF para reclamar', 'Historial de tus nóminas', 'Soporte por email'],
+    features: ['Nóminas ilimitadas al mes', 'Desglose exacto línea por línea', 'El importe exacto que te deben', 'Informe PDF para reclamar', 'Historial de tus nóminas', 'Soporte por email'],
   },
   {
     id: 'asesoria', name: 'Asesoría / Gestoría', price: '39', period: '/mes',
     desc: 'Para despachos y gestorías', cta: 'Suscribirme', highlight: false,
-    features: ['Todo lo del plan Trabajador', 'Desgloses ilimitados de tus clientes', 'Informes PDF con tu marca', 'Soporte prioritario'],
+    features: ['Todo lo del plan Trabajador', 'Nóminas ilimitadas de todos tus clientes', 'Informes PDF con tu marca', 'Soporte prioritario'],
   },
 ];
 
@@ -99,7 +99,12 @@ export default function PreciosPage() {
           ))}
         </div>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-10">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-10 max-w-2xl mx-auto">
+          <strong>Ningún plan tiene límite de uso:</strong> puedes analizar todas las nóminas que
+          quieras cada mes, también en el plan gratuito. No cobramos por análisis ni hay bolsas de
+          créditos que se agoten.
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
           Pago seguro con Stripe. Tus datos están protegidos — <Link to="/privacidad" className="text-blue-600 hover:underline">política de privacidad</Link>.
         </p>
       </section>

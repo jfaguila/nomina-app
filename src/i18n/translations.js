@@ -1,5 +1,31 @@
 export const translations = {
   es: {
+    // Portada. Estaba escrita a pelo en HomePage.jsx, asi que pulsar EN solo
+    // cambiaba los enlaces de accesibilidad y el resto seguia en castellano.
+    home: {
+      badge: 'Convenios oficiales · tablas 2025',
+      heroA: '¿Te pagan',
+      heroB: 'lo que te toca?',
+      leadA: 'Sube tu nómina y en',
+      leadB: '10 segundos',
+      leadC: 'la comparamos con tu convenio colectivo. Si te pagan de menos, lo verás claro.',
+      bullet1: '100% privado — no se guarda',
+      bullet2: 'Resultado al instante',
+      bullet3: 'Gratis para empezar',
+      seal1: 'Basado en convenios oficiales (BOE/BOJA)',
+      seal2: 'Tus datos no se almacenan',
+      seal3: 'Hecho en España',
+      step1: 'Sube tu archivo',
+      step2: 'Configuración',
+      province: 'Provincia / Región',
+      analyze: 'Analizar mi nómina gratis',
+      confidential: '🔒 Tu nómina es confidencial y no se guarda.',
+      moreInfo: 'Más info',
+      navPricing: 'Precios',
+      navHowTo: 'Instrucciones',
+      tagline: 'Verificador de nóminas',
+    },
+
     // Header
     title: 'Verificador de Nóminas',
     subtitle: 'Verifica si tu nómina está correctamente elaborada según el convenio aplicable',
@@ -107,6 +133,30 @@ export const translations = {
   },
 
   en: {
+    home: {
+      badge: 'Official agreements · 2025 pay tables',
+      heroA: 'Are you being paid',
+      heroB: 'what you are owed?',
+      leadA: 'Upload your payslip and in',
+      leadB: '10 seconds',
+      leadC: "we compare it against your Spanish collective agreement. If you are being underpaid, you will see it clearly.",
+      bullet1: '100% private — nothing is stored',
+      bullet2: 'Instant result',
+      bullet3: 'Free to start',
+      seal1: 'Based on official agreements (BOE/BOJA)',
+      seal2: 'Your data is never stored',
+      seal3: 'Made in Spain',
+      step1: 'Upload your file',
+      step2: 'Settings',
+      province: 'Province / Region',
+      analyze: 'Check my payslip for free',
+      confidential: '🔒 Your payslip is confidential and is never stored.',
+      moreInfo: 'More info',
+      navPricing: 'Pricing',
+      navHowTo: 'How it works',
+      tagline: 'Payslip checker',
+    },
+
     // Header
     title: 'Payroll Verifier',
     subtitle: 'Verify if your payroll is correctly prepared according to the applicable convention',

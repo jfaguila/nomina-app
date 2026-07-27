@@ -334,12 +334,12 @@ const HomePage = () => {
                         <img src="/logo.svg" alt="NominIA" className="w-12 h-12 rounded-2xl shadow-lg shadow-[#0E2438]/20" />
                         <div>
                             <h1 className="text-2xl font-extrabold tracking-tight leading-none">NominIA<span className="text-lime-500">.app</span></h1>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Verificador de nóminas</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{t('home.tagline')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <LanguageSelector />
-                        <Link to="/precios" className="px-4 py-2 rounded-full bg-[#0E2438] text-white text-sm font-bold hover:bg-[#0A1A2B] transition-colors">Precios</Link>
+                        <Link to="/precios" className="px-4 py-2 rounded-full bg-[#0E2438] text-white text-sm font-bold hover:bg-[#0A1A2B] transition-colors">{t('home.navPricing')}</Link>
                         <button
                             onClick={() => setShowInstructions(true)}
                             className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
@@ -382,28 +382,28 @@ const HomePage = () => {
                                 <div className="relative max-w-3xl">
                                     <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-3.5 py-1.5 text-[11px] font-mono uppercase tracking-[0.18em] text-lime-300 ring-1 ring-inset ring-white/10 backdrop-blur">
                                         <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-lime-400"></span></span>
-                                        Convenios oficiales · tablas 2025
+                                        {t('home.badge')}
                                     </span>
                                     <h2 className="mt-6 text-[2.6rem] leading-[1.02] md:text-[4.6rem] md:leading-[0.98] font-extrabold tracking-tight">
-                                        ¿Te pagan <span className="text-lime-400 italic font-serif font-normal">lo que te toca?</span>
+                                        {t('home.heroA')} <span className="text-lime-400 italic font-serif font-normal">{t('home.heroB')}</span>
                                     </h2>
                                     <p className="mt-6 text-lg md:text-xl text-slate-300/90 max-w-xl leading-relaxed">
-                                        Sube tu nómina y en <b className="text-white font-semibold">10 segundos</b> la comparamos con tu convenio colectivo. Si te pagan de menos, lo verás claro.
+                                        {t('home.leadA')} <b className="text-white font-semibold">{t('home.leadB')}</b> {t('home.leadC')}
                                     </p>
                                     <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm text-slate-300">
-                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> 100% privado — no se guarda</span>
-                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> Resultado al instante</span>
-                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> Gratis para empezar</span>
+                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> {t('home.bullet1')}</span>
+                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> {t('home.bullet2')}</span>
+                                        <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> {t('home.bullet3')}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center text-xs font-mono uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
-                                <span>Basado en convenios oficiales (BOE/BOJA)</span>
+                                <span>{t('home.seal1')}</span>
                                 <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
-                                <span>Tus datos no se almacenan</span>
+                                <span>{t('home.seal2')}</span>
                                 <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
-                                <span>Hecho en España</span>
+                                <span>{t('home.seal3')}</span>
                             </div>
 
                             {error && (
@@ -426,7 +426,7 @@ const HomePage = () => {
                                     <div className="space-y-6">
                                         <h3 className="text-xl font-bold flex items-center gap-3">
                                             <span className="flex-none bg-[#0E2438] text-lime-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                                            Sube tu archivo
+                                            {t('home.step1')}
                                         </h3>
                                         <FileUpload onFileSelect={handleFileSelect} selectedFile={selectedFile} />
                                     </div>
@@ -434,12 +434,12 @@ const HomePage = () => {
                                     <div className="space-y-6">
                                         <h3 className="text-xl font-bold flex items-center gap-3">
                                             <span className="flex-none bg-[#0E2438] text-lime-400 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
-                                            Configuración
+                                            {t('home.step2')}
                                         </h3>
 
                                         <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
                                             <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Provincia / Región</label>
+                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('home.province')}</label>
                                                 <select
                                                     value={uploadData.provincia}
                                                     onChange={(e) => setUploadData({ ...uploadData, provincia: e.target.value })}
@@ -500,13 +500,13 @@ const HomePage = () => {
                                             disabled={!selectedFile || loading}
                                             className="w-full py-4 px-6 rounded-2xl bg-lime-400 hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed text-[#0A1A2B] font-extrabold text-lg shadow-lg shadow-lime-500/20 transition-all flex items-center justify-center gap-3"
                                         >
-                                            <span>Analizar mi nómina gratis</span>
+                                            <span>{t('home.analyze')}</span>
                                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                             </svg>
                                         </button>
                                         <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                                            🔒 Tu nómina es confidencial y no se guarda. <Link to="/privacidad" className="text-blue-600 hover:underline">Más info</Link>
+                                            {t('home.confidential')} <Link to="/privacidad" className="text-blue-600 hover:underline">{t('home.moreInfo')}</Link>
                                         </p>
                                     </div>
                                 </div>
@@ -594,7 +594,7 @@ const HomePage = () => {
                         <span>© 2026 · Verificador de nóminas con IA</span>
                     </div>
                     <nav className="flex items-center gap-5">
-                        <Link to="/precios" className="hover:text-blue-600">Precios</Link>
+                        <Link to="/precios" className="hover:text-blue-600">{t('home.navPricing')}</Link>
                         <Link to="/aviso-legal" className="hover:text-blue-600">Aviso legal</Link>
                         <Link to="/privacidad" className="hover:text-blue-600">Privacidad</Link>
                         <Link to="/privacidad#cookies" className="hover:text-blue-600">Cookies</Link>
