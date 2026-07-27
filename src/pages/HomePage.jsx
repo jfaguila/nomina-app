@@ -445,12 +445,12 @@ const HomePage = () => {
                                                     onChange={(e) => setUploadData({ ...uploadData, provincia: e.target.value })}
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
-                                                    <option value="">Selecciona tu provincia…</option>
+                                                    <option value="">{t('ui.selectProvince')}</option>
                                                     {PROVINCIAS.map((p) => <option key={p} value={p}>{p}</option>)}
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Convenio Aplicable</label>
+                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('ui.agreement')}</label>
                                                 <select
                                                     value={uploadData.convenio}
                                                     onChange={(e) => {
@@ -470,14 +470,14 @@ const HomePage = () => {
                                                     <option value="bricomart">Bricomart</option>
                                                     <option value="makro">Makro</option>
                                                     <option value="decathlon">Decathlon</option>
-                                                    <option value="hosteleria" disabled>Hostelería (en preparación)</option>
-                                                    <option value="comercio" disabled>Comercio (en preparación)</option>
-                                                    <option value="construccion" disabled>Construcción (en preparación)</option>
-                                                    <option value="general" disabled>Otros convenios (en preparación)</option>
+                                                    <option value="hosteleria" disabled>{t('conventions.hosteleria')} ({t('ui.inPrep')})</option>
+                                                    <option value="comercio" disabled>{t('conventions.comercio')} ({t('ui.inPrep')})</option>
+                                                    <option value="construccion" disabled>{t('conventions.construccion')} ({t('ui.inPrep')})</option>
+                                                    <option value="general" disabled>{t('ui.otherAgreements')} ({t('ui.inPrep')})</option>
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Categoría Profesional</label>
+                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('ui.category')}</label>
                                                 <select
                                                     value={uploadData.categoria}
                                                     onChange={(e) => setUploadData({ ...uploadData, categoria: e.target.value })}
@@ -489,7 +489,7 @@ const HomePage = () => {
                                                 </select>
                                                 {CATEGORIAS_POR_CONVENIO[uploadData.convenio] && (
                                                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        ⚖️ Comparamos tu nómina con la tabla salarial exacta de esta categoría según el convenio vigente.
+                                                        {t('ui.categoryNote')}
                                                     </p>
                                                 )}
                                             </div>
@@ -526,11 +526,11 @@ const HomePage = () => {
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                                     </span>
-                                    ¡Echémosle un ojo!
+                                    {t('ui.reviewBadge')}
                                 </div>
-                                <h2 className="text-3xl font-bold">Verifica los datos detectados</h2>
+                                <h2 className="text-3xl font-bold">{t('ui.reviewTitle')}</h2>
                                 <p className="text-gray-600 dark:text-gray-400">
-                                    Nuestra IA ha extraído esta información. Por favor, asegúrate de que todo es correcto antes del análisis legal final.
+                                    {t('ui.reviewLead')}
                                 </p>
                             </div>
 
@@ -561,8 +561,8 @@ const HomePage = () => {
                                 <>
                                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                         <div>
-                                            <h2 className="text-3xl font-bold tracking-tight">Tu Informe de Verificación</h2>
-                                            <p className="text-gray-600 dark:text-gray-400 mt-1">Resultados basados en tu convenio colectivo.</p>
+                                            <h2 className="text-3xl font-bold tracking-tight">{t('ui.reportTitle')}</h2>
+                                            <p className="text-gray-600 dark:text-gray-400 mt-1">{t('ui.reportLead')}</p>
                                         </div>
                                         <button
                                             onClick={() => {
@@ -591,14 +591,14 @@ const HomePage = () => {
                 <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center gap-2">
                         <span className="font-bold text-gray-700 dark:text-gray-300">NominIA</span>
-                        <span>© 2026 · Verificador de nóminas con IA</span>
+                        <span>{t('ui.footerTagline')}</span>
                     </div>
                     <nav className="flex items-center gap-5">
                         <Link to="/precios" className="hover:text-blue-600">{t('home.navPricing')}</Link>
-                        <Link to="/aviso-legal" className="hover:text-blue-600">Aviso legal</Link>
-                        <Link to="/privacidad" className="hover:text-blue-600">Privacidad</Link>
-                        <Link to="/privacidad#cookies" className="hover:text-blue-600">Cookies</Link>
-                        <Link to="/terminos" className="hover:text-blue-600">Condiciones</Link>
+                        <Link to="/aviso-legal" className="hover:text-blue-600">{t('ui.footerLegal')}</Link>
+                        <Link to="/privacidad" className="hover:text-blue-600">{t('ui.footerPrivacy')}</Link>
+                        <Link to="/privacidad#cookies" className="hover:text-blue-600">{t('ui.footerCookies')}</Link>
+                        <Link to="/terminos" className="hover:text-blue-600">{t('ui.footerTerms')}</Link>
                     </nav>
                 </div>
             </footer>

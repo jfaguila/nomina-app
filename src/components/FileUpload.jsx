@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../i18n/LanguageProvider';
 
 const FileUpload = ({ onFileSelect }) => {
+    const { t } = useLanguage();
     const [preview, setPreview] = useState(null);
     const [fileName, setFileName] = useState('');
 
@@ -48,7 +50,7 @@ const FileUpload = ({ onFileSelect }) => {
         `}
                 role="button"
                 tabIndex={0}
-                aria-label="Subir archivo de nómina"
+                aria-label={t('upload.ariaZone')}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
@@ -56,7 +58,7 @@ const FileUpload = ({ onFileSelect }) => {
                     }
                 }}
             >
-                <input {...getInputProps()} aria-label="Seleccionar archivo de nómina" />
+                <input {...getInputProps()} aria-label={t('upload.ariaInput')} />
 
                 <div className="text-center">
                     {preview ? (
@@ -78,13 +80,13 @@ const FileUpload = ({ onFileSelect }) => {
 
                             <div>
                                 <p className="text-xl font-bold gradient-text mb-2">
-                                    {isDragActive ? '¡Suelta el archivo aquí!' : 'Arrastra tu nómina aquí'}
+                                    {isDragActive ? t('upload.dropActive') : t('upload.drop')}
                                 </p>
                                 <p className="text-gray-500">
-                                    o haz clic para seleccionar
+                                    {t('upload.click')}
                                 </p>
                                 <p className="text-sm text-gray-400 mt-2">
-                                    Formatos: PDF, JPG, PNG
+                                    {t('upload.formats')}
                                 </p>
                             </div>
                         </div>
@@ -106,7 +108,7 @@ const FileUpload = ({ onFileSelect }) => {
                         </div>
                         <div>
                             <p className="font-bold text-lg text-gray-800">✅ {fileName}</p>
-                            <p className="text-sm text-green-600 font-semibold">Archivo listo para analizar</p>
+                            <p className="text-sm text-green-600 font-semibold">{t('upload.ready')}</p>
                         </div>
                     </div>
                     <div className="text-right">
@@ -119,7 +121,7 @@ const FileUpload = ({ onFileSelect }) => {
                             }}
                             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
                         >
-                            ❌ Quitar
+                            {t('upload.remove')}
                         </button>
                     </div>
                 </motion.div>

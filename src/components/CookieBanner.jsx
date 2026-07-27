@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../i18n/LanguageProvider';
 
 const KEY = 'nominia_consent'; // 'granted' | 'denied'
 
@@ -18,6 +19,7 @@ function updateConsent(granted) {
 }
 
 export default function CookieBanner() {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -37,25 +39,25 @@ export default function CookieBanner() {
   };
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 p-4" role="dialog" aria-label="Aviso de cookies">
+    <div className="fixed bottom-0 inset-x-0 z-50 p-4" role="dialog" aria-label={t('cookies.label')}>
       <div className="max-w-3xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4">
         <p className="text-sm text-gray-600 dark:text-gray-300 flex-1">
-          🍪 Usamos cookies técnicas necesarias para que la web funcione y, <strong>solo si las aceptas</strong>,
-          cookies de Google Ads para medir nuestras campañas. Nunca vendemos tus datos y tu nómina no se guarda.{' '}
-          <Link to="/privacidad#cookies" className="text-blue-600 hover:underline">Más info</Link>.
+          {t('cookies.text')} <strong>{t('cookies.textStrong')}</strong>,{' '}
+          {t('cookies.text2')}{' '}
+          <Link to="/privacidad#cookies" className="text-blue-600 hover:underline">{t('cookies.more')}</Link>.
         </p>
         <div className="flex-none flex gap-2">
           <button
             onClick={() => decide(false)}
             className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
-            Rechazar
+            {t('cookies.reject')}
           </button>
           <button
             onClick={() => decide(true)}
             className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors"
           >
-            Aceptar
+            {t('cookies.accept')}
           </button>
         </div>
       </div>
