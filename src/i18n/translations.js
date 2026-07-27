@@ -3,7 +3,7 @@ export const translations = {
     // Portada. Estaba escrita a pelo en HomePage.jsx, asi que pulsar EN solo
     // cambiaba los enlaces de accesibilidad y el resto seguia en castellano.
     home: {
-      badge: 'Convenios oficiales · tablas 2025',
+      badge: 'Convenios oficiales · tablas vigentes',
       heroA: '¿Te pagan',
       heroB: 'lo que te toca?',
       leadA: 'Sube tu nómina y en',
@@ -204,7 +204,7 @@ export const translations = {
 
   en: {
     home: {
-      badge: 'Official agreements · 2025 pay tables',
+      badge: 'Official agreements · pay tables in force',
       heroA: 'Are you being paid',
       heroB: 'what you are owed?',
       leadA: 'Upload your payslip and in',
