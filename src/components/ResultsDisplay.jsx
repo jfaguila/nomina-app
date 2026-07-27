@@ -65,10 +65,16 @@ const ResultsDisplay = ({ results, usos = 0 }) => {
                     transition={{ delay: 0.15 }}
                     className="glass-card p-8 text-center border-2 border-blue-200 dark:border-blue-900/40 relative overflow-hidden"
                 >
+                    {/* Fondo decorativo del muro de pago. Va SIN cifras: aunque esté
+                        borroso, el texto se lee al seleccionarlo o copiarlo, y un importe
+                        inventado en un verificador de nóminas es un dato falso sobre el
+                        sueldo de alguien. Se enmascara con puntos. */}
                     <div className="absolute inset-0 pointer-events-none select-none opacity-[0.07] blur-sm flex flex-col items-center justify-center gap-2" aria-hidden="true">
                         <div className="text-2xl font-bold">Salario Base · Plus Convenio · Antigüedad</div>
-                        <div className="text-4xl font-extrabold">1.405,33 € &nbsp; vs &nbsp; 1.253,26 €</div>
-                        <div className="text-2xl font-bold">Diferencia a tu favor: 152,07 €/mes</div>
+                        <div className="text-4xl font-extrabold">•.••• , •• € &nbsp; vs &nbsp; •.••• , •• €</div>
+                        <div className="text-2xl font-bold">
+                            {isValid ? 'Diferencia con tu convenio: ••• , •• €/mes' : 'Diferencia a tu favor: ••• , •• €/mes'}
+                        </div>
                     </div>
                     <div className="relative">
                         <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4">

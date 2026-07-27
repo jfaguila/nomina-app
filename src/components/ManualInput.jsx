@@ -1,6 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+// Las claves tienen que ser EXACTAMENTE las de backend/data/convenios.json.
+// Si aquí falta un convenio que sí ofrece la portada, el <select> no encuentra su
+// opcion, cae a la primera ("general") y la nomina se compara contra otra tabla
+// sin avisar al usuario.
+const CONVENIOS = [
+    { value: 'general', label: 'Convenio General' },
+    { value: 'hosteleria', label: 'Hostelería' },
+    { value: 'comercio', label: 'Comercio' },
+    { value: 'construccion', label: 'Construcción' },
+    { value: 'transporte_sanitario_andalucia', label: 'Transporte Sanitario Andalucía' },
+    { value: 'mercadona', label: 'Mercadona (2024-2028)' },
+    { value: 'grandes_almacenes', label: 'Grandes Almacenes' },
+    { value: 'leroy_merlin', label: 'Leroy Merlin (Grandes Almacenes)' },
+    { value: 'el_corte_ingles', label: 'El Corte Inglés (Grandes Almacenes)' },
+    { value: 'ikea', label: 'Ikea (Grandes Almacenes)' },
+    { value: 'obramat', label: 'Obramat (Grandes Almacenes)' },
+    { value: 'hipercor', label: 'Hipercor (Grandes Almacenes)' },
+    { value: 'bricomart', label: 'Bricomart (Grandes Almacenes)' },
+    { value: 'makro', label: 'Makro (Grandes Almacenes)' },
+    { value: 'decathlon', label: 'Decathlon (Grandes Almacenes)' }
+];
+
+// Grupos profesionales del Convenio de Grandes Almacenes (tabla 2024).
+const CATS_GRANDES_ALMACENES = [
+    { value: 'base', label: 'Grupo Base · cajas, reposición, ventas, almacén…' },
+    { value: 'profesional', label: 'Grupo Profesional' },
+    { value: 'coordinador', label: 'Coordinador/a' },
+    { value: 'tecnicos', label: 'Técnicos/as' }
+];
+
+const CATS_GENERICAS = [
+    { value: 'empleado', label: 'Empleado Base' },
+    { value: 'tecnico', label: 'Técnico/a' },
+    { value: 'mando_intermedio', label: 'Mando Intermedio' },
+    { value: 'directivo', label: 'Directivo/a' }
+];
+
+const CATEGORIAS_POR_CONVENIO = {
+    transporte_sanitario_andalucia: [
+        { value: 'tes_conductor', label: 'TES Conductor/a' },
+        { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero' },
+        { value: 'tes_camillero', label: 'TES Camillero/a' },
+        { value: 'jefe_equipo', label: 'Jefe/a de Equipo' },
+        { value: 'jefe_trafico', label: 'Jefe/a de Tráfico' },
+        { value: 'oficial_admin', label: 'Oficial 1ª Administrativo' },
+        { value: 'auxiliar_admin', label: 'Auxiliar Administrativo' },
+        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico' },
+        { value: 'mecanico', label: 'Mecánico/a' },
+        { value: 'chapista', label: 'Chapista' },
+        { value: 'pintor', label: 'Pintor/a' },
+        { value: 'jefe_taller', label: 'Jefe/a de Taller' },
+        { value: 'telefonista', label: 'Telefonista' },
+        { value: 'medico', label: 'Médico/a' },
+        { value: 'ats_due', label: 'ATS/DUE Enfermería' },
+        { value: 'director_area', label: 'Director/a de Área' },
+        { value: 'director', label: 'Director/a' }
+    ],
+    mercadona: [
+        { value: 'gerente_a_menos3', label: 'Gerente A · Cajas/Reposición/Venta (menos de 3 años)' },
+        { value: 'gerente_a_mas3', label: 'Gerente A · Cajas/Reposición/Venta (3 o más años)' },
+        { value: 'gerente_b', label: 'Gerente B · Ayte coordinación / Chofer / Admin' },
+        { value: 'gerente_c', label: 'Gerente C y Coordinadores' }
+    ],
+    grandes_almacenes: CATS_GRANDES_ALMACENES,
+    leroy_merlin: CATS_GRANDES_ALMACENES,
+    el_corte_ingles: CATS_GRANDES_ALMACENES,
+    ikea: CATS_GRANDES_ALMACENES,
+    obramat: CATS_GRANDES_ALMACENES,
+    hipercor: CATS_GRANDES_ALMACENES,
+    bricomart: CATS_GRANDES_ALMACENES,
+    makro: CATS_GRANDES_ALMACENES,
+    decathlon: CATS_GRANDES_ALMACENES
+};
+
+const categoriasDe = (convenio) => CATEGORIAS_POR_CONVENIO[convenio] || CATS_GENERICAS;
+
 const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false }) => {
     const [formData, setFormData] = useState({
         // === CONTEXTO ===
@@ -77,6 +153,21 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                 ...initialData
             };
 
+            // Un <select> cuyo value no coincide con ninguna opcion PINTA la primera
+            // pero guarda el valor invalido: el usuario ve "Convenio General" y se
+            // envia otra cosa (o al reves). Se normaliza antes de mostrar nada.
+            if (!CONVENIOS.some(c => c.value === newFormData.convenio)) {
+                newFormData.convenio = 'general';
+            }
+            const catsValidas = categoriasDe(newFormData.convenio);
+            if (!catsValidas.some(c => c.value === newFormData.categoria)) {
+                newFormData.categoria = catsValidas[0].value;
+                // Si lo que detecto el OCR no existe en este convenio, no se anuncia
+                // como "detectado automaticamente": seria mentir sobre el dato.
+                detected.categoria = false;
+                setDetectedFields({ ...detected });
+            }
+
             console.log('📋 FORM DATA ANTES DE SETEAR:');
             console.log(JSON.stringify(formData, null, 2));
 
@@ -141,6 +232,14 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                 [name]: type === 'checkbox' ? checked : value
             };
 
+            // Al cambiar de convenio, la categoria anterior puede no existir en el nuevo.
+            if (name === 'convenio') {
+                const catsValidas = categoriasDe(value);
+                if (!catsValidas.some(c => c.value === newFormData.categoria)) {
+                    newFormData.categoria = catsValidas[0].value;
+                }
+            }
+
             console.log(`📋 Form data DESPUÉS:`);
             console.log(JSON.stringify(newFormData, null, 2));
             console.log(`=== FIN ManualInput handleChange ===\n`);
@@ -176,13 +275,9 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 onChange={handleChange}
                                 className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
                             >
-                                <option value="general">Convenio General</option>
-                                <option value="hosteleria">Hostelería</option>
-                                <option value="comercio">Comercio</option>
-                                <option value="construccion">Construcción</option>
-                                <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía</option>
-                                <option value="mercadona">Mercadona (2024-2028)</option>
-                                <option value="leroy_merlin">Leroy Merlin (Grandes Almacenes)</option>
+                                {CONVENIOS.map(c => (
+                                    <option key={c.value} value={c.value}>{c.label}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="relative">
@@ -203,34 +298,9 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                     : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                                     }`}
                             >
-                                {formData.convenio === 'transporte_sanitario_andalucia' ? (
-                                    <>
-                                        <option value="tes_conductor">TES Conductor</option>
-                                        <option value="tes_ayudante_camillero">TES Ayudante Camillero</option>
-                                        <option value="tes_camillero">TES Camillero</option>
-                                    </>
-                                ) : formData.convenio === 'mercadona' ? (
-                                    <>
-                                        <option value="personal_base">Personal Base</option>
-                                        <option value="gerente_a">Gerente A (0-2 años)</option>
-                                        <option value="gerente_b">Gerente B (2-4 años)</option>
-                                        <option value="gerente_c">Gerente C (4+ años)</option>
-                                        <option value="coordinador">Coordinador</option>
-                                    </>
-                                ) : formData.convenio === 'leroy_merlin' ? (
-                                    <>
-                                        <option value="profesional">Profesional</option>
-                                        <option value="coordinador">Coordinador</option>
-                                        <option value="tecnico">Técnico</option>
-                                    </>
-                                ) : (
-                                    <>
-                                        <option value="empleado">Empleado Base</option>
-                                        <option value="tecnico">Técnico/a</option>
-                                        <option value="mando_intermedio">Mando Intermedio</option>
-                                        <option value="directivo">Directivo/a</option>
-                                    </>
-                                )}
+                                {categoriasDe(formData.convenio).map(c => (
+                                    <option key={c.value} value={c.value}>{c.label}</option>
+                                ))}
                             </select>
                             {detectedFields.categoria && (
                                 <button
