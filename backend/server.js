@@ -289,6 +289,14 @@ app.post('/api/checkout', async (req, res) => {
             }],
             success_url: `${FRONTEND}/?suscrito=true`,
             cancel_url: `${FRONTEND}/precios`,
+            // La cuenta de Stripe es única para todas las marcas y su nombre público es
+            // "asistencia.io", así que el checkout dice "Pagar a asistencia.io". Sin avisar,
+            // el cliente que llega desde NominIA cree que está pagando a otra empresa y abandona.
+            custom_text: {
+                submit: {
+                    message: 'Compra segura. El cargo aparecerá a nombre de asistencia.io, que es la cuenta desde la que NominIA gestiona sus cobros: es correcto. Sin permanencia.'
+                }
+            },
             metadata: { plan, producto: 'nominia' }
         });
         res.json({ url: session.url });
