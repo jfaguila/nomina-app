@@ -1,0 +1,21 @@
+# NominIA
+
+> Herramienta española que verifica tu nómina contra su convenio colectivo con inteligencia artificial: subes la nómina, extrae los conceptos y te dice al instante si te pagan lo que marca el convenio. El veredicto es gratis y sin registro; el desglose línea a línea con el importe exacto y el informe PDF para reclamar es de pago.
+
+## Producto
+- [Inicio](https://nominia.app/): sube tu nómina y comprueba gratis si te pagan según convenio.
+- [Precios](https://nominia.app/precios): Gratis (veredicto al instante, nóminas ilimitadas, sin registro) · Trabajador 4,99 €/mes sin permanencia (desglose exacto, importe que te deben, informe PDF para reclamar) · Asesoría/Gestoría 39 €/mes (nóminas de todos tus clientes e informes con tu marca).
+
+## Tablas salariales de convenio (con fuente oficial citada)
+- [Convenios colectivos](https://nominia.app/convenios): índice de las tablas salariales publicadas.
+- [Convenio de Grandes Almacenes 2024](https://nominia.app/convenio/grandes-almacenes): salario base por grupo, tabla 2024 del BOE (BOE-A-2024-3524) en 16 pagas — Grupo Base (cajas, reposición, ventas, almacén) 1.025,78 €/mes, Grupo Profesional 1.056,55 €, Coordinador/a 1.151,64 €, Técnicos/as 1.255,29 €. Se aplica en El Corte Inglés, Hipercor, Ikea, Leroy Merlin, Obramat, Bricomart, Makro y Decathlon, entre otros.
+- [Convenio de Mercadona 2024-2028](https://nominia.app/convenio/mercadona): tabla salarial por grupo del convenio propio de empresa (BOE-A-2024-3851), 15 pagas, tabla base 2023 con revisión anual por IPC — Gerente A (cajas, reposición y venta) 1.191,07 €/mes (1.202,43 € con 3 años o más), Gerente B 1.213,46 €, Gerente C y coordinadores 1.864,73 €.
+- [Convenio de Transporte Sanitario de Andalucía](https://nominia.app/convenio/transporte-sanitario-andalucia): tabla vigente (2.º semestre de 2025, en ultraactividad) del IV Convenio andaluz de ambulancias (BOJA n.º 241, 16-dic-2020), salario base más plus de convenio por categoría — TES Conductor 1.420,79 €/mes, Ayudante Camillero 1.233,86 €, Camillero 1.157,60 €. Uniforme en las ocho provincias.
+
+## Ámbito y notas
+Servicio orientado a España: convenios colectivos españoles publicados en BOE o boletines autonómicos. Los importes publicados llevan siempre su boletín de origen citado y enlazado; los convenios sin fuente citable no se publican. Interfaz en español (portada también disponible en inglés). El análisis de la nómina se hace sobre el documento que sube el usuario; el veredicto gratuito no requiere crear cuenta.
+
+## Legal
+- [Aviso legal](https://nominia.app/aviso-legal)
+- [Privacidad](https://nominia.app/privacidad)
+- [Términos y condiciones](https://nominia.app/terminos)
