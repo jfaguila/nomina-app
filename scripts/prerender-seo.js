@@ -102,6 +102,29 @@ const ROUTES = [
       'Tu nómina se procesa para darte el resultado y no se almacena. No vendemos ni cedemos tus datos. Solo usamos cookies tecnicas necesarias para que la web funcione, ninguna de publicidad.',
     cta: 'Volver a NominIA',
   },
+  // Existian como ruta de la SPA pero sin copia estatica: servian el <title> y el
+  // canonical de la portada, asi que Google las veia como duplicados de la home.
+  {
+    dir: 'aviso-legal',
+    title: 'Aviso legal · NominIA',
+    description:
+      'Datos identificativos del titular de NominIA, condiciones de uso del sitio y propiedad intelectual.',
+    h1: 'Aviso legal',
+    body:
+      'Datos identificativos del titular de NominIA, condiciones de uso del sitio web y propiedad intelectual de sus contenidos.',
+    cta: 'Volver a NominIA',
+  },
+  {
+    dir: 'terminos',
+    title: 'Condiciones de contratación · NominIA',
+    description:
+      'Planes, precios, forma de pago, cancelación y derecho de desistimiento de las suscripciones de NominIA.',
+    h1: 'Condiciones de contratación',
+    body:
+      'Planes y precios, forma de pago, duración y cancelación de la suscripción y derecho de desistimiento aplicable a los servicios de NominIA.',
+    cta: 'Ver planes',
+    ctaHref: `${BASE}/precios`,
+  },
 ];
 
 const source = fs.readFileSync(path.join(BUILD, 'index.html'), 'utf8');
