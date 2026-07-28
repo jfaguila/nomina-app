@@ -30,7 +30,7 @@ const GA_CATS = [
 ];
 
 const CATEGORIAS_POR_CONVENIO = {
-    // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
+    // Grupos del convenio propio de Mercadona (BOE-A-2024-3851, anexo 2)
     mercadona: [
         { value: 'gerente_a_menos3', label: 'Gerente A · Cajas/Reposición/Venta (menos de 3 años)' },
         { value: 'gerente_a_mas3', label: 'Gerente A · Cajas/Reposición/Venta (3 o más años)' },
@@ -46,6 +46,7 @@ const CATEGORIAS_POR_CONVENIO = {
     bricomart: GA_CATS,
     makro: GA_CATS,
     decathlon: GA_CATS,
+    // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
     transporte_sanitario_andalucia: [
         { value: 'tes_conductor', label: 'TES Conductor/a' },
         { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero' },
@@ -596,6 +597,7 @@ const HomePage = () => {
                     </div>
                     <nav className="flex items-center gap-5">
                         <Link to="/precios" className="hover:text-blue-600">{t('home.navPricing')}</Link>
+                        <Link to="/convenios" className="hover:text-blue-600">Convenios</Link>
                         <Link to="/aviso-legal" className="hover:text-blue-600">{t('ui.footerLegal')}</Link>
                         <Link to="/privacidad" className="hover:text-blue-600">{t('ui.footerPrivacy')}</Link>
                         <Link to="/privacidad#cookies" className="hover:text-blue-600">{t('ui.footerCookies')}</Link>

@@ -8,6 +8,8 @@ import PreciosPage from './pages/PreciosPage';
 import PrivacidadPage from './pages/PrivacidadPage';
 import AvisoLegalPage from './pages/AvisoLegalPage';
 import TerminosPage from './pages/TerminosPage';
+import ConveniosIndexPage from './pages/ConveniosIndexPage';
+import ConvenioPage from './pages/ConvenioPage';
 import './index.css';
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
             <Route path="/privacidad" element={<PrivacidadPage />} />
             <Route path="/aviso-legal" element={<AvisoLegalPage />} />
             <Route path="/terminos" element={<TerminosPage />} />
+            <Route path="/convenios" element={<ConveniosIndexPage />} />
+            <Route path="/convenio/:slug" element={<ConvenioPage />} />
           </Routes>
           <CookieBanner />
         </div>

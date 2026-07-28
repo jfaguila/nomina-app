@@ -11,10 +11,77 @@
 const fs = require('fs');
 const path = require('path');
 
+const { CONVENIOS_PUBLICOS, eur } = require('../src/data/conveniosPublicos');
+
 const BUILD = path.join(__dirname, '..', 'build');
 const BASE = 'https://nominia.app';
 
+// El respaldo estatico tiene que decir LO MISMO que la pagina React, no un resumen:
+// si el rastreador ve un parrafo y el usuario ve una tabla de sueldos, la pagina no
+// vale para posicionar por "cuanto cobra un X" y ademas es contenido divergente.
+function tablaHtml(c) {
+  const th = 'style="text-align:left;padding:8px 10px;border-bottom:2px solid #cbd5e1;font-size:14px;"';
+  const td = 'style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:14px;"';
+  const tdr = 'style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:14px;text-align:right;"';
+  const cabeceras = c.columnaExtra
+    ? `<th ${th}>Categoría</th><th ${th}>Salario base</th><th ${th}>Plus de convenio</th><th ${th}>Al mes</th>`
+    : `<th ${th}>Categoría o grupo</th><th ${th}>Al mes</th><th ${th}>Al año (${c.pagas} pagas)</th>`;
+  const filas = c.filas
+    .map((f) =>
+      c.columnaExtra
+        ? `<tr><td ${td}>${f.categoria}</td><td ${tdr}>${eur(f.base)}</td><td ${tdr}>${eur(f.plus)}</td><td ${tdr}><strong>${eur(f.mes)}</strong></td></tr>`
+        : `<tr><td ${td}>${f.categoria}</td><td ${tdr}><strong>${eur(f.mes)}</strong></td><td ${tdr}>${eur(f.anual)}</td></tr>`
+    )
+    .join('');
+  return (
+    `<table style="width:100%;border-collapse:collapse;margin:20px 0;"><thead><tr>${cabeceras}</tr></thead><tbody>${filas}</tbody></table>` +
+    `<p style="font-size:13px;color:#64748b;">Ámbito: ${c.ambito} · ${c.pagas} pagas · Fuente: <a href="${c.fuenteUrl}">${c.fuente}</a></p>` +
+    c.notas.map((n) => `<p style="font-size:15px;color:#334155;">${n}</p>`).join('') +
+    `<h2 style="font-size:22px;">Preguntas frecuentes</h2>` +
+    c.faq
+      .map(
+        (f) =>
+          `<h3 style="font-size:17px;margin-bottom:4px;">${f.p}</h3><p style="font-size:15px;color:#334155;margin-top:0;">${f.r}</p>`
+      )
+      .join('')
+  );
+}
+
+const RUTAS_CONVENIO = CONVENIOS_PUBLICOS.map((c) => ({
+  dir: `convenio/${c.slug}`,
+  title: c.metaTitle,
+  description: c.metaDescription,
+  h1: c.titulo,
+  bodyHtml: `<p style="font-size:18px;color:#334155;">${c.entradilla}</p>${tablaHtml(c)}`,
+  cta: 'Comprobar mi nómina gratis',
+  ctaHref: `${BASE}/`,
+  align: 'left',
+  ancho: 900,
+}));
+
 const ROUTES = [
+  {
+    dir: 'convenios',
+    title: 'Tablas salariales de convenio 2024-2025 · comprueba tu nómina | NominIA',
+    description:
+      'Tablas salariales oficiales por convenio: Grandes Almacenes, Mercadona y Transporte Sanitario de Andalucía, con su fuente en el BOE y el BOJA. Sube tu nómina y comprueba gratis si te pagan lo que marca tu convenio.',
+    h1: 'Tablas salariales por convenio',
+    bodyHtml:
+      '<p style="font-size:18px;color:#334155;">Publicamos, con su fuente oficial delante, los importes que un convenio marca como mínimo para cada categoría. Solo publicamos la tabla de un convenio cuando podemos enlazar el boletín del que sale.</p>' +
+      '<ul style="font-size:16px;color:#334155;">' +
+      CONVENIOS_PUBLICOS.map(
+        (c) =>
+          `<li><a href="${BASE}/convenio/${c.slug}">${c.titulo}</a> — desde ${eur(
+            Math.min(...c.filas.map((f) => f.mes))
+          )} al mes, ${c.pagas} pagas, tabla ${c.tablaAplicada}.</li>`
+      ).join('') +
+      '</ul>',
+    cta: 'Comprobar mi nómina gratis',
+    ctaHref: `${BASE}/`,
+    align: 'left',
+    ancho: 900,
+  },
+  ...RUTAS_CONVENIO,
   {
     dir: 'precios',
     title: 'Precios de NominIA · Gratis, 4,99 €/mes o 39 €/mes para asesorías',
@@ -101,10 +168,10 @@ for (const route of ROUTES) {
   html = replaceOnce(
     html,
     /<main style="[^"]*">[\s\S]*?<\/main>/,
-    `<main style="max-width:680px;margin:64px auto;padding:24px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;text-align:center;color:#0E2438;">` +
+    `<main style="max-width:${route.ancho || 680}px;margin:64px auto;padding:24px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;text-align:${route.align || 'center'};color:#0E2438;">` +
       `<h1 style="font-size:32px;line-height:1.2;">${route.h1}</h1>` +
-      `<p style="font-size:18px;color:#334155;">${route.body}</p>` +
-      `<p><a href="${url}" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600;">${route.cta}</a></p>` +
+      (route.bodyHtml || `<p style="font-size:18px;color:#334155;">${route.body}</p>`) +
+      `<p><a href="${route.ctaHref || url}" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600;">${route.cta}</a></p>` +
       `</main>`,
     'respaldo estatico <main>'
   );
