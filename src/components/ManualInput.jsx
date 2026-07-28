@@ -5,11 +5,14 @@ import { motion } from 'framer-motion';
 // Si aquí falta un convenio que sí ofrece la portada, el <select> no encuentra su
 // opcion, cae a la primera ("general") y la nomina se compara contra otra tabla
 // sin avisar al usuario.
+// Los marcados sinTabla no tienen tabla salarial con boletín citado en
+// backend/data/convenios.json: la portada ya los ofrece deshabilitados
+// ("en preparación") y aquí tampoco pueden producir un veredicto.
 const CONVENIOS = [
-    { value: 'general', label: 'Convenio General' },
-    { value: 'hosteleria', label: 'Hostelería' },
-    { value: 'comercio', label: 'Comercio' },
-    { value: 'construccion', label: 'Construcción' },
+    { value: 'general', label: 'Convenio General', sinTabla: true },
+    { value: 'hosteleria', label: 'Hostelería', sinTabla: true },
+    { value: 'comercio', label: 'Comercio', sinTabla: true },
+    { value: 'construccion', label: 'Construcción', sinTabla: true },
     { value: 'transporte_sanitario_andalucia', label: 'Transporte Sanitario Andalucía' },
     { value: 'mercadona', label: 'Mercadona (2024-2028)' },
     { value: 'grandes_almacenes', label: 'Grandes Almacenes' },
@@ -248,8 +251,13 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
         });
     };
 
+    // Un convenio sin tabla oficial no puede generar un veredicto: sería
+    // comparar la nómina contra importes sin fuente.
+    const convenioSinTabla = CONVENIOS.some(c => c.value === formData.convenio && c.sinTabla);
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (convenioSinTabla) return;
         onSubmit(formData);
     };
 
@@ -276,9 +284,16 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                 className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
                             >
                                 {CONVENIOS.map(c => (
-                                    <option key={c.value} value={c.value}>{c.label}</option>
+                                    <option key={c.value} value={c.value} disabled={c.sinTabla}>
+                                        {c.label}{c.sinTabla ? ' (en preparación)' : ''}
+                                    </option>
                                 ))}
                             </select>
+                            {convenioSinTabla && (
+                                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 ml-1">
+                                    Este convenio aún no tiene su tabla salarial oficial cargada, así que no podemos darte un veredicto fiable. Elige tu convenio en la lista para continuar.
+                                </p>
+                            )}
                         </div>
                         <div className="relative">
                             <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
@@ -723,8 +738,8 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                     </button>
                     <button
                         type="submit"
-                        disabled={disabled}
-                        className="flex-[2] py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+                        disabled={disabled || convenioSinTabla}
+                        className="flex-[2] py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <span>Verificar Nómina</span>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
