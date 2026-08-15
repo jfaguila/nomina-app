@@ -202,19 +202,25 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
         const baseCot = devengos;
         // Para cada deducción: si el OCR/usuario YA tiene un valor, se RESPETA (es el real de la nómina); si no, se estima.
         const ccV  = num(formData.cotizacionContingenciasComunes) || baseCot * 0.0470;
-        const meiV = num(formData.cotizacionMEI) || baseCot * 0.0013;
+        const meiV = num(formData.cotizacionMEI); // NO estimar MEI: inventarlo en nóminas sin MEI (p.ej. anteriores a 2023) creaba una deducción fantasma de ~2 €.
         const desV = num(formData.cotizacionDesempleo) || baseCot * 0.0155;
         const fpV  = num(formData.cotizacionFormacionProfesional) || baseCot * 0.0010;
         const irpf = num(formData.irpf);
-        const totalDed = ccV + meiV + desV + fpV + irpf;
-        const patch = {
-            totalDevengado: r2(devengos),
-            totalDeducciones: r2(totalDed),
-            liquidoTotal: r2(devengos - totalDed)
-        };
-        // Rellenar SOLO las deducciones que estuvieran vacías (no pisar las reales del OCR)
+        const totalDedCalc = ccV + meiV + desV + fpV + irpf;
+        const patch = {};
+        // Los TOTALES reales de la nómina (devengado, deducciones, líquido) MANDAN:
+        // si el OCR/usuario ya los trae, se RESPETAN y NO se pisan. Solo se calculan
+        // cuando faltan. Antes se sobreescribían siempre con un cálculo aproximado y
+        // salían mal (p.ej. Mercadona: total real 375,60 pasaba a 377,96 por el MEI).
+        if (!num(formData.totalDevengado)) patch.totalDevengado = r2(devengos);
+        if (!num(formData.totalDeducciones)) patch.totalDeducciones = r2(totalDedCalc);
+        if (!num(formData.liquidoTotal)) {
+            const tdReal = num(formData.totalDeducciones) || totalDedCalc;
+            patch.liquidoTotal = r2(devengos - tdReal);
+        }
+        // Rellenar SOLO las deducciones sueltas que estuvieran vacías (no pisar el OCR).
+        // El MEI NO se autocompleta: no inventamos un concepto que no aparece.
         if (!num(formData.cotizacionContingenciasComunes)) patch.cotizacionContingenciasComunes = r2(ccV);
-        if (!num(formData.cotizacionMEI)) patch.cotizacionMEI = r2(meiV);
         if (!num(formData.cotizacionDesempleo)) patch.cotizacionDesempleo = r2(desV);
         if (!num(formData.cotizacionFormacionProfesional)) patch.cotizacionFormacionProfesional = r2(fpV);
         setFormData(prev => ({ ...prev, ...patch }));
