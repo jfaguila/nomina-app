@@ -63,12 +63,16 @@ const CONVENIOS_PUBLICOS = [
     slug: 'mercadona',
     convenioId: 'mercadona',
     nombre: 'Mercadona',
-    titulo: 'Convenio de Mercadona 2024-2028: tablas salariales por grupo',
-    metaTitle: 'Convenio Mercadona 2024-2028 · tabla salarial por grupo (BOE) | NominIA',
+    // Solo hay una tabla publicada en el BOE (la de 2023). El convenio dura 2024-2028 y
+    // manda revisarla cada ano, pero a 3-sep-2026 no consta ninguna tabla revisada en el
+    // BOE (busqueda por titulo: solo BOE-A-2024-3851 y la modificacion LGTBI BOE-A-2025-11416).
+    // Por eso el titulo no promete una tabla 2024-2028 que no podemos citar.
+    titulo: 'Convenio de Mercadona: tabla salarial base 2023 por grupo (BOE) y cómo se actualiza',
+    metaTitle: 'Convenio Mercadona · tabla salarial base 2023 por grupo (BOE) y cómo se actualiza | NominIA',
     metaDescription:
-      'Salario base por grupo del Convenio Colectivo de Mercadona, S.A. (BOE-A-2024-3851): Gerente A 1.191,07 €, Gerente A con 3 años 1.202,43 €, Gerente B 1.213,46 € y Gerente C 1.864,73 € al mes en 15 pagas. Comprueba gratis si tu nómina lo cumple.',
+      'Tabla salarial base 2023 del Convenio de Mercadona, S.A., la única publicada en el BOE (BOE-A-2024-3851): Gerente A 1.191,07 €, Gerente B 1.213,46 € y Gerente C 1.864,73 € al mes en 15 pagas. Es el suelo: el convenio 2024-2028 la revisa cada año. Comprueba gratis si tu nómina lo cumple.',
     entradilla:
-      'Mercadona tiene convenio propio de empresa, uniforme en toda España, con vigencia 2024-2028. Su tabla organiza la plantilla en grupos «Gerente» —el nombre despista, porque el Gerente A es el personal de cajas, reposición y venta— y reparte el salario base en 15 pagas.',
+      'Mercadona tiene convenio propio de empresa, uniforme en toda España, con vigencia 2024-2028. La única tabla salarial publicada en el BOE es la de 2023 (Anexo 2): el propio convenio manda actualizarla cada año y remitirla a la Dirección General de Trabajo, pero no consta ninguna tabla revisada en el BOE, así que estos importes son el suelo, no el sueldo de este año. La tabla organiza la plantilla en grupos «Gerente» —el nombre despista, porque el Gerente A es el personal de cajas, reposición y venta— y reparte el salario base en 15 pagas.',
     empresas: ['Mercadona, S.A.'],
     pagas: 15,
     tablaAplicada: '2023',
@@ -84,7 +88,8 @@ const CONVENIOS_PUBLICOS = [
     ],
     notas: [
       'El salario base se reparte en 15 pagas: 12 mensualidades y 3 pagas extra, que pueden ir prorrateadas.',
-      'La tabla que publica el convenio es la de 2023. El propio texto establece que los salarios se revisan por IPC cada año hasta 2028, así que el importe de tu año puede ser superior al de la tabla base.',
+      'La tabla que publica el convenio es la de 2023 y es la única que consta en el BOE. El propio texto (art. 32) establece que el salario base se revisa cada año hasta 2028 según el IPC y los resultados de la empresa, así que el importe de tu año debería ser superior al de la tabla base.',
+      'Salario base de tabla frente a sueldo bruto total: las cifras de sueldo de Mercadona que circulan en prensa se refieren al bruto mensual completo de un empleado a jornada completa, que suma al salario base los complementos de la empresa (primas, plus por objetivos, antigüedad). Por eso son bastante más altas que el salario base de la tabla del BOE. Al comparar tu nómina, mira el conjunto de conceptos fijos, no solo la línea de salario base.',
       'La antigüedad se reconoce por cuatrienios (5 % del salario base) y la hora nocturna se paga a 2,25 €.',
     ],
     faq: [
