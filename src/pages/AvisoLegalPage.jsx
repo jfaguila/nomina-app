@@ -2,12 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
+import { schemaPagina } from '../data/seoSchema';
 
 export default function AvisoLegalPage() {
   useSeo({
     title: 'Aviso legal · NominIA',
     description: 'Datos identificativos del titular de NominIA, condiciones de uso del sitio y propiedad intelectual.',
     path: '/aviso-legal',
+    jsonLd: schemaPagina('Aviso legal', '/aviso-legal'),
   });
 
   return (

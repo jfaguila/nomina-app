@@ -3,6 +3,7 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { getConvenio, CONVENIOS_PUBLICOS, eur } from '../data/conveniosPublicos';
+import { schemaConvenio, schemaConvenios } from '../data/seoSchema';
 
 export default function ConvenioPage() {
   const { slug } = useParams();
@@ -12,6 +13,9 @@ export default function ConvenioPage() {
     title: convenio ? convenio.metaTitle : 'Convenios colectivos · NominIA',
     description: convenio ? convenio.metaDescription : 'Tablas salariales de convenio.',
     path: convenio ? `/convenio/${convenio.slug}` : '/convenios',
+    // FAQPage (las 3 preguntas de la pagina) + BreadcrumbList + Organization: el
+    // mismo bloque que escribe scripts/prerender-seo.js en el HTML estatico.
+    jsonLd: convenio ? schemaConvenio(convenio) : schemaConvenios(),
   });
 
   if (!convenio) return <Navigate to="/convenios" replace />;

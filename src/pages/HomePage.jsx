@@ -13,6 +13,7 @@ import useSeo from '../hooks/useSeo';
 import InstructionsModal from '../components/InstructionsModal';
 import LeadForm from '../components/LeadForm';
 import SimuladorHoras from '../components/SimuladorHoras';
+import { schemaHome } from '../data/seoSchema';
 
 const CATEGORIAS_GENERICAS = [
     { value: 'empleado', label: 'Empleado' },
@@ -75,6 +76,7 @@ const HomePage = () => {
         title: 'NominIA · Verifica si te pagan lo que marca tu convenio',
         description: 'Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre gratis si te están pagando de menos. 100% privado, sin registro.',
         path: '/',
+        jsonLd: schemaHome(),
     });
 
     const { t } = useLanguage();
@@ -334,7 +336,8 @@ const HomePage = () => {
                     <div className="flex items-center gap-3">
                         <img src="/logo.svg" alt="NominIA" className="w-12 h-12 rounded-2xl shadow-lg shadow-[#0E2438]/20" />
                         <div>
-                            <h1 className="text-2xl font-extrabold tracking-tight leading-none">NominIA<span className="text-lime-500">.app</span></h1>
+                            {/* El logo no es el H1: el H1 de la portada es la propuesta de valor del hero. */}
+                            <div className="text-2xl font-extrabold tracking-tight leading-none">NominIA<span className="text-lime-500">.app</span></div>
                             <p className="text-xs text-gray-500 dark:text-gray-400">{t('home.tagline')}</p>
                         </div>
                     </div>
@@ -386,9 +389,10 @@ const HomePage = () => {
                                         <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-lime-400"></span></span>
                                         {t('home.badge')}
                                     </span>
-                                    <h2 className="mt-6 text-[2.6rem] leading-[1.02] md:text-[4.6rem] md:leading-[0.98] font-extrabold tracking-tight">
+                                    {/* Mismo texto que el <h1> de respaldo de public/index.html: lo que ve el rastreador y lo que ve el usuario tienen que coincidir. */}
+                                    <h1 className="mt-6 text-[2.6rem] leading-[1.02] md:text-[4.6rem] md:leading-[0.98] font-extrabold tracking-tight">
                                         {t('home.heroA')} <span className="text-lime-400 italic font-serif font-normal">{t('home.heroB')}</span>
-                                    </h2>
+                                    </h1>
                                     <p className="mt-6 text-lg md:text-xl text-slate-300/90 max-w-xl leading-relaxed">
                                         {t('home.leadA')} <b className="text-white font-semibold">{t('home.leadB')}</b> {t('home.leadC')}
                                     </p>

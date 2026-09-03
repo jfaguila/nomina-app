@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { CONVENIOS_PUBLICOS, eur } from '../data/conveniosPublicos';
+import { schemaConvenios } from '../data/seoSchema';
 
 // Los que el motor sabe leer pero cuya tabla no tiene boletin citado: se listan
 // como cobertura del producto, no como pagina con importes publicados.
@@ -18,6 +19,7 @@ export default function ConveniosIndexPage() {
     description:
       'Tablas salariales oficiales por convenio: Grandes Almacenes, Mercadona y Transporte Sanitario de Andalucía, con su fuente en el BOE y el BOJA. Sube tu nómina y comprueba gratis si te pagan lo que marca tu convenio.',
     path: '/convenios',
+    jsonLd: schemaConvenios(),
   });
 
   return (

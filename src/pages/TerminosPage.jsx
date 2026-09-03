@@ -2,12 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
+import { schemaPagina } from '../data/seoSchema';
 
 export default function TerminosPage() {
   useSeo({
     title: 'Condiciones de contratación · NominIA',
     description: 'Planes, precios, forma de pago, cancelación y derecho de desistimiento de las suscripciones de NominIA.',
     path: '/terminos',
+    jsonLd: schemaPagina('Condiciones de contratación', '/terminos'),
   });
 
   return (

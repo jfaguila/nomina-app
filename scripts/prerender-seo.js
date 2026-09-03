@@ -12,6 +12,13 @@ const fs = require('fs');
 const path = require('path');
 
 const { CONVENIOS_PUBLICOS, eur } = require('../src/data/conveniosPublicos');
+const {
+  schemaHome,
+  schemaPrecios,
+  schemaConvenios,
+  schemaConvenio,
+  schemaPagina,
+} = require('../src/data/seoSchema');
 
 const BUILD = path.join(__dirname, '..', 'build');
 const BASE = 'https://nominia.app';
@@ -52,6 +59,7 @@ const RUTAS_CONVENIO = CONVENIOS_PUBLICOS.map((c) => ({
   title: c.metaTitle,
   description: c.metaDescription,
   h1: c.titulo,
+  jsonLd: schemaConvenio(c),
   bodyHtml: `<p style="font-size:18px;color:#334155;">${c.entradilla}</p>${tablaHtml(c)}`,
   cta: 'Comprobar mi nómina gratis',
   ctaHref: `${BASE}/`,
@@ -66,6 +74,7 @@ const ROUTES = [
     description:
       'Tablas salariales oficiales por convenio: Grandes Almacenes, Mercadona y Transporte Sanitario de Andalucía, con su fuente en el BOE y el BOJA. Sube tu nómina y comprueba gratis si te pagan lo que marca tu convenio.',
     h1: 'Tablas salariales por convenio',
+    jsonLd: schemaConvenios(),
     bodyHtml:
       '<p style="font-size:18px;color:#334155;">Publicamos, con su fuente oficial delante, los importes que un convenio marca como mínimo para cada categoría. Solo publicamos la tabla de un convenio cuando podemos enlazar el boletín del que sale.</p>' +
       '<ul style="font-size:16px;color:#334155;">' +
@@ -87,7 +96,9 @@ const ROUTES = [
     title: 'Precios de NominIA · Gratis, 4,99 €/mes o 39 €/mes para asesorías',
     description:
       'Comprueba gratis si te pagan de menos. Por 4,99 €/mes desbloqueas el desglose línea por línea y el informe PDF para reclamar. Plan de asesoría 39 €/mes. Sin permanencia.',
-    h1: 'Planes simples y claros',
+    // Mismo texto que el <h1> de src/pages/PreciosPage.jsx.
+    h1: 'Precios de NominIA: gratis, 4,99 €/mes o 39 €/mes para asesorías',
+    jsonLd: schemaPrecios(),
     body:
       'Empieza gratis: el veredicto de si te pagan bien no cuesta nada y no requiere registro. El plan Trabajador (4,99 €/mes) añade el desglose exacto línea por línea, el importe que te deben y el informe PDF para reclamar. El plan Asesoría / Gestoría (39 €/mes) da desgloses ilimitados de tus clientes e informes con tu marca. Sin permanencia.',
     cta: 'Ver planes',
@@ -97,7 +108,8 @@ const ROUTES = [
     title: 'Privacidad y cookies · NominIA',
     description:
       'Cómo trata NominIA tu nómina: no se guarda, no se vende y solo usamos cookies técnicas. Política de privacidad y de cookies.',
-    h1: 'Privacidad y cookies',
+    h1: 'Privacidad y confidencialidad',
+    jsonLd: schemaPagina('Privacidad y cookies', '/privacidad'),
     body:
       'Tu nómina se procesa para darte el resultado y no se almacena. No vendemos ni cedemos tus datos. Solo usamos cookies tecnicas necesarias para que la web funcione, ninguna de publicidad.',
     cta: 'Volver a NominIA',
@@ -110,6 +122,7 @@ const ROUTES = [
     description:
       'Datos identificativos del titular de NominIA, condiciones de uso del sitio y propiedad intelectual.',
     h1: 'Aviso legal',
+    jsonLd: schemaPagina('Aviso legal', '/aviso-legal'),
     body:
       'Datos identificativos del titular de NominIA, condiciones de uso del sitio web y propiedad intelectual de sus contenidos.',
     cta: 'Volver a NominIA',
@@ -120,6 +133,7 @@ const ROUTES = [
     description:
       'Planes, precios, forma de pago, cancelación y derecho de desistimiento de las suscripciones de NominIA.',
     h1: 'Condiciones de contratación',
+    jsonLd: schemaPagina('Condiciones de contratación', '/terminos'),
     body:
       'Planes y precios, forma de pago, duración y cancelación de la suscripción y derecho de desistimiento aplicable a los servicios de NominIA.',
     cta: 'Ver planes',
@@ -135,7 +149,15 @@ function replaceOnce(html, regex, replacement, label) {
   if (!regex.test(html)) {
     throw new Error(`prerender-seo: no se encontro ${label} en build/index.html`);
   }
-  return html.replace(regex, replacement);
+  // Funcion y no cadena: un '$' dentro del JSON-LD o del texto no debe interpretarse
+  // como patron de sustitucion.
+  return html.replace(regex, () => replacement);
+}
+
+const JSONLD_RE = /<script type="application\/ld\+json" id="seo-jsonld">[\s\S]*?<\/script>/;
+function jsonLdTag(bloques) {
+  // '</' escapado por si algun texto lo contuviera: cerraria el <script> antes de tiempo.
+  return `<script type="application/ld+json" id="seo-jsonld">${JSON.stringify(bloques).replace(/<\//g, '<\\/')}</script>`;
 }
 
 for (const route of ROUTES) {
@@ -186,6 +208,10 @@ for (const route of ROUTES) {
     'twitter:description'
   );
 
+  // Datos estructurados de la ruta (FAQPage, BreadcrumbList, Organization, Offer...):
+  // los mismos bloques que useSeo escribe en el navegador.
+  html = replaceOnce(html, JSONLD_RE, jsonLdTag(route.jsonLd), 'script#seo-jsonld');
+
   // El respaldo estatico dentro de #root: React lo sustituye al montar, pero es lo
   // unico que ve un rastreador que no renderiza.
   html = replaceOnce(
@@ -204,3 +230,11 @@ for (const route of ROUTES) {
   fs.writeFileSync(path.join(out, 'index.html'), html);
   console.log(`prerender-seo: build/${route.dir}/index.html`);
 }
+
+// La portada: public/index.html trae solo el WebApplication; aqui se le anade
+// Organization, igual que hace useSeo al montar HomePage.
+fs.writeFileSync(
+  path.join(BUILD, 'index.html'),
+  replaceOnce(source, JSONLD_RE, jsonLdTag(schemaHome()), 'script#seo-jsonld (portada)')
+);
+console.log('prerender-seo: build/index.html (JSON-LD de la portada)');

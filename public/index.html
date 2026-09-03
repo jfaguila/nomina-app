@@ -65,8 +65,9 @@
     <meta name="twitter:image" content="https://nominia.app/og.png" />
     <meta name="twitter:image:alt" content="NominIA — ¿Te pagan lo que te toca?" />
 
-    <!-- Datos estructurados -->
-    <script type="application/ld+json">
+    <!-- Datos estructurados. El id lo usan useSeo (navegador) y prerender-seo.js (HTML
+         estatico) para sustituir este bloque por el de cada ruta; ver src/data/seoSchema.js -->
+    <script type="application/ld+json" id="seo-jsonld">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
@@ -87,9 +88,10 @@
     <div id="root">
       <!-- Contenido estático de respaldo: visible para buscadores y en el primer pintado. React lo sustituye al cargar. -->
       <main style="max-width:680px;margin:64px auto;padding:24px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;text-align:center;color:#0E2438;">
-        <h1 style="font-size:32px;line-height:1.2;">¿Te están pagando lo que marca tu convenio?</h1>
+        <h1 style="font-size:32px;line-height:1.2;">¿Te pagan lo que marca tu convenio? Compruébalo gratis.</h1>
         <p style="font-size:18px;color:#334155;">Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre <strong>gratis</strong> si te están pagando de menos.</p>
         <p style="color:#64748b;">100% privado · Resultado al instante · Sin registro</p>
+        <p style="font-size:15px;color:#334155;">Consulta las <a href="https://nominia.app/convenios">tablas salariales por convenio</a> con su fuente oficial o los <a href="https://nominia.app/precios">precios</a> (gratis, 4,99 €/mes o 39 €/mes para asesorías).</p>
         <p><a href="https://nominia.app/" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600;">Verificar mi nómina</a></p>
       </main>
     </div>

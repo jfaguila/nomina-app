@@ -2,12 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
+import { schemaPagina } from '../data/seoSchema';
 
 export default function PrivacidadPage() {
   useSeo({
     title: 'Privacidad y cookies · NominIA',
     description: 'Cómo trata NominIA tu nómina: no se guarda, no se vende y solo usamos cookies técnicas. Política de privacidad y de cookies.',
     path: '/privacidad',
+    jsonLd: schemaPagina('Privacidad y cookies', '/privacidad'),
   });
 
   return (

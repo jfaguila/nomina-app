@@ -10,6 +10,7 @@ import AvisoLegalPage from './pages/AvisoLegalPage';
 import TerminosPage from './pages/TerminosPage';
 import ConveniosIndexPage from './pages/ConveniosIndexPage';
 import ConvenioPage from './pages/ConvenioPage';
+import NotFoundPage from './pages/NotFoundPage';
 import './index.css';
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
             <Route path="/terminos" element={<TerminosPage />} />
             <Route path="/convenios" element={<ConveniosIndexPage />} />
             <Route path="/convenio/:slug" element={<ConvenioPage />} />
+            {/* Sin esto, cualquier URL desconocida (o /en, que no existe) quedaba en blanco con 200. */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
           <CookieBanner />
         </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
+import { schemaPrecios } from '../data/seoSchema';
 
 const getApiUrl =() => process.env.REACT_APP_API_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5987' : 'https://nomina-backend-production-57d2.up.railway.app');
 
@@ -31,6 +32,7 @@ export default function PreciosPage() {
     title: 'Precios de NominIA · Gratis, 4,99 €/mes o 39 €/mes para asesorías',
     description: 'Comprueba gratis si te pagan de menos. Por 4,99 €/mes desbloqueas el desglose línea por línea y el informe PDF para reclamar. Plan de asesoría 39 €/mes. Sin permanencia.',
     path: '/precios',
+    jsonLd: schemaPrecios(),
   });
 
   async function suscribir(plan) {
@@ -52,7 +54,7 @@ export default function PreciosPage() {
         <Link to="/" className="flex items-center gap-3">
           <img src="/logo.svg" alt="NominIA" className="w-11 h-11 rounded-xl shadow-lg shadow-blue-500/20" />
           <div>
-            <h1 className="text-2xl font-bold tracking-tight leading-none">NominIA</h1>
+            <span className="text-2xl font-bold tracking-tight leading-none block">NominIA</span>
             <p className="text-xs text-gray-500 dark:text-gray-400">Verificador inteligente de nóminas</p>
           </div>
         </Link>
@@ -63,7 +65,8 @@ export default function PreciosPage() {
       </header>
 
       <section className="max-w-6xl mx-auto px-6 pt-8 pb-20 text-center">
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">Planes simples y claros</h2>
+        {/* Mismo texto que ROUTES[precios].h1 en scripts/prerender-seo.js. */}
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">Precios de NominIA: gratis, 4,99 €/mes o 39 €/mes para asesorías</h1>
         <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           Empieza gratis. Cuando lo necesites, pásate a ilimitado. Sin permanencia.
         </p>
@@ -106,6 +109,10 @@ export default function PreciosPage() {
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
           Pago seguro con Stripe. Tus datos están protegidos — <Link to="/privacidad" className="text-blue-600 hover:underline">política de privacidad</Link>.
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+          ¿Quieres ver primero contra qué se compara tu nómina? Consulta las{' '}
+          <Link to="/convenios" className="text-blue-600 hover:underline">tablas salariales por convenio</Link> con su fuente oficial.
         </p>
       </section>
     </div>

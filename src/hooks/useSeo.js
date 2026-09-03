@@ -14,14 +14,22 @@ function setMeta(selector, attr, value) {
   el.setAttribute(attr, value);
 }
 
-// Las 3 rutas son una SPA sobre un unico index.html, asi que sin esto /precios y
+// Las rutas son una SPA sobre un unico index.html, asi que sin esto /precios y
 // /privacidad heredan el title y el canonical de la home: Google las trata como
 // duplicados de la portada y no las indexa.
-export default function useSeo({ title, description, path }) {
+//
+// - robots: 'noindex' en la pagina 404; el resto hereda 'index, follow'.
+// - jsonLd: array de bloques schema.org (src/data/seoSchema.js). Se escribe en el
+//   <script id="seo-jsonld"> que ya trae public/index.html, para que en el DOM no
+//   convivan el bloque generico de la portada y el de la ruta.
+export default function useSeo({ title, description, path, robots = 'index, follow', jsonLd }) {
+  const jsonLdText = jsonLd ? JSON.stringify(jsonLd) : '';
+
   useEffect(() => {
     const url = BASE + path;
     document.title = title;
     setMeta('meta[name="description"]', 'content', description);
+    setMeta('meta[name="robots"]', 'content', robots);
     setMeta('meta[property="og:title"]', 'content', title);
     setMeta('meta[property="og:description"]', 'content', description);
     setMeta('meta[property="og:url"]', 'content', url);
@@ -35,5 +43,16 @@ export default function useSeo({ title, description, path }) {
       document.head.appendChild(canonical);
     }
     canonical.setAttribute('href', url);
-  }, [title, description, path]);
+
+    if (jsonLdText) {
+      let script = document.getElementById('seo-jsonld');
+      if (!script) {
+        script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = 'seo-jsonld';
+        document.head.appendChild(script);
+      }
+      script.textContent = jsonLdText;
+    }
+  }, [title, description, path, robots, jsonLdText]);
 }

@@ -4,8 +4,10 @@ export const translations = {
     // cambiaba los enlaces de accesibilidad y el resto seguia en castellano.
     home: {
       badge: 'Convenios oficiales · tablas vigentes',
-      heroA: '¿Te pagan',
-      heroB: 'lo que te toca?',
+      // Es el H1 de la portada (heroA + heroB): tiene que decir lo mismo que el
+      // <h1> estatico de public/index.html.
+      heroA: '¿Te pagan lo que marca tu convenio?',
+      heroB: 'Compruébalo gratis.',
       leadA: 'Sube tu nómina y en',
       leadB: '10 segundos',
       leadC: 'la comparamos con tu convenio colectivo. Si te pagan de menos, lo verás claro.',
@@ -205,8 +207,8 @@ export const translations = {
   en: {
     home: {
       badge: 'Official agreements · pay tables in force',
-      heroA: 'Are you being paid',
-      heroB: 'what you are owed?',
+      heroA: 'Are you paid what your collective agreement says?',
+      heroB: 'Check it for free.',
       leadA: 'Upload your payslip and in',
       leadB: '10 seconds',
       leadC: "we compare it against your Spanish collective agreement. If you are being underpaid, you will see it clearly.",
