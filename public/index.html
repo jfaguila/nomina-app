@@ -29,6 +29,28 @@
         }
       } catch (e) {}
     </script>
+    <!-- Pixel de Meta (NominIA Web). Publicidad: NO se carga hasta que el usuario
+         acepta en el banner de cookies. CookieBanner.jsx llama a nominiaLoadMetaPixel()
+         al aceptar; aqui solo se dispara si ya habia un consentimiento guardado. -->
+    <script>
+      window.NOMINIA_META_PIXEL = '910915878380906';
+      window.nominiaLoadMetaPixel = function () {
+        if (window.__nominiaMetaPixel) return;
+        window.__nominiaMetaPixel = true;
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){
+          n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
+          t=b.createElement(e);t.async=!0;t.src=v;
+          s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+        (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', window.NOMINIA_META_PIXEL);
+        fbq('track', 'PageView');
+      };
+      try {
+        if (localStorage.getItem('nominia_consent') === 'granted') window.nominiaLoadMetaPixel();
+      } catch (e) {}
+    </script>
+
     <!-- Google Ads (conversión de lead NominIA) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18208622022"></script>
     <script>

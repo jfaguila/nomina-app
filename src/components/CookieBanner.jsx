@@ -16,6 +16,11 @@ function updateConsent(granted) {
       analytics_storage: v,
     });
   }
+  // El pixel de Meta es publicidad de terceros: solo se descarga tras aceptar.
+  // Al rechazar no se carga nada (y si ya estaba, no se vuelve a inicializar).
+  if (granted && typeof window.nominiaLoadMetaPixel === 'function') {
+    try { window.nominiaLoadMetaPixel(); } catch (e) {}
+  }
 }
 
 export default function CookieBanner() {

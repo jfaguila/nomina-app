@@ -29,6 +29,9 @@ export default function LeadForm({ apiUrl, defaults = {}, onCaptured }) {
         } catch (_) { /* no bloqueamos el veredicto si el guardado falla */ }
         finally {
             try { if (window.gtag) window.gtag('event', 'conversion', { send_to: 'AW-18208622022/ua98COfA0cEcEMaLxupD' }); } catch (e) {}
+            // Meta: fbq solo existe si el usuario acepto cookies. Se manda el evento
+            // Lead SIN datos personales: ni correo ni nombre, ni siquiera hasheados.
+            try { if (window.fbq) window.fbq('track', 'Lead'); } catch (e) {}
             setLoading(false);
             onCaptured && onCaptured({ email, nombre, provincia });
         }
