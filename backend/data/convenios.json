@@ -245,7 +245,9 @@
       "pernocta_desayuno": 22.1,
       "total_dia": 54.61
     },
-    "festividadEspecial2025": 43.88
+    "festividadEspecial2025": 43.88,
+    "estructuraBaseMasPlus": true,
+    "categoriaPorDefecto": "tes_conductor"
   },
   "mercadona": {
     "nombre": "Convenio Colectivo de Mercadona, S.A. (2024-2028)",
@@ -1029,6 +1031,8 @@
       "cena": 14.24,
       "pernocta_desayuno": 19.38,
       "total_dia": 47.86
-    }
+    },
+    "estructuraBaseMasPlus": true,
+    "categoriaPorDefecto": "tes_conductor"
   }
 }

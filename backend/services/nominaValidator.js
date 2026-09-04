@@ -74,9 +74,13 @@ class NominaValidator {
             salarioBaseRealEfectivo = salarioBaseReal + sumaComp;
             conceptoBaseLabel = 'Salario base + complementos';
         }
-        // FIX: en transporte sanitario, si la categoría no es TES, usar tes_conductor (DEFAULT TES)
-        if (convenioKey === 'transporte_sanitario_andalucia' && convenio.detallesSalariales && !convenio.detallesSalariales[nominaData.categoria]) {
-            nominaData.categoria = 'tes_conductor';
+        // En transporte sanitario, si la categoria no esta en la tabla, se cae a la
+        // categoria por defecto del convenio (el TES conductor). Antes esto miraba el
+        // literal 'transporte_sanitario_andalucia': al anadir el convenio valenciano,
+        // con la MISMA estructura de base + plus, el literal lo dejaba fuera. La forma
+        // se declara ahora en el dato (estructuraBaseMasPlus), no en un if por nombre.
+        if (convenio.estructuraBaseMasPlus && convenio.detallesSalariales && !convenio.detallesSalariales[nominaData.categoria]) {
+            nominaData.categoria = convenio.categoriaPorDefecto || 'tes_conductor';
         }
         // Resolver la categoría contra las claves REALES de la tabla del convenio
         // (p. ej. "gerente_a" -> "gerente_a_mas3" según antigüedad). Si no hay
@@ -110,8 +114,11 @@ class NominaValidator {
             warnings.push(`No se ha podido identificar tu categoría en la tabla del convenio: la comparación usa la referencia general ("empleado"). Revísala a mano.`);
         }
 
-        // Ajuste específico para transporte sanitario (Base + Plus Convenio)
-        if (convenioKey === 'transporte_sanitario_andalucia' && convenio.detallesSalariales && convenio.detallesSalariales[nominaData.categoria]) {
+        // Convenios cuya tabla es "salario base + plus de convenio" (transporte sanitario):
+        // la nomina trae las dos lineas separadas, asi que comparar la linea de salario
+        // base contra el TOTAL de la tabla acusa de menos a una nomina correcta. Aqui se
+        // compara base contra base y plus contra plus.
+        if (convenio.estructuraBaseMasPlus && convenio.detallesSalariales && convenio.detallesSalariales[nominaData.categoria]) {
             salarioBaseTeorico = convenio.detallesSalariales[nominaData.categoria].salarioBase;
 
             // Plus Convenio
