@@ -12,7 +12,17 @@
 const BASE = 'https://nominia.app';
 
 // Perfiles sociales conectados el 2-sep-2026 (Facebook page 1258238120710732,
-// LinkedIn org 146242934). Se enlazan por id numerico: no hay URL vanidosa fijada.
+// LinkedIn org 146242934). Se enlazan por id numerico y no por el nombre de la
+// pagina: el id sobrevive a un renombrado y la URL con nombre, no.
+//
+// Estas dos constantes son la UNICA fuente de las URLs de las redes: las usa el
+// `sameAs` de Organization (lo que le dice a Google que esas cuentas son de la
+// marca), el pie de la web (src/components/SiteFooter.jsx) y el pie del HTML
+// estatico que genera scripts/prerender-seo.js. Si viviesen en tres sitios, el
+// dia que cambie un perfil quedarian dos mintiendo.
+const FACEBOOK_URL = 'https://www.facebook.com/1258238120710732';
+const LINKEDIN_URL = 'https://www.linkedin.com/company/146242934';
+
 const ORGANIZATION = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -20,10 +30,7 @@ const ORGANIZATION = {
   name: 'NominIA',
   url: `${BASE}/`,
   logo: `${BASE}/logo512.png`,
-  sameAs: [
-    'https://www.facebook.com/1258238120710732',
-    'https://www.linkedin.com/company/146242934',
-  ],
+  sameAs: [FACEBOOK_URL, LINKEDIN_URL],
 };
 
 const WEB_APPLICATION = {
@@ -156,6 +163,8 @@ function schemaPagina(name, path) {
 
 module.exports = {
   ORGANIZATION,
+  FACEBOOK_URL,
+  LINKEDIN_URL,
   schemaHome,
   schemaPrecios,
   schemaConvenios,

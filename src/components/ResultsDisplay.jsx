@@ -10,9 +10,14 @@ const ResultsDisplay = ({ results, usos = 0 }) => {
     if (!results) return null;
 
     const { isValid, errors, warnings, details } = results;
-    // Modelo teaser: el veredicto es gratis; el desglose exacto y "cuánto te deben" requieren plan de pago.
+    // El muro lo decide el SERVIDOR, no esta pantalla: sin plan, la respuesta de
+    // la API ya viene sin un solo importe. Antes se enviaban los euros al
+    // navegador y solo se tapaban aqui, asi que cualquiera los leia en la
+    // pestana de red. Esto es lo que hace que el plan de 4,99 EUR valga algo.
     const locked = !results.unlocked;
-    const nDiferencias = (errors && errors.length) || 0;
+    const nDiferencias = results.nDiferencias != null ? results.nDiferencias : ((errors && errors.length) || 0);
+    // Los conceptos que fallan (sin cifras) los manda el servidor en el plan gratis.
+    const conceptos = results.conceptos || [];
 
     return (
         <motion.div
@@ -88,8 +93,18 @@ const ResultsDisplay = ({ results, usos = 0 }) => {
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             {isValid ? 'Ve el desglose completo de tu nómina' : 'Desbloquea cuánto dinero te deben'}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2 max-w-md mx-auto">
-                            Accede al <strong>desglose línea por línea</strong> (salario base, plus convenio, antigüedad, complementos), el <strong>importe exacto</strong> de las diferencias y un <strong>informe PDF</strong> para reclamar.
+                        {conceptos.length > 0 && (
+                            <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                                {conceptos.map((c, i) => (
+                                    <span key={i} className="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-sm font-semibold">
+                                        {c}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                        <p className="text-gray-600 dark:text-gray-400 mt-4 max-w-md mx-auto">
+                            Ya sabes <strong>qué</strong> conceptos fallan. Por 4,99 €/mes ves <strong>cuántos euros exactos</strong> te faltan
+                            en cada uno, la tabla comparativa frente a tu convenio y el informe con la cita del boletín oficial para reclamarlo.
                         </p>
                         <Link to="/precios" className="inline-flex items-center gap-2 mt-6 px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 transition-all">
                             🔓 Ver el desglose — desde 4,99€/mes

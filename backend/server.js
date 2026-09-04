@@ -17,6 +17,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Muro de pago del lado del servidor: sin token valido, el desglose con importes
+// no sale de aqui. Ver backend/services/acceso.js.
+const acceso = require('./services/acceso');
+
 // Lazy Load Services to prevent Startup Crash (Debug Mode)
 let ocrService = null;
 let nominaValidator = null;
@@ -52,8 +56,15 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
     }
     if (event.type === 'checkout.session.completed') {
         const s = event.data.object;
-        console.log('✅ SUSCRIPCIÓN NominIA:', s.metadata?.plan, '| email:', s.customer_details?.email, '| sub:', s.subscription);
-        // (futuro: guardar el cliente/suscripción + dar acceso)
+        const emailCliente = s.customer_details?.email || s.customer_email || '';
+        console.log('✅ SUSCRIPCIÓN NominIA:', s.metadata?.plan, '| email:', emailCliente, '| sub:', s.subscription);
+        // El correo es el unico recibo que le llega al cliente y, sobre todo, su
+        // enlace de vuelta: si cierra la pestana antes de que /gracias canjee la
+        // sesion, sin este correo se queda pagando y sin producto.
+        if (emailCliente) {
+            enviarEmailSuscripcion(emailCliente, s.metadata?.plan || 'trabajador', s.id)
+                .catch(e => console.warn('email suscripción:', e.message));
+        }
     }
     res.json({ received: true });
 });
@@ -113,9 +124,11 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
             const validationResults = nominaValidator.validate(extractedText, manualData);
             const rawExtractedData = nominaValidator.extractDataFromText(extractedText);
 
+            const acc0 = acceso.verificarToken(acceso.tokenDePeticion(req));
             res.json({
-                ...validationResults,
+                ...(acc0 ? acceso.abrir(validationResults, acc0) : acceso.capar(validationResults)),
                 rawExtractedData,
+                debugText: validationResults.debugText || extractedText,
                 debugMode: true
             });
             return;
@@ -166,10 +179,16 @@ Líquido a percibir: 1.150,50`;
         // Limpiar archivo subido
         fs.unlinkSync(filePath);
 
-        // Enviar respuesta completa
+        // El desglose con importes solo sale con token de suscripcion valido.
+        // rawExtractedData son los datos de SU PROPIA nomina (los necesita la
+        // pantalla de revision), asi que ese va siempre.
+        const acc = acceso.verificarToken(acceso.tokenDePeticion(req));
         res.json({
-            ...validationResults,
-            rawExtractedData
+            ...(acc ? acceso.abrir(validationResults, acc) : acceso.capar(validationResults)),
+            rawExtractedData,
+            // El texto de su propia nomina: no es producto de pago y la pantalla
+            // 2 lo necesita para poder pedir el analisis definitivo.
+            debugText: validationResults.debugText || extractedText
         });
 
     } catch (error) {
@@ -186,7 +205,8 @@ app.post('/api/validate-data', (req, res) => {
     try {
         const { manualData, extractedText } = req.body;
         const validationResults = nominaValidator.validate(extractedText || '', manualData || {});
-        res.json(validationResults);
+        const acc = acceso.verificarToken(acceso.tokenDePeticion(req));
+        res.json(acc ? acceso.abrir(validationResults, acc) : acceso.capar(validationResults));
     } catch (error) {
         console.error('Error en /api/validate-data:', error);
         res.status(500).json({ error: error.message });
@@ -270,14 +290,17 @@ const FRONTEND = process.env.FRONTEND_URL || 'https://nomina-app-chi.vercel.app'
 app.post('/api/checkout', async (req, res) => {
     try {
         if (!stripe) return res.status(503).json({ error: 'Pagos no configurados todavía' });
-        const { plan } = req.body || {};
+        const { plan, email } = req.body || {};
         const planes = {
             trabajador: { amount: 499, name: 'NominIA — Plan Trabajador' },
             asesoria:   { amount: 3900, name: 'NominIA — Plan Asesoría' }
         };
         if (!planes[plan]) return res.status(400).json({ error: 'Plan no válido' });
+        const emailValido = typeof email === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) ? email : null;
         const session = await stripe.checkout.sessions.create({
             mode: 'subscription',
+            // Si ya dio su correo para ver el veredicto, no se lo pedimos otra vez.
+            ...(emailValido ? { customer_email: emailValido } : {}),
             line_items: [{
                 price_data: {
                     currency: 'eur',
@@ -287,8 +310,11 @@ app.post('/api/checkout', async (req, res) => {
                 },
                 quantity: 1
             }],
-            success_url: `${FRONTEND}/?suscrito=true`,
-            cancel_url: `${FRONTEND}/precios`,
+            // Antes esto era `/?suscrito=true`: una portada en blanco que nadie
+            // interpretaba. El que pagaba volvia al formulario vacio y sin acceso.
+            // Ahora vuelve a /gracias, que canjea la sesion por el token de acceso.
+            success_url: `${FRONTEND}/gracias?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${FRONTEND}/precios?cancelado=1`,
             // La cuenta de Stripe es única para todas las marcas y su nombre público es
             // "asistencia.io", así que el checkout dice "Pagar a asistencia.io". Sin avisar,
             // el cliente que llega desde NominIA cree que está pagando a otra empresa y abandona.
@@ -304,6 +330,46 @@ app.post('/api/checkout', async (req, res) => {
         console.error('checkout error:', e.message);
         res.status(500).json({ error: 'Error al crear el pago', details: e.message });
     }
+});
+
+/*
+ * Canje de la sesion de Stripe por el token de acceso.
+ *
+ * Es el unico sitio que enciende el desglose de pago. No se fia del navegador:
+ * pregunta a Stripe si ESA sesion esta pagada. Un session_id inventado, cancelado
+ * o de otra cuenta no abre nada.
+ */
+app.get('/api/acceso', async (req, res) => {
+    try {
+        if (!stripe) return res.status(503).json({ error: 'Pagos no configurados todavía' });
+        const sessionId = String(req.query.session_id || '');
+        if (!/^cs_[A-Za-z0-9_]+$/.test(sessionId)) {
+            return res.status(400).json({ error: 'Falta el identificador de la compra' });
+        }
+        const s = await stripe.checkout.sessions.retrieve(sessionId);
+        const pagada = s && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required');
+        if (!pagada) {
+            return res.status(402).json({
+                error: 'Ese pago todavía no consta como cobrado',
+                estado: (s && s.payment_status) || 'desconocido'
+            });
+        }
+        const plan = (s.metadata && s.metadata.plan) || 'trabajador';
+        const email = (s.customer_details && s.customer_details.email) || s.customer_email || '';
+        const token = acceso.crearToken({ email, plan, sessionId });
+        if (!token) return res.status(503).json({ error: 'Acceso no configurado en el servidor' });
+        console.log('🔓 ACCESO NominIA concedido | plan:', plan, '| email:', email, '| sesión:', sessionId);
+        return res.json({ ok: true, token, email, plan });
+    } catch (e) {
+        console.error('acceso error:', e.message);
+        return res.status(400).json({ error: 'No hemos podido comprobar ese pago', details: e.message });
+    }
+});
+
+// Comprueba si un token sigue vivo (lo usa la web al arrancar).
+app.get('/api/acceso/estado', (req, res) => {
+    const acc = acceso.verificarToken(acceso.tokenDePeticion(req));
+    res.json({ activo: !!acc, plan: acc ? acc.plan : null, email: acc ? acc.email : null });
 });
 
 // === LEAD: captura RGPD del plan gratis → Brevo (lista NominIA Leads) ===
@@ -338,6 +404,30 @@ async function enviarEmailDia0(email, nombre, resultado) {
     });
     if (!r.ok) console.warn('Brevo email día0 status', r.status, (await r.text()).slice(0, 160));
 }
+// Recibo + enlace de acceso tras pagar. Es lo unico que el cliente se lleva por
+// escrito, asi que dice exactamente que ha comprado y como volver.
+async function enviarEmailSuscripcion(email, plan, sessionId) {
+    if (!BREVO_KEY) { console.warn('suscripción sin email: BREVO_API_KEY no configurada'); return; }
+    const enlace = `${FRONTEND}/gracias?session_id=${encodeURIComponent(sessionId)}`;
+    const nombrePlan = plan === 'asesoria' ? 'Asesoría / Gestoría (39 €/mes)' : 'Trabajador (4,99 €/mes)';
+    const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#0E1A2B">
+      <h2 style="color:#0E2438">Ya tienes el desglose desbloqueado</h2>
+      <p>Gracias por suscribirte al plan <strong>${nombrePlan}</strong> de NominIA.</p>
+      <p>A partir de ahora, cada nómina que subas te dirá <strong>el importe exacto en euros</strong> de cada diferencia frente a tu convenio, y podrás descargarte el informe para reclamarlo.</p>
+      <p style="text-align:center;margin:28px 0">
+        <a href="${enlace}" style="background:#84CC16;color:#0A1A2B;font-weight:bold;padding:14px 28px;border-radius:14px;text-decoration:none">Abrir mi desglose</a>
+      </p>
+      <p style="font-size:13px;color:#64748b">Guarda este correo: este enlace es tu llave de acceso, no hay contraseña que recordar.</p>
+      <p style="font-size:12px;color:#64748b">El cargo aparece en tu banco a nombre de <strong>asistencia.io</strong>, que es la cuenta desde la que NominIA gestiona sus cobros. Sin permanencia: puedes cancelar cuando quieras escribiendo a hola@nominia.app.</p>
+    </div>`;
+    const r = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: { 'api-key': BREVO_KEY, 'Content-Type': 'application/json', 'accept': 'application/json' },
+        body: JSON.stringify({ sender: SENDER, to: [{ email }], subject: 'Tu suscripción a NominIA está activa', htmlContent: html })
+    });
+    if (!r.ok) console.warn('Brevo suscripción status', r.status, (await r.text()).slice(0, 160));
+}
+
 app.post('/api/lead', async (req, res) => {
     try {
         const { email, nombre, provincia, convenio, resultado, consent } = req.body || {};
@@ -390,7 +480,10 @@ app.get('*', (req, res) => {
                 'GET /health',
                 'POST /api/verify-nomina',
                 'POST /api/test-ocr',
-                'POST /api/validate-data'
+                'POST /api/validate-data',
+                'POST /api/checkout',
+                'GET /api/acceso?session_id=cs_...',
+                'GET /api/acceso/estado'
             ]
         });
     }

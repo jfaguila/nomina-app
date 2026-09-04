@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useLanguage } from '../i18n/LanguageProvider';
@@ -14,6 +14,8 @@ import InstructionsModal from '../components/InstructionsModal';
 import LeadForm from '../components/LeadForm';
 import SimuladorHoras from '../components/SimuladorHoras';
 import { schemaHome } from '../data/seoSchema';
+import { cabecerasAcceso, tienePlan, setEmail as guardarEmail, guardarUltimoAnalisis, leerUltimoAnalisis, olvidarUltimoAnalisis } from '../lib/acceso';
+import SiteFooter from '../components/SiteFooter';
 
 const CATEGORIAS_GENERICAS = [
     { value: 'empleado', label: 'Empleado' },
@@ -105,7 +107,7 @@ const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila
 const HomePage = () => {
     useSeo({
         title: 'NominIA · Verifica si te pagan lo que marca tu convenio',
-        description: 'Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre gratis si te están pagando de menos. 100% privado, sin registro.',
+        description: 'Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre gratis si te están pagando de menos: solo te pedimos un correo para enviarte el veredicto. Tu nómina no se guarda.',
         path: '/',
         jsonLd: schemaHome(),
     });
@@ -124,7 +126,8 @@ const HomePage = () => {
     const [step, setStep] = useState(1);
     const [reviewData, setReviewData] = useState(null);
     const [extractedText, setExtractedText] = useState('');
-    const [leadCaptured, setLeadCaptured] = useState(false);
+    // Quien ya tiene plan de pago ya nos dio el correo al comprar: no se lo pedimos otra vez.
+    const [leadCaptured, setLeadCaptured] = useState(() => tienePlan());
     // Detección de uso repetido (Opción A: nudge suave, no muro)
     const [usos, setUsos] = useState(() => {
         try { return parseInt(localStorage.getItem('nominia_usos') || '0', 10) || 0; } catch (e) { return 0; }
@@ -154,6 +157,47 @@ const HomePage = () => {
         }
         return 'http://localhost:5987';
     };
+
+    /*
+     * Vuelta del pago.
+     *
+     * Antes, pulsar "Ver el desglose" te llevaba a /precios y perdias el analisis:
+     * pagabas y aterrizabas en un formulario vacio, sin ni una pista de que habias
+     * comprado algo. Ahora /gracias marca el ultimo analisis como "reanalizar" y al
+     * volver aqui se rehace solo, esta vez con el token, y se ve desbloqueado.
+     */
+    useEffect(() => {
+        const guardado = leerUltimoAnalisis();
+        if (!guardado || !guardado.reanalizar || !tienePlan()) return;
+        let vivo = true;
+        (async () => {
+            try {
+                setLoading(true);
+                setLoadingMessage('Recuperando tu nómina…');
+                setLoadingProgress(60);
+                const res = await axios.post(`${getApiUrl()}/api/validate-data`, {
+                    extractedText: guardado.extractedText,
+                    manualData: guardado.finalData
+                }, { headers: cabecerasAcceso() });
+                if (!vivo) return;
+                if (guardado.uploadData) setUploadData(guardado.uploadData);
+                setExtractedText(guardado.extractedText || '');
+                setReviewData(guardado.finalData || null);
+                setResults(res.data);
+                setLeadCaptured(true);
+                setStep(3);
+                guardarUltimoAnalisis({ ...guardado, reanalizar: false });
+            } catch (e) {
+                // Si falla, no se rompe nada: se queda en la pantalla de subida.
+                if (vivo) olvidarUltimoAnalisis();
+            } finally {
+                if (vivo) { setLoading(false); setLoadingProgress(null); setLoadingMessage(''); }
+            }
+        })();
+        return () => { vivo = false; };
+        // Solo al montar: es una recuperacion puntual, no un observador.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Helper function to safely extract numeric values - DEBUG VERSION
     const safeNumericValue = (value) => {
@@ -206,7 +250,7 @@ const HomePage = () => {
             console.log('Connecting to API:', apiUrl);
 
             const response = await axios.post(`${apiUrl}/api/verify-nomina`, formDataToSend, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'multipart/form-data', ...cabecerasAcceso() },
                 onUploadProgress: (progressEvent) => {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                     setLoadingProgress(25 + (percentCompleted * 0.3));
@@ -295,13 +339,18 @@ const HomePage = () => {
 
         try {
             const apiUrl = getApiUrl();
+            // El desglose con importes lo decide el SERVIDOR: si hay token de
+            // suscripcion valido, viene entero; si no, viene sin cifras.
             const response = await axios.post(`${apiUrl}/api/validate-data`, {
                 extractedText: extractedText,
                 manualData: finalData
-            });
+            }, { headers: cabecerasAcceso() });
 
             setResults(response.data);
             setLoadingProgress(100);
+            // Si se va a /precios a pagar, esto permite recuperar la nomina al
+            // volver en vez de obligarle a subirla otra vez.
+            guardarUltimoAnalisis({ extractedText, finalData, uploadData });
             // Contar uso (nudge suave en visitas repetidas)
             try {
                 const nuevo = (parseInt(localStorage.getItem('nominia_usos') || '0', 10) || 0) + 1;
@@ -593,7 +642,7 @@ const HomePage = () => {
                                         convenio: uploadData.convenio,
                                         resultado: results && results.isValid ? 'Nómina correcta' : 'Posibles diferencias a favor'
                                     }}
-                                    onCaptured={() => setLeadCaptured(true)}
+                                    onCaptured={(datos) => { if (datos && datos.email) guardarEmail(datos.email); setLeadCaptured(true); }}
                                 />
                             ) : (
                                 <>
@@ -625,22 +674,7 @@ const HomePage = () => {
                     )}
                 </AnimatePresence>
             </div>
-            <footer className="border-t border-gray-100 dark:border-gray-800 mt-16">
-                <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">NominIA</span>
-                        <span>{t('ui.footerTagline')}</span>
-                    </div>
-                    <nav className="flex items-center gap-5">
-                        <Link to="/precios" className="hover:text-blue-600">{t('home.navPricing')}</Link>
-                        <Link to="/convenios" className="hover:text-blue-600">Convenios</Link>
-                        <Link to="/aviso-legal" className="hover:text-blue-600">{t('ui.footerLegal')}</Link>
-                        <Link to="/privacidad" className="hover:text-blue-600">{t('ui.footerPrivacy')}</Link>
-                        <Link to="/privacidad#cookies" className="hover:text-blue-600">{t('ui.footerCookies')}</Link>
-                        <Link to="/terminos" className="hover:text-blue-600">{t('ui.footerTerms')}</Link>
-                    </nav>
-                </div>
-            </footer>
+            <SiteFooter ancho="max-w-6xl" />
         </div>
     );
 };

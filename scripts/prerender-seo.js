@@ -24,10 +24,45 @@ const {
   schemaConvenio,
   schemaTransporteSanitario,
   schemaPagina,
+  FACEBOOK_URL,
+  LINKEDIN_URL,
 } = require('../src/data/seoSchema');
 
 const BUILD = path.join(__dirname, '..', 'build');
 const BASE = 'https://nominia.app';
+
+/*
+ * Pie con las redes de la marca en el HTML SIN JavaScript.
+ *
+ * El pie de la SPA (src/components/SiteFooter.jsx) solo existe cuando el navegador
+ * ejecuta React. Un rastreador que lee el HTML tal cual llega —o cualquiera con JS
+ * desactivado— no veria ni un enlace a Facebook ni a LinkedIn, que es precisamente
+ * la senal que confirma el `sameAs` del JSON-LD de Organization: el dato estructurado
+ * dice "estas cuentas son mias" y el enlace visible es lo que lo respalda.
+ *
+ * Las URLs se importan de seoSchema.js, la misma fuente de la que sale ese sameAs.
+ */
+const ICONO = {
+  facebook:
+    'M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z',
+  linkedin:
+    'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z',
+};
+
+function enlaceRed(href, nombre, icono) {
+  return (
+    `<a href="${href}" rel="me noopener" title="NominIA en ${nombre}" ` +
+    `style="color:#2563EB;text-decoration:none;font-weight:600;">` +
+    `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" ` +
+    `style="vertical-align:-2px;margin-right:5px;"><path d="${icono}"/></svg>${nombre}</a>`
+  );
+}
+
+const PIE_REDES =
+  `<p style="margin-top:40px;padding-top:18px;border-top:1px solid #e2e8f0;font-size:14px;color:#64748b;text-align:left;">` +
+  `NominIA en redes: ${enlaceRed(FACEBOOK_URL, 'Facebook', ICONO.facebook)}` +
+  ` &middot; ${enlaceRed(LINKEDIN_URL, 'LinkedIn', ICONO.linkedin)}` +
+  `</p>`;
 
 // El respaldo estatico tiene que decir LO MISMO que la pagina React, no un resumen:
 // si el rastreador ve un parrafo y el usuario ve una tabla de sueldos, la pagina no
@@ -266,6 +301,23 @@ const ROUTES = [
     cta: 'Ver planes',
   },
   {
+    // Aterrizaje tras pagar en Stripe. No es una pagina de captacion: no se
+    // indexa y no entra en el sitemap, pero necesita su propio title y canonical
+    // porque, si no, Vercel le sirve el index.html de la portada y Google la ve
+    // como un duplicado de la home.
+    dir: 'gracias',
+    noindex: true,
+    title: 'Suscripción activada · NominIA',
+    description:
+      'Tu suscripción a NominIA está activa: ya puedes ver el importe exacto de las diferencias de tu nómina.',
+    h1: 'Suscripción activada',
+    jsonLd: schemaPagina('Suscripción activada', '/gracias'),
+    body:
+      'Tu plan de NominIA está activo. A partir de ahora cada nómina que subas te dirá el importe exacto en euros de cada diferencia frente a tu convenio, con la tabla comparativa y el informe para reclamarlo.',
+    cta: 'Analizar mi nómina',
+    ctaHref: `${BASE}/`,
+  },
+  {
     dir: 'privacidad',
     title: 'Privacidad y cookies · NominIA',
     description:
@@ -370,6 +422,17 @@ for (const route of ROUTES) {
     'twitter:description'
   );
 
+  // Paginas privadas (post-pago): mismo noindex que pone useSeo al montar. Sin
+  // esto el HTML estatico dice "index, follow" a un rastreador que no ejecuta JS.
+  if (route.noindex) {
+    html = replaceOnce(
+      html,
+      /<meta name="robots" content="[^"]*"\s*\/?>/,
+      '<meta name="robots" content="noindex, nofollow"/>',
+      'meta robots'
+    );
+  }
+
   // Datos estructurados de la ruta (FAQPage, BreadcrumbList, Organization, Offer...):
   // los mismos bloques que useSeo escribe en el navegador.
   html = replaceOnce(html, JSONLD_RE, jsonLdTag(route.jsonLd), 'script#seo-jsonld');
@@ -383,6 +446,7 @@ for (const route of ROUTES) {
       `<h1 style="font-size:32px;line-height:1.2;">${route.h1}</h1>` +
       (route.bodyHtml || `<p style="font-size:18px;color:#334155;">${route.body}</p>`) +
       `<p><a href="${route.ctaHref || url}" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600;">${route.cta}</a></p>` +
+      PIE_REDES +
       `</main>`,
     'respaldo estatico <main>'
   );
@@ -395,9 +459,16 @@ for (const route of ROUTES) {
 
 // La portada: public/index.html trae solo el WebApplication; aqui se le anade
 // Organization, igual que hace useSeo al montar HomePage.
+// La portada no pasa por el bloque de rutas de arriba (conserva su propio <main>),
+// asi que el pie de redes hay que inyectarselo aparte, antes de cerrar el <main>.
 fs.writeFileSync(
   path.join(BUILD, 'index.html'),
-  replaceOnce(source, JSONLD_RE, jsonLdTag(schemaHome()), 'script#seo-jsonld (portada)')
+  replaceOnce(
+    replaceOnce(source, JSONLD_RE, jsonLdTag(schemaHome()), 'script#seo-jsonld (portada)'),
+    /<\/main>/,
+    `${PIE_REDES}</main>`,
+    'cierre de <main> (portada)'
+  )
 );
 console.log('prerender-seo: build/index.html (JSON-LD de la portada)');
 
@@ -420,7 +491,9 @@ const frecuencia = (dir) => (dir.startsWith('convenio') ? 'monthly' : 'yearly');
 
 const urls = [
   `  <url>\n    <loc>${BASE}/</loc>\n    <lastmod>${HOY}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>`,
-  ...ROUTES.map(
+  // Una URL con noindex en el sitemap es una contradiccion: se le pide a Google
+  // que la rastree y luego se le dice que no la indexe.
+  ...ROUTES.filter((r) => !r.noindex).map(
     (r) =>
       `  <url>\n    <loc>${BASE}/${r.dir}</loc>\n    <lastmod>${HOY}</lastmod>\n    <changefreq>${frecuencia(
         r.dir

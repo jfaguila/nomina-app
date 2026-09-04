@@ -6,7 +6,14 @@ export default function SimuladorHoras({ results }) {
     const [horas, setHoras] = useState(10);
 
     const det = (results && results.details) || {};
-    const baseStr = (det.salario_base_comparativa && (det.salario_base_comparativa.real ?? det.salario_base_comparativa.teorico)) || 0;
+    // En el plan gratis la API ya no manda `details` (ahi viajaban los importes
+    // del convenio, que son de pago), pero si manda `datosTuyos`: el salario base
+    // que pone SU nomina. Con eso el simulador funciona igual para todo el mundo.
+    const tuyos = (results && results.datosTuyos) || {};
+    const baseStr =
+        (det.salario_base_comparativa && (det.salario_base_comparativa.real ?? det.salario_base_comparativa.teorico)) ||
+        tuyos.salario_base_comparativa ||
+        0;
     const base = parseFloat(baseStr) || 0;
 
     // Parámetros del convenio TES Andalucía

@@ -4,6 +4,8 @@ import axios from 'axios';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { schemaPrecios } from '../data/seoSchema';
+import { getEmail, tienePlan } from '../lib/acceso';
+import SiteFooter from '../components/SiteFooter';
 
 const getApiUrl =() => process.env.REACT_APP_API_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5987' : 'https://nomina-backend-production-57d2.up.railway.app');
 
@@ -11,17 +13,17 @@ const PLANS = [
   {
     id: 'gratis', name: 'Gratis', price: '0', period: '',
     desc: 'Descubre si hay un problema', cta: 'Probar gratis', highlight: false, free: true,
-    features: ['Veredicto al instante: ¿te pagan bien?', 'Detección automática del convenio', 'Nóminas ilimitadas al mes', 'Sin registro'],
+    features: ['Veredicto al instante: ¿te pagan bien o no?', 'En qué conceptos falla tu nómina', 'Detección automática del convenio', 'Nóminas ilimitadas al mes', 'Solo pedimos un correo para enviártelo'],
   },
   {
     id: 'trabajador', name: 'Trabajador', price: '4,99', period: '/mes',
     desc: 'Descubre cuánto te deben', cta: 'Desbloquear desglose', highlight: true,
-    features: ['Nóminas ilimitadas al mes', 'Desglose exacto línea por línea', 'El importe exacto que te deben', 'Informe PDF para reclamar', 'Historial de tus nóminas', 'Soporte por email'],
+    features: ['Todo lo del plan gratis', 'El importe exacto en euros de cada diferencia', 'Tabla comparativa: lo que cobras vs. lo que marca tu convenio', 'Informe descargable con la cita del boletín, para reclamar', 'Nóminas ilimitadas al mes', 'Soporte por email'],
   },
   {
     id: 'asesoria', name: 'Asesoría / Gestoría', price: '39', period: '/mes',
     desc: 'Para despachos y gestorías', cta: 'Suscribirme', highlight: false,
-    features: ['Todo lo del plan Trabajador', 'Nóminas ilimitadas de todos tus clientes', 'Informes PDF con tu marca', 'Soporte prioritario'],
+    features: ['Todo lo del plan Trabajador', 'Nóminas ilimitadas de todos tus clientes', 'Informes con tu marca', 'Soporte prioritario'],
   },
 ];
 
@@ -38,7 +40,7 @@ export default function PreciosPage() {
   async function suscribir(plan) {
     setLoading(plan);
     try {
-      const res = await axios.post(`${getApiUrl()}/api/checkout`, { plan });
+      const res = await axios.post(`${getApiUrl()}/api/checkout`, { plan, email: getEmail() || undefined });
       if (res.data?.url) window.location.href = res.data.url;
       else alert(res.data?.error || 'No se pudo iniciar el pago');
     } catch (e) {
@@ -67,9 +69,18 @@ export default function PreciosPage() {
       <section className="max-w-6xl mx-auto px-6 pt-8 pb-20 text-center">
         {/* Mismo texto que ROUTES[precios].h1 en scripts/prerender-seo.js. */}
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">Precios de NominIA: gratis, 4,99 €/mes o 39 €/mes para asesorías</h1>
+        {/* La frase que define la frontera. Si el usuario no sabe que compra, no compra. */}
         <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Empieza gratis. Cuando lo necesites, pásate a ilimitado. Sin permanencia.
+          Gratis te decimos <strong>si</strong> te pagan de menos y en qué conceptos.
+          Por 4,99 €/mes te decimos <strong>cuántos euros exactos</strong> te faltan cada mes
+          y te damos el informe, con la cita del boletín oficial, para reclamárselos a tu empresa.
         </p>
+        {tienePlan() && (
+          <p className="mt-6 inline-block rounded-2xl bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 px-5 py-3 text-sm font-semibold">
+            Ya tienes una suscripción activa en este navegador. No hace falta que vuelvas a pagar:{' '}
+            <Link to="/" className="underline">vuelve a analizar tu nómina</Link>.
+          </p>
+        )}
 
         <div className="grid md:grid-cols-3 gap-6 mt-12 text-left">
           {PLANS.map((p) => (
@@ -115,6 +126,7 @@ export default function PreciosPage() {
           <Link to="/convenios" className="text-blue-600 hover:underline">tablas salariales por convenio</Link> con su fuente oficial.
         </p>
       </section>
+      <SiteFooter />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import SkipLinks from './components/SkipLinks';
 import CookieBanner from './components/CookieBanner';
 import HomePage from './pages/HomePage';
 import PreciosPage from './pages/PreciosPage';
+import GraciasPage from './pages/GraciasPage';
 import PrivacidadPage from './pages/PrivacidadPage';
 import AvisoLegalPage from './pages/AvisoLegalPage';
 import TerminosPage from './pages/TerminosPage';
@@ -23,6 +24,8 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/precios" element={<PreciosPage />} />
+            {/* Aterrizaje tras pagar en Stripe: canjea la sesion por el acceso. */}
+            <Route path="/gracias" element={<GraciasPage />} />
             <Route path="/privacidad" element={<PrivacidadPage />} />
             <Route path="/aviso-legal" element={<AvisoLegalPage />} />
             <Route path="/terminos" element={<TerminosPage />} />
