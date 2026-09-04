@@ -95,6 +95,7 @@ export default function TransporteSanitarioPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {c.ambito} · {c.vigencia}
                 {c.tablaAnual ? ' · tabla anual publicada' : ''}
+                {c.tablaMensual ? ' · tabla mensual publicada' : ''}
               </p>
             </Link>
           ))}

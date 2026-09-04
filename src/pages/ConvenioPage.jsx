@@ -115,6 +115,8 @@ export default function ConvenioPage() {
                 <dd className="text-gray-700 dark:text-gray-300">
                   {convenio.tablaAnual
                     ? `Publicada abajo (${convenio.tablaAnual.tablaAplicada}), en importes anuales. No comparable todavía por el verificador.`
+                    : convenio.tablaMensual
+                    ? `Publicada abajo (${convenio.tablaMensual.tablaAplicada}), en importes mensuales. No comparable todavía por el verificador.`
                     : 'No publicada: sin verificar en el boletín oficial'}
                 </dd>
               </div>
@@ -122,6 +124,44 @@ export default function ConvenioPage() {
 
             <h2 className="text-2xl font-bold mb-3">Por qué aquí no verás una cifra inventada</h2>
             <p className="text-gray-700 dark:text-gray-300 mb-10">{convenio.porQueSinTabla}</p>
+
+            {convenio.tablaMensual && (
+              <>
+                <h2 className="text-2xl font-bold mb-3">
+                  Tabla salarial {convenio.tablaMensual.tablaAplicada} por categoría (importes mensuales)
+                </h2>
+                <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800 mb-4">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 dark:bg-gray-900 text-left">
+                      <tr>
+                        <th scope="col" className="px-4 py-3 font-semibold">Categoría</th>
+                        <th scope="col" className="px-4 py-3 font-semibold text-right">Salario base</th>
+                        <th scope="col" className="px-4 py-3 font-semibold text-right">Pagas prorrateadas</th>
+                        <th scope="col" className="px-4 py-3 font-semibold text-right">Plus de residencia</th>
+                        <th scope="col" className="px-4 py-3 font-semibold text-right">Base mes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {convenio.tablaMensual.filas.map((f) => (
+                        <tr key={f.categoria} className="border-t border-gray-100 dark:border-gray-800">
+                          <th scope="row" className="px-4 py-3 font-medium text-left">{f.categoria}</th>
+                          <td className="px-4 py-3 text-right tabular-nums">{eur(f.base)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums">{eur(f.ppe)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums">{eur(f.residencia)}</td>
+                          <td className="px-4 py-3 text-right font-bold tabular-nums">{eur(f.mes)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-10">
+                  {convenio.tablaMensual.nota} Fuente:{' '}
+                  <a href={convenio.fuenteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    {convenio.fuente}
+                  </a>
+                </p>
+              </>
+            )}
 
             {convenio.tablaAnual && (
               <>

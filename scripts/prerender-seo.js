@@ -72,11 +72,33 @@ function fichaHtml(c) {
     `<dt ${dt}>Tabla salarial</dt><dd ${dd}>${
       c.tablaAnual
         ? `Publicada abajo (${c.tablaAnual.tablaAplicada}), en importes anuales. No comparable todavía por el verificador.`
+        : c.tablaMensual
+        ? `Publicada abajo (${c.tablaMensual.tablaAplicada}), en importes mensuales. No comparable todavía por el verificador.`
         : 'No publicada: sin verificar en el boletín oficial'
     }</dd>` +
     `</dl>` +
     `<h2 style="font-size:22px;">Por qué aquí no verás una cifra inventada</h2>` +
     `<p style="font-size:15px;color:#334155;">${c.porQueSinTabla}</p>`;
+
+  if (c.tablaMensual) {
+    const th = 'style="text-align:left;padding:8px 10px;border-bottom:2px solid #cbd5e1;font-size:14px;"';
+    const td = 'style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:14px;"';
+    const tdr = 'style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:14px;text-align:right;"';
+    html +=
+      `<h2 style="font-size:22px;">Tabla salarial ${c.tablaMensual.tablaAplicada} por categoría (importes mensuales)</h2>` +
+      `<table style="width:100%;border-collapse:collapse;margin:20px 0;"><thead><tr>` +
+      `<th ${th}>Categoría</th><th ${th}>Salario base</th><th ${th}>Pagas prorrateadas</th>` +
+      `<th ${th}>Plus de residencia</th><th ${th}>Base mes</th></tr></thead><tbody>` +
+      c.tablaMensual.filas
+        .map(
+          (f) =>
+            `<tr><td ${td}>${f.categoria}</td><td ${tdr}>${eur(f.base)}</td><td ${tdr}>${eur(f.ppe)}</td>` +
+            `<td ${tdr}>${eur(f.residencia)}</td><td ${tdr}><strong>${eur(f.mes)}</strong></td></tr>`
+        )
+        .join('') +
+      `</tbody></table>` +
+      `<p style="font-size:13px;color:#64748b;">${c.tablaMensual.nota} Fuente: <a href="${c.fuenteUrl}">${c.fuente}</a></p>`;
+  }
 
   if (c.tablaAnual) {
     const th = 'style="text-align:left;padding:8px 10px;border-bottom:2px solid #cbd5e1;font-size:14px;"';

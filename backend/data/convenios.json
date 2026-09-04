@@ -1034,5 +1034,159 @@
     },
     "estructuraBaseMasPlus": true,
     "categoriaPorDefecto": "tes_conductor"
+  },
+  "transporte_sanitario_murcia": {
+    "nombre": "IV Convenio Colectivo regional del Transporte de Enfermos y Accidentados en Ambulancias de la Región de Murcia (2023-2027)",
+    "salarioMinimo": {
+      "tes_conductor": 1690.91,
+      "tes_ayudante_camillero": 1535.79,
+      "tes_camillero": 1472.48,
+      "limpiador_a": 1472.48,
+      "jefe_equipo": 1668.22,
+      "jefe_trafico": 1777.9,
+      "oficial_1_administrativo": 1747.99,
+      "auxiliar_administrativo": 1558.62,
+      "ayudante_mecanico": 1508.72,
+      "mecanico": 1642.37,
+      "chapista": 1598.48,
+      "pintor": 1598.48,
+      "jefe_taller": 1722.59,
+      "telefonista": 1568.53,
+      "medico": 2585.45,
+      "ats": 2067.0,
+      "director_area": 2408.31,
+      "director": 2605.39
+    },
+    "detallesSalariales": {
+      "tes_conductor": {
+        "salarioBase": 1551.88,
+        "plusConvenio": 139.03,
+        "total": 1690.91
+      },
+      "tes_ayudante_camillero": {
+        "salarioBase": 1417.97,
+        "plusConvenio": 117.82,
+        "total": 1535.79
+      },
+      "tes_camillero": {
+        "salarioBase": 1363.7,
+        "plusConvenio": 108.78,
+        "total": 1472.48
+      },
+      "limpiador_a": {
+        "salarioBase": 1363.7,
+        "plusConvenio": 108.78,
+        "total": 1472.48
+      },
+      "jefe_equipo": {
+        "salarioBase": 1563.11,
+        "plusConvenio": 105.11,
+        "total": 1668.22
+      },
+      "jefe_trafico": {
+        "salarioBase": 1662.81,
+        "plusConvenio": 115.09,
+        "total": 1777.9
+      },
+      "oficial_1_administrativo": {
+        "salarioBase": 1635.61,
+        "plusConvenio": 112.38,
+        "total": 1747.99
+      },
+      "auxiliar_administrativo": {
+        "salarioBase": 1463.45,
+        "plusConvenio": 95.17,
+        "total": 1558.62
+      },
+      "ayudante_mecanico": {
+        "salarioBase": 1418.09,
+        "plusConvenio": 90.63,
+        "total": 1508.72
+      },
+      "mecanico": {
+        "salarioBase": 1539.57,
+        "plusConvenio": 102.8,
+        "total": 1642.37
+      },
+      "chapista": {
+        "salarioBase": 1499.67,
+        "plusConvenio": 98.81,
+        "total": 1598.48
+      },
+      "pintor": {
+        "salarioBase": 1499.67,
+        "plusConvenio": 98.81,
+        "total": 1598.48
+      },
+      "jefe_taller": {
+        "salarioBase": 1612.53,
+        "plusConvenio": 110.06,
+        "total": 1722.59
+      },
+      "telefonista": {
+        "salarioBase": 1472.49,
+        "plusConvenio": 96.04,
+        "total": 1568.53
+      },
+      "medico": {
+        "salarioBase": 2396.93,
+        "plusConvenio": 188.52,
+        "total": 2585.45
+      },
+      "ats": {
+        "salarioBase": 1925.65,
+        "plusConvenio": 141.35,
+        "total": 2067.0
+      },
+      "director_area": {
+        "salarioBase": 2235.9,
+        "plusConvenio": 172.41,
+        "total": 2408.31
+      },
+      "director": {
+        "salarioBase": 2415.07,
+        "plusConvenio": 190.32,
+        "total": 2605.39
+      }
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "dietaMaxDiaria": 79.51,
+    "pagas": 14,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    },
+    "vigencia": {
+      "inicio": "2023-01-01",
+      "fin": "2027-12-31",
+      "ultraactividad": false
+    },
+    "reglasAntiguedad": {
+      "tipo": "porcentaje_progresivo",
+      "porcentajeBase": 0.03,
+      "descripcion": "3% del salario base a los 3 anos, +1% por cada ano desde el 4o, hasta el 20% a los 20 anos (art. 13)"
+    },
+    "reglasNocturnidad": {
+      "tipo": "porcentaje",
+      "porcentaje": 10,
+      "descripcion": "10% sobre salario base mas plus convenio por cada hora trabajada entre las 22:00 y las 6:00 (art. 17)"
+    },
+    "descripcion": "IV Convenio Colectivo regional para el Transporte de Enfermos y Accidentados en Ambulancias de la Region de Murcia. Codigo 30003045012008. Tabla salarial 2026 (Anexo V, Cuadro I). Cada categoria cobra salario base mas plus de convenio en 14 pagas.",
+    "codigoConvenio": "30003045012008",
+    "publicacion": "BORM n.º 167 - 22/07/2025",
+    "fuente": "BORM n.º 167, de 22-jul-2025 (IV convenio colectivo regional, suscrito 27-mar-2025). Codigo 30003045012008. Anexo V, tabla salarial 2026.",
+    "fuenteUrl": "https://www.borm.es/services/anuncio/ano/2025/numero/3623/pdf?id=837684",
+    "ambito": "Region de Murcia",
+    "dietas2026": {
+      "comida": 15.89,
+      "cena": 15.89,
+      "pernocta_desayuno": 47.72,
+      "total_dia": 79.51
+    },
+    "estructuraBaseMasPlus": true,
+    "categoriaPorDefecto": "tes_conductor"
   }
 }

@@ -83,6 +83,36 @@ for (const f of CONVENIOS_FICHA) {
   if (!Array.isArray(f.faq) || f.faq.length < 3) {
     errores.push(`${f.slug}: la ficha necesita al menos 3 preguntas para el FAQPage`);
   }
+  if (f.tablaAnual && f.tablaMensual) {
+    errores.push(`${f.slug}: no puede publicar a la vez tabla anual y tabla mensual`);
+  }
+  /*
+   * Tabla mensual de ficha: misma regla que la anual (boletin delante, filas con
+   * importe), pero ademas cada fila tiene que CUADRAR. El anexo de Melilla publica
+   * el mes como salario base + prorrateo de pagas + plus de residencia; si alguno de
+   * los tres se transcribe mal, la suma deja de dar y aqui salta. Es la unica forma de
+   * que un error de tecleo en una tabla que el verificador no compara no pase inadvertido.
+   */
+  if (f.tablaMensual) {
+    if (!f.fuenteUrl) {
+      errores.push(`${f.slug}: publica una tabla mensual sin boletin oficial enlazado`);
+    }
+    if (!Array.isArray(f.tablaMensual.filas) || !f.tablaMensual.filas.length) {
+      errores.push(`${f.slug}: tablaMensual sin filas`);
+    }
+    for (const fila of f.tablaMensual.filas || []) {
+      if (!(Number(fila.mes) > 0)) {
+        errores.push(`${f.slug}: la fila "${fila.categoria}" no tiene importe mensual`);
+        continue;
+      }
+      const suma = Number(fila.base) + Number(fila.ppe) + Number(fila.residencia);
+      if (Math.abs(suma - Number(fila.mes)) > 0.02) {
+        errores.push(
+          `${f.slug}: la fila "${fila.categoria}" no cuadra: ${fila.base} + ${fila.ppe} + ${fila.residencia} = ${suma.toFixed(2)}, pero publica ${fila.mes}`
+        );
+      }
+    }
+  }
   if (f.tablaAnual) {
     if (!f.fuenteUrl) {
       errores.push(`${f.slug}: publica una tabla anual sin boletin oficial enlazado`);
@@ -109,6 +139,11 @@ const importesPublicados = new Set([
   ...CONVENIOS_PUBLICOS.flatMap((c) => c.filas.map((f) => Number(f.mes))),
   ...CONVENIOS_PUBLICOS.flatMap((c) => c.filas.map((f) => Number(f.anual)).filter(Boolean)),
   ...CONVENIOS_FICHA.flatMap((c) => (c.tablaAnual ? c.tablaAnual.filas.map((f) => Number(f.anual)) : [])),
+  ...CONVENIOS_FICHA.flatMap((c) =>
+    c.tablaMensual
+      ? c.tablaMensual.filas.flatMap((f) => [Number(f.base), Number(f.ppe), Number(f.residencia), Number(f.mes)])
+      : []
+  ),
 ]);
 
 // Un importe escrito en un texto: "1.025,78 €" o "31.944,83 €". El (?<![\d.]) evita
@@ -180,7 +215,9 @@ if (errores.length) {
 
 const filas = CONVENIOS_PUBLICOS.reduce((n, c) => n + c.filas.length, 0);
 const conTablaAnual = CONVENIOS_FICHA.filter((c) => c.tablaAnual).length;
+const conTablaMensual = CONVENIOS_FICHA.filter((c) => c.tablaMensual).length;
 console.log(
   `check-convenios: OK — ${CONVENIOS_PUBLICOS.length} convenios con tabla comparable y ${filas} importes cuadran ` +
-    `con el motor (llms.txt incluido); ${CONVENIOS_FICHA.length} fichas informativas, ${conTablaAnual} con tabla anual verificada.`
+    `con el motor (llms.txt incluido); ${CONVENIOS_FICHA.length} fichas informativas, ${conTablaAnual} con tabla anual ` +
+    `verificada y ${conTablaMensual} con tabla mensual verificada.`
 );

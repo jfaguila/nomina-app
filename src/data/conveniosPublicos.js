@@ -238,6 +238,75 @@ const CONVENIOS_PUBLICOS = [
       },
     ],
   },
+  {
+    slug: 'transporte-sanitario-murcia',
+    convenioId: 'transporte_sanitario_murcia',
+    nombre: 'Transporte Sanitario de la Región de Murcia',
+    titulo:
+      'Convenio de transporte sanitario de la Región de Murcia: tabla salarial 2026 de ambulancias',
+    metaTitle: 'Convenio ambulancias Murcia 2026 · tabla salarial (BORM) | NominIA',
+    metaDescription:
+      'Tabla salarial 2026 del IV Convenio del Transporte de Enfermos y Accidentados en Ambulancias de la Región de Murcia (BORM n.º 167, 22-jul-2025, código 30003045012008): Conductor/a 1.690,91 €, Ayudante Camillero/a 1.535,79 € y Camillero/a 1.472,48 € al mes en 14 pagas, salario base más plus de convenio. Comprueba gratis si tu nómina lo cumple.',
+    entradilla:
+      'El IV Convenio del transporte de enfermos y accidentados en ambulancias de la Región de Murcia publica en el BORM una tabla para cada año de su vigencia, de 2023 a 2027. Aquí está la de 2026, la que se aplica ahora. Cada categoría cobra un salario base más un plus de convenio, y lo que hay que comparar con tu nómina es la suma de los dos, no solo la línea de salario base.',
+    empresas: ['Empresas de transporte sanitario de la Región de Murcia'],
+    pagas: 14,
+    tablaAplicada: '2026',
+    ambito: 'Región de Murcia',
+    fuente:
+      'BORM n.º 167, de 22-jul-2025 (IV convenio colectivo regional, suscrito el 27-mar-2025). Código 30003045012008. Anexo V, Cuadro I, tabla salarial definitiva de 2026.',
+    fuenteUrl: 'https://www.borm.es/services/anuncio/ano/2025/numero/3623/pdf?id=837684',
+    columnaExtra: true,
+    filas: [
+      { categoria: 'Conductor/a', base: 1551.88, plus: 139.03, mes: 1690.91 },
+      { categoria: 'Ayudante Camillero/a', base: 1417.97, plus: 117.82, mes: 1535.79 },
+      { categoria: 'Camillero/a', base: 1363.7, plus: 108.78, mes: 1472.48 },
+      { categoria: 'Limpiador/a', base: 1363.7, plus: 108.78, mes: 1472.48 },
+      { categoria: 'Jefe de Equipo', base: 1563.11, plus: 105.11, mes: 1668.22 },
+      { categoria: 'Jefe de Tráfico', base: 1662.81, plus: 115.09, mes: 1777.9 },
+      { categoria: 'Oficial 1ª Administrativo/a', base: 1635.61, plus: 112.38, mes: 1747.99 },
+      { categoria: 'Auxiliar Administrativo/a', base: 1463.45, plus: 95.17, mes: 1558.62 },
+      { categoria: 'Ayudante Mecánico/a', base: 1418.09, plus: 90.63, mes: 1508.72 },
+      { categoria: 'Mecánico/a', base: 1539.57, plus: 102.8, mes: 1642.37 },
+      { categoria: 'Chapista', base: 1499.67, plus: 98.81, mes: 1598.48 },
+      { categoria: 'Pintor', base: 1499.67, plus: 98.81, mes: 1598.48 },
+      { categoria: 'Jefe de Taller', base: 1612.53, plus: 110.06, mes: 1722.59 },
+      { categoria: 'Telefonista', base: 1472.49, plus: 96.04, mes: 1568.53 },
+      { categoria: 'Médico', base: 2396.93, plus: 188.52, mes: 2585.45 },
+      { categoria: 'ATS', base: 1925.65, plus: 141.35, mes: 2067 },
+      { categoria: 'Director/a de Área', base: 2235.9, plus: 172.41, mes: 2408.31 },
+      { categoria: 'Director/a', base: 2415.07, plus: 190.32, mes: 2605.39 },
+    ],
+    notas: [
+      'El convenio murciano no usa el término TES en sus tablas: el personal de ambulancia aparece como Conductor/a, Ayudante Camillero/a y Camillero/a. Si tu nómina dice «TES», mira la categoría que figura en el contrato y en el recibo, porque es la del convenio la que fija el importe.',
+      'El salario se reparte en 14 pagas. El propio convenio calcula el precio de la hora nocturna dividiendo el salario base más el plus de convenio por catorce pagas entre la jornada anual.',
+      'Además del salario base y el plus de convenio, el convenio reconoce un plus de transporte: en 2026 son 98,51 € al mes si se abona en once mensualidades, o 90,30 € si se prorratea en doce. Es un concepto extrasalarial, así que no entra en la comparación de la tabla, pero tiene que aparecer en tu nómina.',
+      'Antigüedad: un 3 % del salario base a los tres años, un 1 % más por cada año a partir del cuarto y un 20 % a partir de los veinte años de servicio (artículo 13).',
+      'Nocturnidad: un 10 % sobre el salario base más el plus de convenio por cada hora trabajada entre las 22:00 y las 6:00 (artículo 17). El personal de emergencias en turnos de 24 horas lo cobra prorrateado en doce mensualidades.',
+      'Festivos: se pagan al 100 % del salario del día si son festivos extraordinarios y al 40 % si están dentro de la jornada anual ordinaria (artículo 18).',
+      'Dietas de 2026: 15,89 € la comida, 15,89 € la cena y 47,72 € la pernocta con desayuno (79,51 € los tres conceptos).',
+      'La jornada máxima de trabajo efectivo baja cada año: 1.764 horas en 2025, 1.756 en 2026 y 1.748 en 2027. Si tu empresa te sigue aplicando la jornada de un año anterior, estás trabajando de más.',
+      'Las subidas ya están pactadas hasta el final del convenio: 2,5 % en 2025, 2 % en 2026 y 1,5 % en 2027. Si tu salario base no se movió el 1 de enero, hay algo que revisar.',
+    ],
+    faq: [
+      {
+        p: '¿Cuánto cobra un técnico de ambulancia en la Región de Murcia?',
+        r: 'Según la tabla de 2026 del IV Convenio publicada en el BORM, un Conductor/a de ambulancia tiene 1.551,88 € de salario base más 139,03 € de plus de convenio: 1.690,91 € al mes en 14 pagas. Un Ayudante Camillero/a cobra 1.535,79 € y un Camillero/a 1.472,48 €. A eso se suman el plus de transporte, la antigüedad, la nocturnidad y los festivos que correspondan.',
+      },
+      {
+        p: '¿Hasta cuándo dura el convenio de ambulancias de Murcia?',
+        r: 'Hasta el 31 de diciembre de 2027, y el BORM publica una tabla salarial para cada año de 2023 a 2027 (Anexos II a VI). Está plenamente en vigor, no en ultraactividad, así que la tabla que te corresponde es la del año en curso.',
+      },
+      {
+        p: '¿Por qué hay que sumar el plus de convenio al salario base?',
+        r: 'Porque es un complemento fijo que el convenio reconoce a cada categoría todos los meses. Comparar solo la línea de «salario base» de tu nómina con la tabla da una lectura falsa: lo que hay que comparar es la suma de los conceptos fijos, y eso es exactamente lo que hace NominIA.',
+      },
+      {
+        p: '¿Puedo reclamar si me han aplicado la tabla de un año anterior?',
+        r: 'Sí. Las diferencias salariales por aplicación incorrecta del convenio se reclaman, y el plazo general para reclamar cantidades es de un año desde que cada mensualidad se debió pagar. Como el convenio publica una tabla por año, aplicar la de 2023 en 2026 es una diferencia fácil de demostrar con el BORM delante.',
+      },
+    ],
+  },
 ];
 
 const {

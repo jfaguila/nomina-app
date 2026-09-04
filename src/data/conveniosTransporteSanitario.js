@@ -362,46 +362,6 @@ const FICHAS = [
     ],
   },
   {
-    slug: 'transporte-sanitario-murcia',
-    nombre: 'Transporte Sanitario de la Región de Murcia',
-    region: 'la Región de Murcia',
-    titulo:
-      'Convenio de transporte sanitario de la Región de Murcia: ambulancias 2023-2027 y tablas salariales',
-    metaTitle: 'Convenio ambulancias Murcia 2023-2027 · tablas salariales transporte sanitario | NominIA',
-    metaDescription:
-      'Convenio del sector Transporte de Enfermos y Accidentados en Ambulancia de la Región de Murcia (código 30003045012008), vigencia 2023-2027. Ámbito, situación y por qué su tabla salarial está pendiente de confirmar en el BORM.',
-    entradilla:
-      'La Región de Murcia tiene convenio sectorial propio de ambulancias con código 30003045012008 y una vigencia cómoda: del 1 de enero de 2023 al 31 de diciembre de 2027. Es un convenio vivo, con subidas anuales previstas, así que la tabla de un TES murciano de este año no es la misma que la de hace dos.',
-    codigo: '30003045012008',
-    ambito: 'Región de Murcia',
-    vigencia: 'Del 1 de enero de 2023 al 31 de diciembre de 2027',
-    fuente:
-      'Convenio inscrito con código 30003045012008. Publicación en el BORM pendiente de enlazar; la referencia que manejamos procede de una base de datos jurídica privada.',
-    fuenteUrl: null,
-    fuenteTipo: null,
-    porQueSinTabla:
-      'La referencia que tenemos del convenio murciano viene de una base de datos jurídica privada, no del Boletín Oficial de la Región de Murcia. Un texto correcto en una web de pago sigue sin ser un boletín oficial enlazable, y esa es la línea que no cruzamos: si no podemos poner el BORM delante de la cifra, la cifra no se publica.',
-    notas: [
-      'Con vigencia hasta 2027, este convenio debería aplicar una tabla distinta cada año. Si llevas varios años con el mismo salario base en la nómina, es la primera señal para revisar.',
-      'Comprueba el código que aparece en tu nómina. Si no es el 30003045012008, puede que tu empresa aplique un convenio propio y no el sectorial de la Región.',
-      CTA_SIN_TABLA,
-    ],
-    faq: [
-      {
-        p: '¿Cuánto cobra un técnico de ambulancia (TES) en Murcia?',
-        r: 'La cuantía sale del convenio sectorial de la Región (código 30003045012008), vigente hasta 2027. No publicamos el importe porque la referencia que tenemos no es del BORM sino de una base de datos privada, y nuestra regla es citar siempre el boletín oficial.',
-      },
-      {
-        p: '¿Hasta cuándo dura el convenio de ambulancias de Murcia?',
-        r: 'Su vigencia pactada llega hasta el 31 de diciembre de 2027, así que está plenamente en vigor y no en ultraactividad.',
-      },
-      {
-        p: '¿Puedo reclamar si me han aplicado una tabla de un año anterior?',
-        r: 'Sí. Las diferencias salariales por aplicación incorrecta del convenio se reclaman, y el plazo general para reclamar cantidades es de un año desde que cada mensualidad se debió pagar. Cuanto antes lo detectes, más recuperas.',
-      },
-    ],
-  },
-  {
     slug: 'transporte-sanitario-pais-vasco',
     nombre: 'Transporte Sanitario del País Vasco',
     region: 'el País Vasco',
@@ -754,6 +714,78 @@ const FICHAS = [
       },
     ],
   },
+  {
+    slug: 'transporte-sanitario-melilla',
+    nombre: 'Transporte Sanitario de Melilla',
+    region: 'Melilla',
+    titulo:
+      'Convenio de transporte sanitario de Melilla: tabla salarial 2026 por categoría (BOME)',
+    metaTitle: 'Convenio ambulancias Melilla 2026 · tabla salarial (BOME) | NominIA',
+    metaDescription:
+      'Tabla salarial 2026 del Convenio Sectorial de Transporte de Enfermos y Accidentados en Ambulancia de Melilla (BOME n.º 6184, 21-jun-2024, código 52100185012019): TES Conductor/a 2.149,26 € al mes con las pagas prorrateadas y el plus de residencia. Vigencia 2024-2029.',
+    entradilla:
+      'Melilla tiene convenio propio de ambulancias, con una vigencia larga —del 1 de enero de 2024 al 31 de diciembre de 2029— y una particularidad que no tiene ningún convenio peninsular: el plus de residencia del 30 %, que se suma a todos los conceptos salariales. Su tabla publica directamente el importe mensual con ese plus y con las pagas extra ya prorrateadas, así que la cifra se lee distinto de las del resto de España.',
+    codigo: '52100185012019',
+    ambito: 'Ciudad Autónoma de Melilla',
+    vigencia: 'Del 1 de enero de 2024 al 31 de diciembre de 2029',
+    fuente:
+      'BOME n.º 6184, de 21-jun-2024 (Resolución de 12-jun-2024 del Área de Trabajo e Inmigración), artículo BOME-A-2024-537. Código 52100185012019. Anexo I, tabla salarial de 2026.',
+    fuenteUrl: 'https://bomemelilla.es/bome/descargar/BOME-A-2024-537.pdf',
+    fuenteTipo: 'boletin',
+    porQueSinTabla:
+      'Aquí sí tenemos la tabla y la publicamos entera abajo, leída en el PDF del BOME. Lo que no hacemos todavía es meterla en el verificador, y el motivo está en la propia estructura de la tabla: el importe mensual que publica el anexo no es «salario base más plus de convenio» como en el resto de convenios del sector, sino el salario base más el prorrateo de las cuatro pagas extraordinarias más el 30 % de plus de residencia. Es una cifra que ya lleva dentro conceptos que en tu nómina pueden aparecer en líneas separadas —o no estar prorrateados en absoluto—, así que compararla en automático contra una línea de tu recibo daría un veredicto falso. Preferimos que la leas tú con el desglose delante.',
+    tablaMensual: {
+      tablaAplicada: '2026',
+      nota:
+        'Importes mensuales tal y como los publica el Anexo I del BOME. La columna «Salario base» es el salario base del convenio; «Pagas prorrateadas» es el prorrateo de las cuatro pagas extraordinarias (el salario base por cuatro, repartido en doce meses); «Plus de residencia» es el 30 % del artículo 24. La última columna es la suma de las tres, que es lo que el propio convenio llama «BASE MES».',
+      filas: [
+        { categoria: 'TES Conductor/a', base: 1239.96, ppe: 413.32, residencia: 495.98, mes: 2149.26 },
+        { categoria: 'TTS Ayudante-Conductor/a-Camillero/a', base: 1076.81, ppe: 358.94, residencia: 430.72, mes: 1866.47 },
+        { categoria: 'TTS Camillero/a', base: 1010.23, ppe: 336.74, residencia: 404.09, mes: 1751.06 },
+        { categoria: 'Jefe/a de Equipo', base: 1216.13, ppe: 405.38, residencia: 486.45, mes: 2107.95 },
+        { categoria: 'Jefe/a de Trafico', base: 1335.01, ppe: 445, residencia: 534.01, mes: 2314.02 },
+        { categoria: 'Oficial 1.ª Administrativo/a', base: 1300.01, ppe: 433.34, residencia: 520, mes: 2253.35 },
+        { categoria: 'Aux. Administrativo/a', base: 1124.23, ppe: 374.74, residencia: 449.69, mes: 1948.67 },
+        { categoria: 'Ayudante Mecánico/a', base: 1048.33, ppe: 349.44, residencia: 419.33, mes: 1817.11 },
+        { categoria: 'Mecánico/a', base: 1188.9, ppe: 396.3, residencia: 475.56, mes: 2060.75 },
+        { categoria: 'Chapista', base: 1142.73, ppe: 380.91, residencia: 457.09, mes: 1980.74 },
+        { categoria: 'Pintor/a', base: 1142.73, ppe: 380.91, residencia: 457.09, mes: 1980.74 },
+        { categoria: 'Jefe/a de Taller', base: 1273.25, ppe: 424.42, residencia: 509.3, mes: 2206.97 },
+        { categoria: 'Telefonista', base: 1111.24, ppe: 370.41, residencia: 444.5, mes: 1926.15 },
+        { categoria: 'Médico/a', base: 2180.65, ppe: 726.88, residencia: 872.26, mes: 3779.8 },
+        { categoria: 'DUE', base: 1635.43, ppe: 545.14, residencia: 654.17, mes: 2834.75 },
+        { categoria: 'Director/a de Área', base: 1994.39, ppe: 664.8, residencia: 797.75, mes: 3456.94 },
+        { categoria: 'Director/a', base: 2201.6, ppe: 733.87, residencia: 880.64, mes: 3816.11 },
+      ],
+    },
+    notas: [
+      'El plus de residencia es lo que separa a Melilla del resto: el artículo 24 reconoce un 30 % sobre todos los conceptos salariales, ordinarios y extraordinarios. No es una mejora voluntaria de la empresa, es convenio: si no aparece en tu nómina, falta.',
+      'Pagas extraordinarias: tres al año (marzo, verano y Navidad) y una cuarta en septiembre desde el 1 de enero de 2025, que el convenio dice expresamente que no se prorratea. Las tres primeras sí se pueden prorratear. Por eso la tabla del anexo trae las cuatro repartidas en doce meses: es una referencia de cómputo, no necesariamente lo que verás en tu recibo.',
+      'Jornada máxima anual: 1.800 horas en 2024 y 1.768 horas de 2025 a 2029. Las vacaciones pasan de 31 días en 2024 a 38 días a partir de 2025.',
+      'Nocturnidad: desde el 1 de enero de 2025, 1,75 € por cada hora trabajada entre las 22:00 y las 6:00, como incremento sobre el salario base.',
+      'Antigüedad: un 3 % a los tres años y un 1 % adicional por año después, hasta el máximo a los veinticinco años.',
+      'Dietas por evacuación a la península: 13,00 € la comida, 13,00 € la cena y 18,00 € la pernocta con desayuno (42,00 € la dieta completa).',
+      'Horas extraordinarias: se abonan con un recargo del 75 % sobre el precio de la hora ordinaria.',
+    ],
+    faq: [
+      {
+        p: '¿Cuánto cobra un técnico de ambulancia (TES) en Melilla?',
+        r: 'Según la tabla de 2026 del convenio publicada en el BOME, un TES Conductor/a tiene 1.239,96 € de salario base, y el anexo lo lleva a 2.149,26 € al mes sumando el prorrateo de las cuatro pagas extraordinarias y el 30 % de plus de residencia. Un TTS Ayudante-Conductor/a-Camillero/a queda en 1.866,47 € por el mismo cómputo.',
+      },
+      {
+        p: '¿Por qué el sueldo de Melilla parece más alto que el de la península?',
+        r: 'Por dos motivos que hay que separar. El primero es real: el plus de residencia del 30 % del artículo 24, que no existe en los convenios peninsulares. El segundo es de cómputo: la tabla del anexo ya trae las pagas extraordinarias prorrateadas en las doce mensualidades, mientras que otros convenios publican el salario base «limpio» y pagan las extras aparte. Comparar la cifra de Melilla con la de otra comunidad sin tener esto en cuenta lleva a conclusiones equivocadas.',
+      },
+      {
+        p: '¿Hasta cuándo dura el convenio de ambulancias de Melilla?',
+        r: 'Hasta el 31 de diciembre de 2029, y el anexo del BOME publica una tabla salarial para cada año de 2024 a 2029. Es, junto con el del País Vasco y el valenciano, uno de los convenios del sector con las subidas pactadas más a largo plazo.',
+      },
+      {
+        p: '¿Puedo comprobar mi nómina de Melilla en NominIA?',
+        r: 'Sí. NominIA lee tu nómina, ordena los conceptos y te enseña el desglose, y detecta las ausencias más frecuentes: el plus de residencia que no aparece, la antigüedad no aplicada o las pagas mal prorrateadas. Lo que no te da todavía es el veredicto automático de importe, porque la tabla del anexo mezcla en una sola cifra conceptos que tu nómina puede traer separados.',
+      },
+    ],
+  },
 ];
 
 /*
@@ -770,7 +802,7 @@ const SECTOR = {
   h1: 'Convenios de transporte sanitario y ambulancias en España: tablas salariales por comunidad',
   metaTitle: 'Convenios de transporte sanitario 2026 · tablas salariales de ambulancias por comunidad | NominIA',
   metaDescription:
-    'Los convenios de ambulancias de España, comunidad por comunidad: código, vigencia y enlace oficial. Tablas salariales publicadas de Andalucía, Comunitat Valenciana y País Vasco. Cuánto cobra un técnico de emergencias sanitarias (TES) según convenio.',
+    'Los convenios de ambulancias de España, comunidad por comunidad: código, vigencia y enlace oficial. Tablas salariales publicadas de Andalucía, Comunitat Valenciana, Región de Murcia, País Vasco y Melilla. Cuánto cobra un técnico de emergencias sanitarias (TES) según convenio.',
   parrafos: [
     'En el transporte sanitario no hay una tabla salarial nacional. El convenio estatal del sector es un acuerdo marco de estructura de la negociación colectiva: lo hemos comprobado en el BOE y no fija cuantías, sino que las remite expresamente a los convenios autonómicos y provinciales. Por eso lo que cobra un técnico de emergencias sanitarias depende de la comunidad en la que trabaje, y las diferencias entre unas y otras son grandes.',
     'Esta página reúne los veinte convenios del sector que hemos revisado, con su código, su vigencia y el enlace a su boletín oficial cuando lo tenemos. Publicamos la tabla completa solo de aquellos cuyo anexo salarial hemos podido verificar en el boletín; del resto damos una ficha informativa que dice exactamente qué falta y por qué. Una cifra de sueldo sin boletín detrás no vale nada, así que preferimos decir que no la tenemos.',
@@ -778,7 +810,7 @@ const SECTOR = {
   faq: [
     {
       p: '¿Cuánto cobra un técnico de emergencias sanitarias (TES) en España?',
-      r: 'Depende de la comunidad autónoma, porque no hay tabla estatal. Con las tablas que hemos verificado en boletín oficial: en Andalucía un TES conductor tiene 1.420,79 € al mes en 14 pagas y en la Comunitat Valenciana 1.562,47 € al mes en 14 pagas (tabla 2026). En el País Vasco el convenio publica el salario base en cómputo anual: 31.944,83 € al año para un TES-conductor/a en 2026.',
+      r: 'Depende de la comunidad autónoma, porque no hay tabla estatal. Con las tablas que hemos verificado en boletín oficial: en Andalucía un TES conductor tiene 1.420,79 € al mes en 14 pagas, en la Comunitat Valenciana 1.562,47 € al mes en 14 pagas y en la Región de Murcia 1.690,91 € al mes en 14 pagas (tablas de 2026). En el País Vasco el convenio publica el salario base en cómputo anual: 31.944,83 € al año para un TES-conductor/a en 2026. Y en Melilla el anexo da 2.149,26 € de base mes, pero con las cuatro pagas extraordinarias ya prorrateadas y el 30 % de plus de residencia dentro, así que no es comparable sin más con las cifras peninsulares.',
     },
     {
       p: '¿Existe un convenio estatal de ambulancias con tablas salariales?',
@@ -786,7 +818,7 @@ const SECTOR = {
     },
     {
       p: '¿Por qué de muchas comunidades no publicáis la tabla?',
-      r: 'Porque no hemos podido verificarla en su boletín oficial. En unos casos el anexo salarial no viene en el texto publicado (Galicia), en otros el boletín es un PDF firmado del que no se puede extraer el texto (Madrid, Canarias) y en otros el convenio publica varias tablas ligadas al inicio del contrato público, sin fecha en el boletín, de forma que no se puede saber cuál es la de hoy (Extremadura, Cantabria). Inventar la cifra que falta sería peor que no tener la página.',
+      r: 'Porque no hemos podido verificarla en su boletín oficial. En unos casos el anexo salarial no viene en el texto publicado (Galicia), en otros el boletín es un PDF firmado del que no se puede extraer el texto (Madrid, Canarias) y en otros el convenio publica varias tablas ligadas al inicio del contrato público, sin fecha en el boletín, de forma que no se puede saber cuál es la de hoy (Extremadura, Cantabria). En algunos casos la cifra circula por ahí en webs sindicales o en bases de datos jurídicas de pago, pero eso no es un boletín: en Madrid, Navarra y La Rioja la tabla que se encuentra viene de fuentes secundarias, y por eso no la publicamos. Inventar la cifra que falta, o copiarla de quien no responde de ella, sería peor que no tener la página.',
     },
     {
       p: '¿Puedo comprobar mi nómina de ambulancia aunque no tengáis la tabla de mi comunidad?',
@@ -797,12 +829,11 @@ const SECTOR = {
       r: 'A fecha de esta revisión, Canarias tiene el convenio vencido desde el 31 de diciembre de 2024 con la negociación bloqueada, Andalucía está en ultraactividad tras agotar su vigencia 2020-2025, Madrid terminó su vigencia a finales de 2024 y Ceuta ni siquiera tiene convenio propio: sigue negociándolo. En el extremo contrario, el País Vasco tiene convenio hasta 2028 y la Comunitat Valenciana tablas pactadas hasta 2030.',
     },
   ],
-  // Melilla no tiene ficha propia: la unica referencia que encontramos es un codigo de
-  // convenio sin fuente oficial que confirmarlo, y una pagina que solo dijera "no lo
-  // sabemos" no le sirve a nadie. Se menciona aqui para no fingir que el mapa esta
-  // completo.
+  // Melilla ya tiene ficha (4-sep-2026): el codigo que antes solo aparecia en
+  // resultados de busqueda quedo confirmado en el BOME n.6184. Este parrafo se
+  // queda para cerrar el mapa y decir en voz alta que ya no falta nadie.
   sinFicha:
-    'Melilla queda fuera de este listado: la única referencia que hemos encontrado es un código de convenio (52100185012019) que aparece en resultados de búsqueda sin ninguna fuente oficial que lo respalde. Hasta confirmarlo en el BOE o en el Boletín Oficial de Melilla no abrimos ficha.',
+    'El mapa del sector queda así cerrado: las diecinueve comunidades y ciudades autónomas con convenio identificado tienen su página. Melilla, que hasta ahora quedaba fuera porque su código de convenio solo aparecía en resultados de búsqueda sin respaldo oficial, ya tiene ficha con su tabla: el código 52100185012019 está confirmado en el BOME n.º 6184 de 21 de junio de 2024.',
 };
 
 module.exports = { CONVENIOS_FICHA: FICHAS, SECTOR_TRANSPORTE_SANITARIO: SECTOR };
