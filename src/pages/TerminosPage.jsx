@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { schemaPagina } from '../data/seoSchema';
+import SiteFooter from '../components/SiteFooter';
 
 export default function TerminosPage() {
   useSeo({
@@ -60,6 +61,7 @@ export default function TerminosPage() {
           <Link to="/aviso-legal" className="text-blue-600 font-semibold hover:underline">Aviso legal</Link>
         </p>
       </article>
+      <SiteFooter />
     </div>
   );
 }

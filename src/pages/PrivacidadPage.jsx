@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { schemaPagina } from '../data/seoSchema';
+import SiteFooter from '../components/SiteFooter';
 
 export default function PrivacidadPage() {
   useSeo({
@@ -65,6 +66,7 @@ export default function PrivacidadPage() {
 
         <p className="mt-10"><Link to="/precios" className="text-blue-600 font-semibold hover:underline">← Ver planes</Link></p>
       </article>
+      <SiteFooter />
     </div>
   );
 }

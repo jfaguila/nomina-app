@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useSeo from '../hooks/useSeo';
+import SiteFooter from '../components/SiteFooter';
 
 // Vercel sirve index.html con 200 para cualquier ruta que no exista (es una SPA), asi
 // que hasta ahora /lo-que-sea mostraba una pagina en blanco y Google la veia como un
@@ -40,6 +41,7 @@ export default function NotFoundPage() {
           <li><Link to="/precios" className="text-blue-600 hover:underline">Precios</Link></li>
         </ul>
       </main>
+      <SiteFooter />
     </div>
   );
 }

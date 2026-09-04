@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { schemaPagina } from '../data/seoSchema';
+import SiteFooter from '../components/SiteFooter';
 
 export default function AvisoLegalPage() {
   useSeo({
@@ -58,6 +59,7 @@ export default function AvisoLegalPage() {
           <Link to="/terminos" className="text-blue-600 font-semibold hover:underline">Condiciones de contratación</Link>
         </p>
       </article>
+      <SiteFooter />
     </div>
   );
 }

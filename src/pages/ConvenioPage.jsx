@@ -4,6 +4,7 @@ import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { getConvenio, esFicha, CONVENIOS_PUBLICOS, CONVENIOS_FICHA, eur } from '../data/conveniosPublicos';
 import { schemaConvenio, schemaConvenios } from '../data/seoSchema';
+import SiteFooter from '../components/SiteFooter';
 
 const esTS = (s) => typeof s === 'string' && s.startsWith('transporte-sanitario-');
 
@@ -301,18 +302,7 @@ export default function ConvenioPage() {
           </p>
         )}
       </main>
-
-      <footer className="border-t border-gray-100 dark:border-gray-800">
-        <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
-          <span><strong className="text-gray-700 dark:text-gray-300">NominIA</strong> · Verificador de nóminas con IA</span>
-          <nav className="flex items-center gap-5">
-            <Link to="/precios" className="hover:text-blue-600">Precios</Link>
-            <Link to="/convenios" className="hover:text-blue-600">Convenios</Link>
-            <Link to="/aviso-legal" className="hover:text-blue-600">Aviso legal</Link>
-            <Link to="/privacidad" className="hover:text-blue-600">Privacidad</Link>
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
