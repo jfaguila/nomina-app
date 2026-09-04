@@ -62,7 +62,7 @@
   "construccion": {
     "nombre": "Convenio de Construcción",
     "salarioMinimo": {
-      "empleado": 1323.0,
+      "empleado": 1323,
       "tecnico": 1650,
       "mando_intermedio": 2100,
       "directivo": 3200
@@ -346,7 +346,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -403,7 +403,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -460,7 +460,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -517,7 +517,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -574,7 +574,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -631,7 +631,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -688,7 +688,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -745,7 +745,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -802,7 +802,7 @@
     "pagasExtra": 4,
     "reglasAntiguedad": {
       "tipo": "trienio",
-      "porcentajeBase": 0.0,
+      "porcentajeBase": 0,
       "descripcion": "Antigüedad según convenio"
     },
     "seguridadSocial": {
@@ -817,5 +817,218 @@
       "plusConvenio",
       "complementoVoluntario"
     ]
+  },
+  "transporte_sanitario_valenciana": {
+    "nombre": "Convenio de Transporte Sanitario de la Comunitat Valenciana (enfermos/accidentados en ambulancia)",
+    "salarioMinimo": {
+      "tes_conductor": 1562.47,
+      "tes_ayudante_camillero": 1299.96,
+      "tes_camillero": 1230.88,
+      "jefe_equipo": 1630.27,
+      "jefe_trafico": 1588.82,
+      "jefe_taller": 1534.72,
+      "mecanico": 1433.02,
+      "ayudante_mecanico": 1263.62,
+      "chapista": 1377.39,
+      "pintor": 1377.39,
+      "director": 2653.68,
+      "director_area": 2403.87,
+      "medico": 2628.38,
+      "tecnico_superior": 2628.38,
+      "tecnico_medio": 1971.25,
+      "diplomado": 1971.25,
+      "ats_due": 1971.25,
+      "jefe_admin": 1604.84,
+      "oficial_admin": 1566.95,
+      "auxiliar_admin": 1326.89,
+      "aspirante_admin": 1137.18,
+      "analista_sistemas": 2628.38,
+      "programador": 1566.95,
+      "operador": 1326.89,
+      "telefonista": 1339.45,
+      "ordenanza": 1326.89,
+      "personal_limpieza": 1146.44,
+      "trabajador_formacion": 1137.18,
+      "empleado": 1230.88,
+      "tecnico": 1562.47
+    },
+    "detallesSalariales": {
+      "tes_conductor": {
+        "salarioBase": 1381.6,
+        "plusConvenio": 180.87,
+        "total": 1562.47
+      },
+      "tes_ayudante_camillero": {
+        "salarioBase": 1149.24,
+        "plusConvenio": 150.72,
+        "total": 1299.96
+      },
+      "tes_camillero": {
+        "salarioBase": 1086.44,
+        "plusConvenio": 144.44,
+        "total": 1230.88
+      },
+      "jefe_equipo": {
+        "salarioBase": 1482.07,
+        "plusConvenio": 148.2,
+        "total": 1630.27
+      },
+      "jefe_trafico": {
+        "salarioBase": 1444.4,
+        "plusConvenio": 144.44,
+        "total": 1588.82
+      },
+      "jefe_taller": {
+        "salarioBase": 1395.23,
+        "plusConvenio": 139.49,
+        "total": 1534.72
+      },
+      "mecanico": {
+        "salarioBase": 1302.75,
+        "plusConvenio": 130.27,
+        "total": 1433.02
+      },
+      "ayudante_mecanico": {
+        "salarioBase": 1148.76,
+        "plusConvenio": 114.86,
+        "total": 1263.62
+      },
+      "chapista": {
+        "salarioBase": 1252.15,
+        "plusConvenio": 125.24,
+        "total": 1377.39
+      },
+      "pintor": {
+        "salarioBase": 1252.15,
+        "plusConvenio": 125.24,
+        "total": 1377.39
+      },
+      "director": {
+        "salarioBase": 2412.46,
+        "plusConvenio": 241.22,
+        "total": 2653.68
+      },
+      "director_area": {
+        "salarioBase": 2185.34,
+        "plusConvenio": 218.53,
+        "total": 2403.87
+      },
+      "medico": {
+        "salarioBase": 2389.44,
+        "plusConvenio": 238.94,
+        "total": 2628.38
+      },
+      "tecnico_superior": {
+        "salarioBase": 2389.44,
+        "plusConvenio": 238.94,
+        "total": 2628.38
+      },
+      "tecnico_medio": {
+        "salarioBase": 1792.09,
+        "plusConvenio": 179.16,
+        "total": 1971.25
+      },
+      "diplomado": {
+        "salarioBase": 1792.09,
+        "plusConvenio": 179.16,
+        "total": 1971.25
+      },
+      "ats_due": {
+        "salarioBase": 1792.09,
+        "plusConvenio": 179.16,
+        "total": 1971.25
+      },
+      "jefe_admin": {
+        "salarioBase": 1458.96,
+        "plusConvenio": 145.88,
+        "total": 1604.84
+      },
+      "oficial_admin": {
+        "salarioBase": 1424.49,
+        "plusConvenio": 142.46,
+        "total": 1566.95
+      },
+      "auxiliar_admin": {
+        "salarioBase": 1206.27,
+        "plusConvenio": 120.62,
+        "total": 1326.89
+      },
+      "aspirante_admin": {
+        "salarioBase": 1033.8,
+        "plusConvenio": 103.38,
+        "total": 1137.18
+      },
+      "analista_sistemas": {
+        "salarioBase": 2389.44,
+        "plusConvenio": 238.94,
+        "total": 2628.38
+      },
+      "programador": {
+        "salarioBase": 1424.49,
+        "plusConvenio": 142.46,
+        "total": 1566.95
+      },
+      "operador": {
+        "salarioBase": 1206.27,
+        "plusConvenio": 120.62,
+        "total": 1326.89
+      },
+      "telefonista": {
+        "salarioBase": 1217.71,
+        "plusConvenio": 121.74,
+        "total": 1339.45
+      },
+      "ordenanza": {
+        "salarioBase": 1206.27,
+        "plusConvenio": 120.62,
+        "total": 1326.89
+      },
+      "personal_limpieza": {
+        "salarioBase": 1042.22,
+        "plusConvenio": 104.22,
+        "total": 1146.44
+      },
+      "trabajador_formacion": {
+        "salarioBase": 1033.8,
+        "plusConvenio": 103.38,
+        "total": 1137.18
+      }
+    },
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "dietaMaxDiaria": 47.86,
+    "pagas": 14,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    },
+    "vigencia": {
+      "inicio": "2024-01-01",
+      "fin": "2030-12-31",
+      "ultraactividad": false,
+      "tablaAplicada": "2026"
+    },
+    "reglasAntiguedad": {
+      "tipo": "porcentaje_anual",
+      "porcentajeBase": 0.03,
+      "descripcion": "3% del salario base a los 3 anos, +1% por cada ano a partir del cuarto, 20% a los 20 anos o mas"
+    },
+    "incrementos": {
+      "descripcion": "Tablas pactadas ano a ano en el Anexo I del convenio, de 2024 a 2030"
+    },
+    "descripcion": "Convenio colectivo de trabajo para el sector de empresas y trabajadores de transporte de enfermos y accidentados en ambulancia (transporte sanitario) de la Comunitat Valenciana. Codigo REGCON 80000715012008. Cada categoria cobra salario base mas plus de convenio, en 14 pagas. Tabla aplicada: 2026.",
+    "codigoConvenio": "80000715012008",
+    "publicacion": "DOGV n.o 10196 - 17/09/2025",
+    "fuente": "DOGV n.º 10196, de 17-sep-2025 (Resolución de 7-ago-2025, Dirección General de Trabajo, Cooperativismo y Seguridad Laboral). Código REGCON 80000715012008. Anexo I, tabla salarial 2026.",
+    "fuenteUrl": "https://dogv.gva.es/datos/2025/09/17/pdf/2025_40064_es.pdf",
+    "ambito": "Comunitat Valenciana (Alicante, Castellón y Valencia)",
+    "dietas2025": {
+      "comida": 14.24,
+      "cena": 14.24,
+      "pernocta_desayuno": 19.38,
+      "total_dia": 47.86
+    }
   }
 }

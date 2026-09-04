@@ -113,14 +113,38 @@ function schemaConvenios() {
   return [breadcrumb([INICIO, { name: 'Convenios', path: '/convenios' }]), ORGANIZATION];
 }
 
+const CONVENIOS = { name: 'Convenios', path: '/convenios' };
+const SECTOR_TS = { name: 'Transporte sanitario', path: '/convenios/transporte-sanitario' };
+
+// Las paginas de ambulancias cuelgan del hub de sector, no directamente de /convenios:
+// son 20 URLs hermanas y la miga tiene que decirle al buscador que forman un grupo.
+function esTransporteSanitario(c) {
+  return typeof c.slug === 'string' && c.slug.startsWith('transporte-sanitario-');
+}
+
 function schemaConvenio(c) {
+  const ruta = esTransporteSanitario(c)
+    ? [INICIO, CONVENIOS, SECTOR_TS, { name: c.nombre, path: `/convenio/${c.slug}` }]
+    : [INICIO, CONVENIOS, { name: c.nombre, path: `/convenio/${c.slug}` }];
+  return [faqPage(c.faq), breadcrumb(ruta), ORGANIZATION];
+}
+
+// Hub del sector: la miga y el listado de las paginas que agrupa.
+function schemaTransporteSanitario(convenios, faq) {
   return [
-    faqPage(c.faq),
-    breadcrumb([
-      INICIO,
-      { name: 'Convenios', path: '/convenios' },
-      { name: c.nombre, path: `/convenio/${c.slug}` },
-    ]),
+    faqPage(faq || []),
+    breadcrumb([INICIO, CONVENIOS, SECTOR_TS]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Convenios de transporte sanitario y ambulancias en España',
+      itemListElement: convenios.map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: c.nombre,
+        url: `${BASE}/convenio/${c.slug}`,
+      })),
+    },
     ORGANIZATION,
   ];
 }
@@ -136,5 +160,6 @@ module.exports = {
   schemaPrecios,
   schemaConvenios,
   schemaConvenio,
+  schemaTransporteSanitario,
   schemaPagina,
 };

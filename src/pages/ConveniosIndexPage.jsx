@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
-import { CONVENIOS_PUBLICOS, eur } from '../data/conveniosPublicos';
+import { CONVENIOS_PUBLICOS, CONVENIOS_FICHA, eur } from '../data/conveniosPublicos';
 import { schemaConvenios } from '../data/seoSchema';
 
 // Los que el motor sabe leer pero cuya tabla no tiene boletin citado: se listan
@@ -15,9 +15,9 @@ const SIN_TABLA_PUBLICA = [
 
 export default function ConveniosIndexPage() {
   useSeo({
-    title: 'Tablas salariales de convenio 2024-2025 · comprueba tu nómina | NominIA',
+    title: 'Tablas salariales de convenio 2026 · comprueba tu nómina | NominIA',
     description:
-      'Tablas salariales oficiales por convenio: Grandes Almacenes, Mercadona y Transporte Sanitario de Andalucía, con su fuente en el BOE y el BOJA. Sube tu nómina y comprueba gratis si te pagan lo que marca tu convenio.',
+      'Tablas salariales oficiales por convenio con su boletín citado: Grandes Almacenes, Mercadona y los convenios de transporte sanitario y ambulancias de Andalucía, la Comunitat Valenciana y el País Vasco. Sube tu nómina y comprueba gratis si te pagan lo que marca tu convenio.',
     path: '/convenios',
     jsonLd: schemaConvenios(),
   });
@@ -64,6 +64,25 @@ export default function ConveniosIndexPage() {
             </Link>
           ))}
         </div>
+
+        <h2 className="text-2xl font-bold mb-3">Transporte sanitario y ambulancias</h2>
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          Es el sector con más convenios distintos de España: uno por comunidad autónoma, porque el
+          convenio estatal es un acuerdo marco que no fija cuantías. Hemos revisado los veinte y
+          tenemos ficha de cada uno, con su código, su vigencia y su boletín cuando existe.
+        </p>
+        <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2 mb-4 text-sm">
+          {CONVENIOS_FICHA.filter((c) => c.slug.startsWith('transporte-sanitario-')).map((c) => (
+            <li key={c.slug}>
+              <Link to={`/convenio/${c.slug}`} className="text-blue-600 hover:underline">{c.nombre}</Link>
+            </li>
+          ))}
+        </ul>
+        <p className="mb-14">
+          <Link to="/convenios/transporte-sanitario" className="font-semibold text-blue-600 hover:underline">
+            Ver el índice completo de convenios de transporte sanitario y ambulancias →
+          </Link>
+        </p>
 
         <div className="rounded-2xl border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/40 p-6 mb-14">
           <h2 className="text-xl font-bold mb-2">No busques tu tabla: sube la nómina</h2>

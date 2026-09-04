@@ -11,12 +11,18 @@
 const fs = require('fs');
 const path = require('path');
 
-const { CONVENIOS_PUBLICOS, eur } = require('../src/data/conveniosPublicos');
+const {
+  CONVENIOS_PUBLICOS,
+  CONVENIOS_FICHA,
+  SECTOR_TRANSPORTE_SANITARIO: SECTOR,
+  eur,
+} = require('../src/data/conveniosPublicos');
 const {
   schemaHome,
   schemaPrecios,
   schemaConvenios,
   schemaConvenio,
+  schemaTransporteSanitario,
   schemaPagina,
 } = require('../src/data/seoSchema');
 
@@ -41,8 +47,59 @@ function tablaHtml(c) {
     )
     .join('');
   return (
+    `<h2 style="font-size:22px;">Tabla salarial vigente (${c.tablaAplicada})</h2>` +
     `<table style="width:100%;border-collapse:collapse;margin:20px 0;"><thead><tr>${cabeceras}</tr></thead><tbody>${filas}</tbody></table>` +
-    `<p style="font-size:13px;color:#64748b;">Ámbito: ${c.ambito} · ${c.pagas} pagas · Fuente: <a href="${c.fuenteUrl}">${c.fuente}</a></p>` +
+    `<p style="font-size:13px;color:#64748b;">Ámbito: ${c.ambito} · ${c.pagas} pagas · Fuente: <a href="${c.fuenteUrl}">${c.fuente}</a></p>`
+  );
+}
+
+// Las fichas informativas NO tienen importes que comparar, pero el respaldo estatico
+// tiene que decir lo mismo que la pagina React: la ficha del convenio, el motivo por
+// el que no publicamos su tabla y, si la hay, la tabla anual verificada.
+function fichaHtml(c) {
+  const dt = 'style="font-weight:600;margin-top:10px;"';
+  const dd = 'style="margin:0 0 0 0;color:#334155;"';
+  const fuenteHtml = c.fuenteUrl
+    ? `<a href="${c.fuenteUrl}">${c.fuente}</a>`
+    : c.fuente || 'Pendiente de localizar en el boletín oficial';
+  let html =
+    `<h2 style="font-size:22px;">Ficha del convenio</h2>` +
+    `<dl style="font-size:15px;">` +
+    `<dt ${dt}>Código de convenio</dt><dd ${dd}>${c.codigo || 'Pendiente de confirmar'}</dd>` +
+    `<dt ${dt}>Ámbito</dt><dd ${dd}>${c.ambito}</dd>` +
+    `<dt ${dt}>Vigencia</dt><dd ${dd}>${c.vigencia}</dd>` +
+    `<dt ${dt}>Publicación oficial</dt><dd ${dd}>${fuenteHtml}</dd>` +
+    `<dt ${dt}>Tabla salarial</dt><dd ${dd}>${
+      c.tablaAnual
+        ? `Publicada abajo (${c.tablaAnual.tablaAplicada}), en importes anuales. No comparable todavía por el verificador.`
+        : 'No publicada: sin verificar en el boletín oficial'
+    }</dd>` +
+    `</dl>` +
+    `<h2 style="font-size:22px;">Por qué aquí no verás una cifra inventada</h2>` +
+    `<p style="font-size:15px;color:#334155;">${c.porQueSinTabla}</p>`;
+
+  if (c.tablaAnual) {
+    const th = 'style="text-align:left;padding:8px 10px;border-bottom:2px solid #cbd5e1;font-size:14px;"';
+    const td = 'style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:14px;"';
+    const tdr = 'style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:14px;text-align:right;"';
+    html +=
+      `<h2 style="font-size:22px;">Tabla salarial ${c.tablaAnual.tablaAplicada} por categoría (importes anuales)</h2>` +
+      `<table style="width:100%;border-collapse:collapse;margin:20px 0;"><thead><tr>` +
+      `<th ${th}>Categoría o grupo</th><th ${th}>Salario base al año</th></tr></thead><tbody>` +
+      c.tablaAnual.filas
+        .map((f) => `<tr><td ${td}>${f.categoria}</td><td ${tdr}><strong>${eur(f.anual)}</strong></td></tr>`)
+        .join('') +
+      `</tbody></table>` +
+      `<p style="font-size:13px;color:#64748b;">${c.tablaAnual.nota} Fuente: <a href="${c.fuenteUrl}">${c.fuente}</a></p>`;
+  }
+  return html;
+}
+
+function notasYFaqHtml(c, ficha) {
+  return (
+    `<h2 style="font-size:22px;">${
+      ficha ? 'Lo que sí conviene saber de este convenio' : 'Lo que conviene saber antes de comparar'
+    }</h2>` +
     c.notas.map((n) => `<p style="font-size:15px;color:#334155;">${n}</p>`).join('') +
     `<h2 style="font-size:22px;">Preguntas frecuentes</h2>` +
     c.faq
@@ -54,13 +111,43 @@ function tablaHtml(c) {
   );
 }
 
-const RUTAS_CONVENIO = CONVENIOS_PUBLICOS.map((c) => ({
+const esTS = (c) => c.slug.startsWith('transporte-sanitario-');
+const TS_TODOS = [...CONVENIOS_PUBLICOS.filter(esTS), ...CONVENIOS_FICHA.filter(esTS)];
+
+// Enlaces internos en el HTML sin JS: sin esto, un rastreador que no ejecuta React
+// entra a una pagina de convenio y no encuentra camino a las otras 19.
+function enlacesHermanosHtml(c) {
+  const sector = esTS(c);
+  const hermanos = sector
+    ? TS_TODOS.filter((o) => o.slug !== c.slug)
+    : CONVENIOS_PUBLICOS.filter((o) => o.slug !== c.slug);
+  return (
+    `<h2 style="font-size:20px;">${
+      sector ? 'Convenios de ambulancias de otras comunidades' : 'Otros convenios'
+    }</h2>` +
+    `<ul style="font-size:15px;color:#334155;">` +
+    hermanos.map((o) => `<li><a href="${BASE}/convenio/${o.slug}">${o.titulo}</a></li>`).join('') +
+    `</ul>` +
+    (sector
+      ? `<p style="font-size:15px;"><a href="${BASE}/convenios/transporte-sanitario">Índice completo de convenios de transporte sanitario y ambulancias</a> · <a href="${BASE}/convenios">Todas las tablas salariales</a></p>`
+      : `<p style="font-size:15px;"><a href="${BASE}/convenios">Todas las tablas salariales</a></p>`)
+  );
+}
+
+const RUTAS_CONVENIO = [
+  ...CONVENIOS_PUBLICOS.map((c) => ({ c, ficha: false })),
+  ...CONVENIOS_FICHA.map((c) => ({ c, ficha: true })),
+].map(({ c, ficha }) => ({
   dir: `convenio/${c.slug}`,
   title: c.metaTitle,
   description: c.metaDescription,
   h1: c.titulo,
   jsonLd: schemaConvenio(c),
-  bodyHtml: `<p style="font-size:18px;color:#334155;">${c.entradilla}</p>${tablaHtml(c)}`,
+  bodyHtml:
+    `<p style="font-size:18px;color:#334155;">${c.entradilla}</p>` +
+    (ficha ? fichaHtml(c) : tablaHtml(c)) +
+    notasYFaqHtml(c, ficha) +
+    enlacesHermanosHtml(c),
   cta: 'Comprobar mi nómina gratis',
   ctaHref: `${BASE}/`,
   align: 'left',
@@ -70,9 +157,9 @@ const RUTAS_CONVENIO = CONVENIOS_PUBLICOS.map((c) => ({
 const ROUTES = [
   {
     dir: 'convenios',
-    title: 'Tablas salariales de convenio 2024-2025 · comprueba tu nómina | NominIA',
+    title: 'Tablas salariales de convenio 2026 · comprueba tu nómina | NominIA',
     description:
-      'Tablas salariales oficiales por convenio: Grandes Almacenes, Mercadona y Transporte Sanitario de Andalucía, con su fuente en el BOE y el BOJA. Sube tu nómina y comprueba gratis si te pagan lo que marca tu convenio.',
+      'Tablas salariales oficiales por convenio con su boletín citado: Grandes Almacenes, Mercadona y los convenios de transporte sanitario y ambulancias de Andalucía, la Comunitat Valenciana y el País Vasco. Sube tu nómina y comprueba gratis si te pagan lo que marca tu convenio.',
     h1: 'Tablas salariales por convenio',
     jsonLd: schemaConvenios(),
     bodyHtml:
@@ -84,7 +171,60 @@ const ROUTES = [
             Math.min(...c.filas.map((f) => f.mes))
           )} al mes, ${c.pagas} pagas, tabla ${c.tablaAplicada}.</li>`
       ).join('') +
-      '</ul>',
+      '</ul>' +
+      '<h2 style="font-size:22px;">Transporte sanitario y ambulancias</h2>' +
+      '<p style="font-size:16px;color:#334155;">Es el sector con más convenios distintos de España: uno por comunidad autónoma, porque el convenio estatal es un acuerdo marco que no fija cuantías. Hemos revisado los veinte y tenemos ficha de cada uno, con su código, su vigencia y su boletín cuando existe.</p>' +
+      '<ul style="font-size:16px;color:#334155;">' +
+      CONVENIOS_FICHA.filter(esTS)
+        .map((c) => `<li><a href="${BASE}/convenio/${c.slug}">${c.nombre}</a></li>`)
+        .join('') +
+      '</ul>' +
+      `<p style="font-size:16px;"><a href="${BASE}/convenios/transporte-sanitario">Ver el índice completo de convenios de transporte sanitario y ambulancias</a></p>`,
+    cta: 'Comprobar mi nómina gratis',
+    ctaHref: `${BASE}/`,
+    align: 'left',
+    ancho: 900,
+  },
+  {
+    dir: 'convenios/transporte-sanitario',
+    title: SECTOR.metaTitle,
+    description: SECTOR.metaDescription,
+    h1: SECTOR.h1,
+    jsonLd: schemaTransporteSanitario(TS_TODOS, SECTOR.faq),
+    bodyHtml:
+      SECTOR.parrafos.map((p) => `<p style="font-size:18px;color:#334155;">${p}</p>`).join('') +
+      '<h2 style="font-size:22px;">Convenios con tabla salarial publicada</h2>' +
+      '<p style="font-size:16px;color:#334155;">De estos convenios hemos verificado el anexo salarial en su boletín oficial, así que publicamos la tabla completa por categoría y el verificador puede comparar tu nómina contra ella.</p>' +
+      '<ul style="font-size:16px;color:#334155;">' +
+      CONVENIOS_PUBLICOS.filter(esTS)
+        .map(
+          (c) =>
+            `<li><a href="${BASE}/convenio/${c.slug}">${c.titulo}</a> — desde ${eur(
+              Math.min(...c.filas.map((f) => f.mes))
+            )} al mes, ${c.pagas} pagas, tabla ${c.tablaAplicada}.</li>`
+        )
+        .join('') +
+      '</ul>' +
+      '<h2 style="font-size:22px;">Convenios con ficha informativa</h2>' +
+      '<p style="font-size:16px;color:#334155;">De estos tenemos el convenio identificado —nombre, código, ámbito, vigencia y, cuando existe, el enlace al boletín— pero no hemos podido verificar su tabla salarial. Cada ficha explica exactamente qué falta. No publicamos importes que no podamos respaldar.</p>' +
+      '<ul style="font-size:16px;color:#334155;">' +
+      CONVENIOS_FICHA.filter(esTS)
+        .map(
+          (c) =>
+            `<li><a href="${BASE}/convenio/${c.slug}">${c.titulo}</a> — ${c.ambito} · ${c.vigencia}${
+              c.tablaAnual ? ' · tabla anual publicada' : ''
+            }.</li>`
+        )
+        .join('') +
+      '</ul>' +
+      `<p style="font-size:15px;color:#64748b;">${SECTOR.sinFicha}</p>` +
+      '<h2 style="font-size:22px;">Preguntas frecuentes sobre el convenio de ambulancias</h2>' +
+      SECTOR.faq
+        .map(
+          (f) =>
+            `<h3 style="font-size:17px;margin-bottom:4px;">${f.p}</h3><p style="font-size:15px;color:#334155;margin-top:0;">${f.r}</p>`
+        )
+        .join(''),
     cta: 'Comprobar mi nómina gratis',
     ctaHref: `${BASE}/`,
     align: 'left',
@@ -238,3 +378,37 @@ fs.writeFileSync(
   replaceOnce(source, JSONLD_RE, jsonLdTag(schemaHome()), 'script#seo-jsonld (portada)')
 );
 console.log('prerender-seo: build/index.html (JSON-LD de la portada)');
+
+/*
+ * sitemap.xml generado, no escrito a mano.
+ *
+ * Hasta hoy public/sitemap.xml listaba 9 URLs a mano. Con 19 paginas nuevas de
+ * convenio, mantenerlo a mano es garantizar que se quede corto: cada convenio que se
+ * anada a los datos tiene que aparecer aqui solo. Se escribe sobre build/, asi que el
+ * fichero estatico de public/ deja de mandar.
+ */
+const HOY = new Date().toISOString().slice(0, 10);
+const prioridad = (dir) => {
+  if (dir === 'convenios' || dir === 'convenios/transporte-sanitario') return '0.9';
+  if (dir.startsWith('convenio/')) return '0.8';
+  if (dir === 'precios') return '0.8';
+  return '0.3';
+};
+const frecuencia = (dir) => (dir.startsWith('convenio') ? 'monthly' : 'yearly');
+
+const urls = [
+  `  <url>\n    <loc>${BASE}/</loc>\n    <lastmod>${HOY}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>`,
+  ...ROUTES.map(
+    (r) =>
+      `  <url>\n    <loc>${BASE}/${r.dir}</loc>\n    <lastmod>${HOY}</lastmod>\n    <changefreq>${frecuencia(
+        r.dir
+      )}</changefreq>\n    <priority>${prioridad(r.dir)}</priority>\n  </url>`
+  ),
+];
+fs.writeFileSync(
+  path.join(BUILD, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join(
+    '\n'
+  )}\n</urlset>\n`
+);
+console.log(`prerender-seo: build/sitemap.xml con ${urls.length} URLs`);

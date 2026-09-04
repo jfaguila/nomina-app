@@ -165,10 +165,99 @@ const CONVENIOS_PUBLICOS = [
       },
     ],
   },
+  {
+    slug: 'transporte-sanitario-comunidad-valenciana',
+    convenioId: 'transporte_sanitario_valenciana',
+    nombre: 'Transporte Sanitario de la Comunitat Valenciana',
+    titulo:
+      'Convenio de transporte sanitario de la Comunitat Valenciana: tabla salarial 2026 de ambulancias',
+    metaTitle:
+      'Convenio ambulancias Comunitat Valenciana 2026 · tabla salarial TES (DOGV) | NominIA',
+    metaDescription:
+      'Tabla salarial 2026 del convenio de transporte sanitario de la Comunitat Valenciana (DOGV n.º 10196): TES-conductor/a 1.562,47 €, TES-ayudante conductor/a 1.299,96 € y TES-camillero/a 1.230,88 € al mes en 14 pagas, salario base más plus de convenio. Comprueba gratis si tu nómina lo cumple.',
+    entradilla:
+      'El convenio de transporte de enfermos y accidentados en ambulancia de la Comunitat Valenciana es de los pocos del sector que tiene las tablas pactadas hasta el final: el anexo publicado en el DOGV fija los importes año a año del 1 de enero de 2024 al 31 de diciembre de 2030. Cada categoría cobra un salario base más un plus de convenio, y la suma de los dos es lo que hay que comparar con tu nómina. Aquí publicamos la tabla de 2026, la que se aplica ahora.',
+    empresas: ['Empresas de transporte sanitario de la Comunitat Valenciana'],
+    pagas: 14,
+    tablaAplicada: '2026',
+    ambito: 'Comunitat Valenciana (Alicante, Castellón y Valencia)',
+    fuente:
+      'DOGV n.º 10196, de 17-sep-2025 (Resolución de 7-ago-2025, Dirección General de Trabajo, Cooperativismo y Seguridad Laboral). Código REGCON 80000715012008. Anexo I, tabla salarial 2026.',
+    fuenteUrl: 'https://dogv.gva.es/datos/2025/09/17/pdf/2025_40064_es.pdf',
+    columnaExtra: true,
+    filas: [
+      { categoria: 'TES-conductor/a', base: 1381.6, plus: 180.87, mes: 1562.47 },
+      { categoria: 'TES-ayudante conductor/a', base: 1149.24, plus: 150.72, mes: 1299.96 },
+      { categoria: 'TES-camillero/a', base: 1086.44, plus: 144.44, mes: 1230.88 },
+      { categoria: 'Jefe/a de equipo', base: 1482.07, plus: 148.2, mes: 1630.27 },
+      { categoria: 'Jefe/a de tráfico', base: 1444.4, plus: 144.44, mes: 1588.82 },
+      { categoria: 'Jefe/a de taller', base: 1395.23, plus: 139.49, mes: 1534.72 },
+      { categoria: 'Mecánico/a', base: 1302.75, plus: 130.27, mes: 1433.02 },
+      { categoria: 'Ayudante mecánico/a', base: 1148.76, plus: 114.86, mes: 1263.62 },
+      { categoria: 'Chapista', base: 1252.15, plus: 125.24, mes: 1377.39 },
+      { categoria: 'Pintor/a', base: 1252.15, plus: 125.24, mes: 1377.39 },
+      { categoria: 'Director/a', base: 2412.46, plus: 241.22, mes: 2653.68 },
+      { categoria: 'Director/a de área', base: 2185.34, plus: 218.53, mes: 2403.87 },
+      { categoria: 'Médico/a', base: 2389.44, plus: 238.94, mes: 2628.38 },
+      { categoria: 'Técnico/a superior', base: 2389.44, plus: 238.94, mes: 2628.38 },
+      { categoria: 'Técnico/a medio', base: 1792.09, plus: 179.16, mes: 1971.25 },
+      { categoria: 'Diplomado/a', base: 1792.09, plus: 179.16, mes: 1971.25 },
+      { categoria: 'DUE Enfermería', base: 1792.09, plus: 179.16, mes: 1971.25 },
+      { categoria: 'Jefe/a administrativo/a', base: 1458.96, plus: 145.88, mes: 1604.84 },
+      { categoria: 'Oficial/a 1.ª administrativo/a', base: 1424.49, plus: 142.46, mes: 1566.95 },
+      { categoria: 'Auxiliar administrativo/a', base: 1206.27, plus: 120.62, mes: 1326.89 },
+      { categoria: 'Aspirante administrativo/a', base: 1033.8, plus: 103.38, mes: 1137.18 },
+      { categoria: 'Analista de sistemas', base: 2389.44, plus: 238.94, mes: 2628.38 },
+      { categoria: 'Programador/a', base: 1424.49, plus: 142.46, mes: 1566.95 },
+      { categoria: 'Operador/a', base: 1206.27, plus: 120.62, mes: 1326.89 },
+      { categoria: 'Telefonista', base: 1217.71, plus: 121.74, mes: 1339.45 },
+      { categoria: 'Ordenanza', base: 1206.27, plus: 120.62, mes: 1326.89 },
+      { categoria: 'Personal de limpieza', base: 1042.22, plus: 104.22, mes: 1146.44 },
+      { categoria: 'Persona trabajadora en formación', base: 1033.8, plus: 103.38, mes: 1137.18 },
+    ],
+    notas: [
+      'El salario se reparte en 14 pagas: el propio convenio calcula el precio de la hora dividiendo el salario base más el plus de convenio y la antigüedad por 14 entre la jornada anual.',
+      'Antigüedad: un 3 % del salario base al cumplir tres años de permanencia, un 1 % más por cada año a partir del cuarto y un 20 % a los veinte años o más de servicio ininterrumpido. Se abona en el recibo de cada mes.',
+      'Las tablas están pactadas año a año hasta 2030, así que la subida no depende de una negociación futura: el importe de 2026 ya está publicado en el DOGV. Si tu salario base no se movió el 1 de enero, hay algo que revisar.',
+      'Dietas desde el 1 de julio de 2025: 14,24 € la comida, 14,24 € la cena y 19,38 € la pernocta con desayuno (47,86 € los tres conceptos). Se actualizan cada 1 de enero con el IPC nacional del año anterior, con un tope del 2 %.',
+      'Plus de localización: 37,45 € por dispositivo de 24 horas y 20,81 € por dispositivo de 12 horas, también actualizables por IPC con tope del 2 %.',
+      'La jornada ordinaria es de 40 horas semanales y 1.800 horas anuales. Las horas complementarias y especiales del personal de movimiento son voluntarias y se pagan con la fórmula del convenio, no como horas extra.',
+    ],
+    faq: [
+      {
+        p: '¿Cuánto cobra un técnico de ambulancia (TES) en la Comunitat Valenciana?',
+        r: 'Según la tabla de 2026 del convenio, un TES-conductor/a tiene 1.381,60 € de salario base más 180,87 € de plus de convenio: 1.562,47 € al mes en 14 pagas. Un TES-ayudante conductor/a cobra 1.299,96 € y un TES-camillero/a 1.230,88 €. A eso se suman antigüedad, dietas y los pluses que correspondan.',
+      },
+      {
+        p: '¿Hasta cuándo dura el convenio de ambulancias de la Comunitat Valenciana?',
+        r: 'Sus efectos se extienden hasta el 31 de diciembre de 2030, y el anexo del DOGV publica una tabla salarial para cada año de 2024 a 2030. Es el convenio del sector con las subidas más aseguradas.',
+      },
+      {
+        p: '¿Qué es el plus de convenio y por qué hay que sumarlo?',
+        r: 'Es un complemento fijo que el convenio reconoce a cada categoría además del salario base. Comparar solo la línea de «salario base» de tu nómina con la tabla da una lectura falsa: lo que hay que comparar es la suma de los conceptos fijos.',
+      },
+    ],
+  },
 ];
 
+const {
+  CONVENIOS_FICHA,
+  SECTOR_TRANSPORTE_SANITARIO,
+} = require('./conveniosTransporteSanitario');
+
+// Un unico buscador para las dos familias: las paginas React y el prerender resuelven
+// el slug sin tener que saber si ese convenio publica importes o es ficha informativa.
+// Las fichas se distinguen por que NO traen `filas`.
 function getConvenio(slug) {
-  return CONVENIOS_PUBLICOS.find((c) => c.slug === slug) || null;
+  return (
+    CONVENIOS_PUBLICOS.find((c) => c.slug === slug) ||
+    CONVENIOS_FICHA.find((c) => c.slug === slug) ||
+    null
+  );
+}
+
+function esFicha(c) {
+  return !!c && !Array.isArray(c.filas);
 }
 
 // A mano y no con toLocaleString: en es-ES el ICU no agrupa los numeros de cuatro
@@ -179,4 +268,11 @@ const eur = (n) => {
   return entera.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + decimal + ' €';
 };
 
-module.exports = { CONVENIOS_PUBLICOS, getConvenio, eur };
+module.exports = {
+  CONVENIOS_PUBLICOS,
+  CONVENIOS_FICHA,
+  SECTOR_TRANSPORTE_SANITARIO,
+  getConvenio,
+  esFicha,
+  eur,
+};

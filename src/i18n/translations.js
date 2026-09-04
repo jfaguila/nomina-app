@@ -165,7 +165,8 @@ export const translations = {
       hosteleria: 'Hostelería',
       comercio: 'Comercio',
       construccion: 'Construcción',
-      transporte_sanitario_andalucia: 'Transporte Sanitario Andalucía'
+      transporte_sanitario_andalucia: 'Transporte Sanitario Andalucía',
+      transporte_sanitario_valenciana: 'Transporte Sanitario Comunitat Valenciana'
     },
 
     // Categories
@@ -363,7 +364,8 @@ export const translations = {
       hosteleria: 'Hospitality',
       comercio: 'Commerce',
       construccion: 'Construction',
-      transporte_sanitario_andalucia: 'Health Transport Andalusia'
+      transporte_sanitario_andalucia: 'Health Transport Andalusia',
+      transporte_sanitario_valenciana: 'Health Transport Valencian Community'
     },
 
     // Categories

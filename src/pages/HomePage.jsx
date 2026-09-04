@@ -47,6 +47,37 @@ const CATEGORIAS_POR_CONVENIO = {
     bricomart: GA_CATS,
     makro: GA_CATS,
     decathlon: GA_CATS,
+    // Tabla 2026 (DOGV n.º 10196) — 28 categorías del convenio valenciano de ambulancias
+    transporte_sanitario_valenciana: [
+        { value: 'tes_conductor', label: 'TES-conductor/a' },
+        { value: 'tes_ayudante_camillero', label: 'TES-ayudante conductor/a' },
+        { value: 'tes_camillero', label: 'TES-camillero/a' },
+        { value: 'jefe_equipo', label: 'Jefe/a de equipo' },
+        { value: 'jefe_trafico', label: 'Jefe/a de tráfico' },
+        { value: 'jefe_taller', label: 'Jefe/a de taller' },
+        { value: 'mecanico', label: 'Mecánico/a' },
+        { value: 'ayudante_mecanico', label: 'Ayudante mecánico/a' },
+        { value: 'chapista', label: 'Chapista' },
+        { value: 'pintor', label: 'Pintor/a' },
+        { value: 'medico', label: 'Médico/a' },
+        { value: 'ats_due', label: 'DUE Enfermería' },
+        { value: 'tecnico_superior', label: 'Técnico/a superior' },
+        { value: 'tecnico_medio', label: 'Técnico/a medio' },
+        { value: 'diplomado', label: 'Diplomado/a' },
+        { value: 'jefe_admin', label: 'Jefe/a administrativo/a' },
+        { value: 'oficial_admin', label: 'Oficial/a 1.ª administrativo/a' },
+        { value: 'auxiliar_admin', label: 'Auxiliar administrativo/a' },
+        { value: 'aspirante_admin', label: 'Aspirante administrativo/a' },
+        { value: 'analista_sistemas', label: 'Analista de sistemas' },
+        { value: 'programador', label: 'Programador/a' },
+        { value: 'operador', label: 'Operador/a' },
+        { value: 'telefonista', label: 'Telefonista' },
+        { value: 'ordenanza', label: 'Ordenanza' },
+        { value: 'personal_limpieza', label: 'Personal de limpieza' },
+        { value: 'trabajador_formacion', label: 'Persona trabajadora en formación' },
+        { value: 'director_area', label: 'Director/a de área' },
+        { value: 'director', label: 'Director/a' },
+    ],
     // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
     transporte_sanitario_andalucia: [
         { value: 'tes_conductor', label: 'TES Conductor/a' },
@@ -467,6 +498,7 @@ const HomePage = () => {
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
                                                     <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
+                                                    <option value="transporte_sanitario_valenciana">Transporte Sanitario Comunitat Valenciana (tabla 2026)</option>
                                                     <option value="mercadona">Mercadona</option>
                                                     <option value="leroy_merlin">Leroy Merlin</option>
                                                     <option value="el_corte_ingles">El Corte Inglés</option>
