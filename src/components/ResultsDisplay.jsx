@@ -90,8 +90,15 @@ const ResultsDisplay = ({ results, usos = 0 }) => {
                                 👋 Ya has verificado {usos} nóminas con NominIA. ¿Hacemos que te salga a cuenta?
                             </div>
                         )}
+                        {/* La magnitud del hallazgo ANTES de pedir el pago. nDiferencias y
+                            conceptos ya vienen en la respuesta capada del backend
+                            (services/acceso.js → capar), sin importes. */}
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            {isValid ? 'Ve el desglose completo de tu nómina' : 'Desbloquea cuánto dinero te deben'}
+                            {isValid
+                                ? 'Ve el desglose completo de tu nómina'
+                                : (nDiferencias > 0
+                                    ? `Diferencias en ${nDiferencias} ${nDiferencias === 1 ? 'concepto' : 'conceptos'} de tu nómina`
+                                    : 'Desbloquea cuánto dinero te deben')}
                         </h3>
                         {conceptos.length > 0 && (
                             <div className="mt-4 flex flex-wrap gap-2 justify-center">
@@ -107,7 +114,7 @@ const ResultsDisplay = ({ results, usos = 0 }) => {
                             en cada uno, la tabla comparativa frente a tu convenio y el informe con la cita del boletín oficial para reclamarlo.
                         </p>
                         <Link to="/precios" className="inline-flex items-center gap-2 mt-6 px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 transition-all">
-                            🔓 Ver el desglose — desde 4,99€/mes
+                            {isValid ? 'Ver el desglose — 4,99 €' : 'Ver cuánto me deben — 4,99 €'}
                         </Link>
                         <p className="text-xs text-gray-400 mt-3">Sin permanencia · Cancela cuando quieras</p>
                     </div>

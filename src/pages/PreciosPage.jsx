@@ -6,6 +6,7 @@ import useSeo from '../hooks/useSeo';
 import { schemaPrecios } from '../data/seoSchema';
 import { getEmail, tienePlan } from '../lib/acceso';
 import SiteFooter from '../components/SiteFooter';
+import { FAQ_PRECIOS } from '../data/faqPrecios';
 
 const getApiUrl =() => process.env.REACT_APP_API_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5987' : 'https://nomina-backend-production-57d2.up.railway.app');
 
@@ -125,6 +126,23 @@ export default function PreciosPage() {
           ¿Quieres ver primero contra qué se compara tu nómina? Consulta las{' '}
           <Link to="/convenios" className="text-blue-600 hover:underline">tablas salariales por convenio</Link> con su fuente oficial.
         </p>
+
+        {/* Las objeciones que frenan el pago, respondidas antes del boton. Mismo
+            contenido que el FAQPage del JSON-LD y que el HTML del prerender. */}
+        <section aria-labelledby="faq-precios" className="mt-16 max-w-3xl mx-auto text-left">
+          <h2 id="faq-precios" className="text-2xl font-bold tracking-tight mb-6 text-center">Preguntas frecuentes</h2>
+          <div className="divide-y divide-gray-200 dark:divide-gray-800 rounded-3xl border border-gray-200 dark:border-gray-800">
+            {FAQ_PRECIOS.map((f) => (
+              <details key={f.p} className="group px-6 py-4">
+                <summary className="cursor-pointer list-none font-semibold flex items-center justify-between gap-4">
+                  <span>{f.p}</span>
+                  <span aria-hidden="true" className="text-blue-600 transition-transform group-open:rotate-45 text-xl leading-none">+</span>
+                </summary>
+                <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{f.r}</p>
+              </details>
+            ))}
+          </div>
+        </section>
       </section>
       <SiteFooter />
     </div>

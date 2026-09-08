@@ -18,6 +18,7 @@ const {
   eur,
 } = require('../src/data/conveniosPublicos');
 const { enlacePortada } = require('../src/data/conveniosSeleccionables');
+const { FAQ_PRECIOS } = require('../src/data/faqPrecios');
 const {
   schemaHome,
   schemaPrecios,
@@ -298,8 +299,14 @@ const ROUTES = [
     // Mismo texto que el <h1> de src/pages/PreciosPage.jsx.
     h1: 'Precios de NominIA: gratis, 4,99 €/mes o 39 €/mes para asesorías',
     jsonLd: schemaPrecios(),
-    body:
-      'Empieza gratis: el veredicto de si te pagan bien no cuesta nada y no requiere registro. El plan Trabajador (4,99 €/mes) añade el desglose exacto línea por línea, el importe que te deben y el informe PDF para reclamar. El plan Asesoría / Gestoría (39 €/mes) da desgloses ilimitados de tus clientes e informes con tu marca. Sin permanencia.',
+    // Las mismas 5 preguntas que la pagina React y que el FAQPage del JSON-LD.
+    bodyHtml:
+      '<p style="font-size:18px;color:#334155;">Empieza gratis: el veredicto de si te pagan bien no cuesta nada y no requiere registro. El plan Trabajador (4,99 €/mes) añade el desglose exacto línea por línea, el importe que te deben y el informe PDF para reclamar. El plan Asesoría / Gestoría (39 €/mes) da desgloses ilimitados de tus clientes e informes con tu marca. Sin permanencia.</p>' +
+      '<h2 style="font-size:22px;">Preguntas frecuentes</h2>' +
+      FAQ_PRECIOS.map(
+        (f) =>
+          `<h3 style="font-size:17px;margin-bottom:4px;">${f.p}</h3><p style="font-size:15px;color:#334155;margin-top:0;">${f.r}</p>`
+      ).join(''),
     cta: 'Ver planes',
   },
   {

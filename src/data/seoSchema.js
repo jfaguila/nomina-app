@@ -10,6 +10,7 @@
  * unico <script type="application/ld+json" id="seo-jsonld">.
  */
 const BASE = 'https://nominia.app';
+const { FAQ_PRECIOS } = require('./faqPrecios');
 
 // Perfiles sociales conectados el 2-sep-2026 (Facebook page 1258238120710732,
 // LinkedIn org 146242934). Se enlazan por id numerico y no por el nombre de la
@@ -111,6 +112,8 @@ function schemaHome() {
 function schemaPrecios() {
   return [
     Object.assign({}, WEB_APPLICATION, { url: `${BASE}/precios`, offers: PLANES.map(offer) }),
+    // Las mismas 5 preguntas que se leen en la pagina (src/data/faqPrecios.js).
+    faqPage(FAQ_PRECIOS),
     breadcrumb([INICIO, { name: 'Precios', path: '/precios' }]),
     ORGANIZATION,
   ];
