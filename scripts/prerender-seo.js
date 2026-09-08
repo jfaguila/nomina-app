@@ -15,6 +15,8 @@ const {
   CONVENIOS_PUBLICOS,
   CONVENIOS_FICHA,
   SECTOR_TRANSPORTE_SANITARIO: SECTOR,
+  SECTOR_HOSTELERIA: HOST,
+  sectorDe,
   eur,
 } = require('../src/data/conveniosPublicos');
 const { enlacePortada } = require('../src/data/conveniosSeleccionables');
@@ -25,6 +27,7 @@ const {
   schemaConvenios,
   schemaConvenio,
   schemaTransporteSanitario,
+  schemaHosteleria,
   schemaPagina,
   FACEBOOK_URL,
   LINKEDIN_URL,
@@ -171,26 +174,76 @@ function notasYFaqHtml(c, ficha) {
 }
 
 const esTS = (c) => c.slug.startsWith('transporte-sanitario-');
+const esHost = (c) => c.slug.startsWith('hosteleria-');
 const TS_TODOS = [...CONVENIOS_PUBLICOS.filter(esTS), ...CONVENIOS_FICHA.filter(esTS)];
+const HOST_TODOS = [...CONVENIOS_PUBLICOS.filter(esHost), ...CONVENIOS_FICHA.filter(esHost)];
+
+const TEXTOS_SECTOR = {
+  'transporte-sanitario': {
+    hermanos: 'Convenios de ambulancias de otras comunidades',
+    indice: 'Índice completo de convenios de transporte sanitario y ambulancias',
+  },
+  hosteleria: {
+    hermanos: 'Convenios de hostelería de otras provincias',
+    indice: 'Índice de convenios de hostelería por provincia',
+  },
+};
 
 // Enlaces internos en el HTML sin JS: sin esto, un rastreador que no ejecuta React
-// entra a una pagina de convenio y no encuentra camino a las otras 19.
+// entra a una pagina de convenio y no encuentra camino a las otras del sector.
 function enlacesHermanosHtml(c) {
-  const sector = esTS(c);
+  const sector = sectorDe(c.slug);
   const hermanos = sector
-    ? TS_TODOS.filter((o) => o.slug !== c.slug)
-    : CONVENIOS_PUBLICOS.filter((o) => o.slug !== c.slug);
+    ? [...CONVENIOS_PUBLICOS, ...CONVENIOS_FICHA].filter((o) => sectorDe(o.slug) === sector && o.slug !== c.slug)
+    : CONVENIOS_PUBLICOS.filter((o) => !sectorDe(o.slug) && o.slug !== c.slug);
+  const textos = sector ? TEXTOS_SECTOR[sector.slug] : null;
   return (
-    `<h2 style="font-size:20px;">${
-      sector ? 'Convenios de ambulancias de otras comunidades' : 'Otros convenios'
-    }</h2>` +
+    `<h2 style="font-size:20px;">${sector ? textos.hermanos : 'Otros convenios'}</h2>` +
     `<ul style="font-size:15px;color:#334155;">` +
     hermanos.map((o) => `<li><a href="${BASE}/convenio/${o.slug}">${o.titulo}</a></li>`).join('') +
     `</ul>` +
     (sector
-      ? `<p style="font-size:15px;"><a href="${BASE}/convenios/transporte-sanitario">Índice completo de convenios de transporte sanitario y ambulancias</a> · <a href="${BASE}/convenios">Todas las tablas salariales</a></p>`
+      ? `<p style="font-size:15px;"><a href="${BASE}${sector.path}">${textos.indice}</a> · <a href="${BASE}/convenios">Todas las tablas salariales</a></p>`
       : `<p style="font-size:15px;"><a href="${BASE}/convenios">Todas las tablas salariales</a></p>`)
   );
+}
+
+// Hub de un sector en HTML sin JS: mismo contenido que la pagina React del hub.
+function hubSectorHtml(S, conTabla, fichas, txtTabla, txtFicha) {
+  let html = S.parrafos.map((p) => `<p style="font-size:18px;color:#334155;">${p}</p>`).join('');
+  if (conTabla.length) {
+    html +=
+      `<h2 style="font-size:22px;">${txtTabla}</h2>` +
+      '<ul style="font-size:16px;color:#334155;">' +
+      conTabla
+        .map(
+          (c) =>
+            `<li><a href="${BASE}/convenio/${c.slug}">${c.titulo}</a> — desde ${eur(
+              Math.min(...c.filas.map((f) => f.mes))
+            )} al mes, ${c.pagas} pagas, tabla ${c.tablaAplicada}.</li>`
+        )
+        .join('') +
+      '</ul>';
+  }
+  if (fichas.length) {
+    html +=
+      `<h2 style="font-size:22px;">${txtFicha}</h2>` +
+      '<ul style="font-size:16px;color:#334155;">' +
+      fichas
+        .map((c) => `<li><a href="${BASE}/convenio/${c.slug}">${c.titulo}</a> — ${c.ambito} · ${c.vigencia}.</li>`)
+        .join('') +
+      '</ul>';
+  }
+  html +=
+    `<p style="font-size:15px;color:#64748b;">${S.sinFicha}</p>` +
+    '<h2 style="font-size:22px;">Preguntas frecuentes</h2>' +
+    S.faq
+      .map(
+        (f) =>
+          `<h3 style="font-size:17px;margin-bottom:4px;">${f.p}</h3><p style="font-size:15px;color:#334155;margin-top:0;">${f.r}</p>`
+      )
+      .join('');
+  return html;
 }
 
 const RUTAS_CONVENIO = [
@@ -239,7 +292,31 @@ const ROUTES = [
         .map((c) => `<li><a href="${BASE}/convenio/${c.slug}">${c.nombre}</a></li>`)
         .join('') +
       '</ul>' +
-      `<p style="font-size:16px;"><a href="${BASE}/convenios/transporte-sanitario">Ver el índice completo de convenios de transporte sanitario y ambulancias</a></p>`,
+      `<p style="font-size:16px;"><a href="${BASE}/convenios/transporte-sanitario">Ver el índice completo de convenios de transporte sanitario y ambulancias</a></p>` +
+      '<h2 style="font-size:22px;">Hostelería por provincias</h2>' +
+      '<p style="font-size:16px;color:#334155;">El sector con más trabajadores no tiene tabla estatal: el ALEH fija la estructura y cada provincia negocia sus importes en su boletín. Publicamos la tabla solo cuando la hemos leído en el boletín oficial; del resto, una ficha que dice qué falta.</p>' +
+      '<ul style="font-size:16px;color:#334155;">' +
+      HOST_TODOS.map((c) => `<li><a href="${BASE}/convenio/${c.slug}">${c.nombre}</a></li>`).join('') +
+      '</ul>' +
+      `<p style="font-size:16px;"><a href="${BASE}/convenios/hosteleria">Ver el índice de convenios de hostelería por provincia</a></p>`,
+    cta: 'Comprobar mi nómina gratis',
+    ctaHref: `${BASE}/`,
+    align: 'left',
+    ancho: 900,
+  },
+  {
+    dir: 'convenios/hosteleria',
+    title: HOST.metaTitle,
+    description: HOST.metaDescription,
+    h1: HOST.h1,
+    jsonLd: schemaHosteleria(HOST_TODOS, HOST.faq),
+    bodyHtml: hubSectorHtml(
+      HOST,
+      CONVENIOS_PUBLICOS.filter(esHost),
+      CONVENIOS_FICHA.filter(esHost),
+      'Provincias con tabla salarial publicada',
+      'Provincias con ficha informativa'
+    ),
     cta: 'Comprobar mi nómina gratis',
     ctaHref: `${BASE}/`,
     align: 'left',
@@ -491,7 +568,7 @@ console.log('prerender-seo: build/index.html (JSON-LD de la portada)');
  */
 const HOY = new Date().toISOString().slice(0, 10);
 const prioridad = (dir) => {
-  if (dir === 'convenios' || dir === 'convenios/transporte-sanitario') return '0.9';
+  if (dir === 'convenios' || dir === 'convenios/transporte-sanitario' || dir === 'convenios/hosteleria') return '0.9';
   if (dir.startsWith('convenio/')) return '0.8';
   if (dir === 'precios') return '0.8';
   return '0.3';

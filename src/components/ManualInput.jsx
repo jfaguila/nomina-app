@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { CATEGORIAS_HOSTELERIA } from '../data/conveniosHosteleria';
 
 // Las claves tienen que ser EXACTAMENTE las de backend/data/convenios.json.
 // Si aquí falta un convenio que sí ofrece la portada, el <select> no encuentra su
@@ -16,6 +17,8 @@ const CONVENIOS = [
     { value: 'transporte_sanitario_andalucia', label: 'Transporte Sanitario Andalucía' },
     { value: 'transporte_sanitario_valenciana', label: 'Transporte Sanitario Comunitat Valenciana (2026)' },
     { value: 'transporte_sanitario_murcia', label: 'Transporte Sanitario Región de Murcia (2026)' },
+    { value: 'hosteleria_madrid', label: 'Hostelería Madrid · bares y restaurantes (tabla 2025)' },
+    { value: 'hosteleria_barcelona', label: 'Hostelería Barcelona · convenio de Cataluña (tabla 2026)' },
     { value: 'mercadona', label: 'Mercadona (2024-2028)' },
     { value: 'grandes_almacenes', label: 'Grandes Almacenes' },
     { value: 'leroy_merlin', label: 'Leroy Merlin (Grandes Almacenes)' },
@@ -44,6 +47,8 @@ const CATS_GENERICAS = [
 ];
 
 const CATEGORIAS_POR_CONVENIO = {
+    // Hosteleria por provincias: misma matriz que la pagina publicada del convenio.
+    ...CATEGORIAS_HOSTELERIA,
     transporte_sanitario_valenciana: [
         { value: 'tes_conductor', label: 'TES-conductor/a' },
         { value: 'tes_ayudante_camillero', label: 'TES-ayudante conductor/a' },

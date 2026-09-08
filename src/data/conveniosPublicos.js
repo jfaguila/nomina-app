@@ -310,9 +310,19 @@ const CONVENIOS_PUBLICOS = [
 ];
 
 const {
-  CONVENIOS_FICHA,
+  CONVENIOS_FICHA: FICHAS_TRANSPORTE_SANITARIO,
   SECTOR_TRANSPORTE_SANITARIO,
 } = require('./conveniosTransporteSanitario');
+const {
+  HOSTELERIA_CON_TABLA,
+  HOSTELERIA_FICHAS,
+  SECTOR_HOSTELERIA,
+} = require('./conveniosHosteleria');
+
+// Hosteleria entra en las mismas dos familias (tabla comparable / ficha) y pasa por
+// las mismas guardas de check-convenios que el resto.
+HOSTELERIA_CON_TABLA.forEach((c) => CONVENIOS_PUBLICOS.push(c));
+const CONVENIOS_FICHA = [...FICHAS_TRANSPORTE_SANITARIO, ...HOSTELERIA_FICHAS];
 
 // Un unico buscador para las dos familias: las paginas React y el prerender resuelven
 // el slug sin tener que saber si ese convenio publica importes o es ficha informativa.
@@ -323,6 +333,15 @@ function getConvenio(slug) {
     CONVENIOS_FICHA.find((c) => c.slug === slug) ||
     null
   );
+}
+
+// Sector al que pertenece un convenio, por el prefijo del slug. Las paginas usan esto
+// para la miga, los enlaces entre hermanos y el hub al que vuelven.
+function sectorDe(slug) {
+  if (typeof slug !== 'string') return null;
+  if (slug.startsWith('transporte-sanitario-')) return SECTOR_TRANSPORTE_SANITARIO;
+  if (slug.startsWith('hosteleria-')) return SECTOR_HOSTELERIA;
+  return null;
 }
 
 function esFicha(c) {
@@ -341,7 +360,9 @@ module.exports = {
   CONVENIOS_PUBLICOS,
   CONVENIOS_FICHA,
   SECTOR_TRANSPORTE_SANITARIO,
+  SECTOR_HOSTELERIA,
   getConvenio,
   esFicha,
+  sectorDe,
   eur,
 };

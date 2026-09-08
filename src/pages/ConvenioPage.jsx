@@ -2,12 +2,24 @@ import React from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
-import { getConvenio, esFicha, CONVENIOS_PUBLICOS, CONVENIOS_FICHA, eur } from '../data/conveniosPublicos';
+import { getConvenio, esFicha, sectorDe, CONVENIOS_PUBLICOS, CONVENIOS_FICHA, eur } from '../data/conveniosPublicos';
 import { enlacePortada } from '../data/conveniosSeleccionables';
 import { schemaConvenio, schemaConvenios } from '../data/seoSchema';
 import SiteFooter from '../components/SiteFooter';
 
-const esTS = (s) => typeof s === 'string' && s.startsWith('transporte-sanitario-');
+// Nombre corto del sector para la miga y los titulos de "hermanos".
+const NOMBRE_SECTOR = {
+  'transporte-sanitario': {
+    miga: 'Transporte sanitario',
+    hermanos: 'Convenios de ambulancias de otras comunidades',
+    indice: 'convenios de transporte sanitario y ambulancias',
+  },
+  hosteleria: {
+    miga: 'Hostelería',
+    hermanos: 'Convenios de hostelería de otras provincias',
+    indice: 'convenios de hostelería por provincia',
+  },
+};
 
 export default function ConvenioPage() {
   const { slug } = useParams();
@@ -25,12 +37,16 @@ export default function ConvenioPage() {
   if (!convenio) return <Navigate to="/convenios" replace />;
 
   const ficha = esFicha(convenio);
-  const sector = esTS(convenio.slug);
-  // Los 20 convenios de ambulancias se enlazan entre ellos: es un sector, y quien busca
-  // el de su comunidad suele acabar comparandolo con el de al lado.
+  // Los convenios de un mismo sector (ambulancias por comunidad, hosteleria por
+  // provincia) se enlazan entre ellos: quien busca el suyo suele acabar comparandolo
+  // con el de al lado.
+  const sector = sectorDe(convenio.slug);
+  const textos = sector ? NOMBRE_SECTOR[sector.slug] : null;
   const hermanos = sector
-    ? [...CONVENIOS_PUBLICOS, ...CONVENIOS_FICHA].filter((c) => esTS(c.slug) && c.slug !== convenio.slug)
-    : CONVENIOS_PUBLICOS.filter((c) => c.slug !== convenio.slug);
+    ? [...CONVENIOS_PUBLICOS, ...CONVENIOS_FICHA].filter(
+        (c) => sectorDe(c.slug) === sector && c.slug !== convenio.slug
+      )
+    : CONVENIOS_PUBLICOS.filter((c) => !sectorDe(c.slug) && c.slug !== convenio.slug);
   const otros = hermanos;
   // El lector de la tabla de Mercadona llega a la portada con Mercadona ya elegido,
   // no con el convenio por defecto. Las fichas sin tabla no tienen convenioId y van
@@ -61,7 +77,7 @@ export default function ConvenioPage() {
           {' › '}
           {sector && (
             <>
-              <Link to="/convenios/transporte-sanitario" className="hover:text-blue-600">Transporte sanitario</Link>
+              <Link to={sector.path} className="hover:text-blue-600">{textos.miga}</Link>
               {' › '}
             </>
           )}
@@ -289,7 +305,7 @@ export default function ConvenioPage() {
         </div>
 
         <h2 className="text-xl font-bold mt-12 mb-3">
-          {sector ? 'Convenios de ambulancias de otras comunidades' : 'Otros convenios'}
+          {sector ? textos.hermanos : 'Otros convenios'}
         </h2>
         <ul className="space-y-2">
           {otros.map((c) => (
@@ -301,8 +317,8 @@ export default function ConvenioPage() {
         {sector && (
           <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
             Índice completo del sector en{' '}
-            <Link to="/convenios/transporte-sanitario" className="text-blue-600 hover:underline">
-              convenios de transporte sanitario y ambulancias
+            <Link to={sector.path} className="text-blue-600 hover:underline">
+              {textos.indice}
             </Link>.
           </p>
         )}

@@ -1053,7 +1053,7 @@
       "jefe_taller": 1722.59,
       "telefonista": 1568.53,
       "medico": 2585.45,
-      "ats": 2067.0,
+      "ats": 2067,
       "director_area": 2408.31,
       "director": 2605.39
     },
@@ -1136,7 +1136,7 @@
       "ats": {
         "salarioBase": 1925.65,
         "plusConvenio": 141.35,
-        "total": 2067.0
+        "total": 2067
       },
       "director_area": {
         "salarioBase": 2235.9,
@@ -1188,5 +1188,385 @@
     },
     "estructuraBaseMasPlus": true,
     "categoriaPorDefecto": "tes_conductor"
+  },
+  "hosteleria_madrid": {
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    },
+    "nombre": "Convenio Colectivo del Sector de Hostelería y Actividades Turísticas de la Comunidad de Madrid (2023-2025, en ultraactividad)",
+    "codigoConvenio": "28002085011981",
+    "publicacion": "BOCM n.º 82 - 06/04/2024",
+    "vigencia": {
+      "inicio": "2023-01-01",
+      "fin": "2025-12-31",
+      "ultraactividad": true,
+      "tablaAplicada": "2025"
+    },
+    "dietaMaxDiaria": 57.82,
+    "plusConvenio": {
+      "importe": 191.22,
+      "meses": 11,
+      "descripcion": "Plus convenio (art. 29), 191,22 EUR/mes en 2025, once meses al ano"
+    },
+    "manutencion": {
+      "importe": 57.82,
+      "descripcion": "Manutencion (art. 28), 57,82 EUR/mes en 2025, en especie o en metalico"
+    },
+    "descripcion": "Convenio de restauracion de la Comunidad de Madrid (bares, restaurantes, cafeterias, discotecas, catering). Salario base mensual por nivel y clase de establecimiento, tabla 2025 (Anexo I.C.c), ultima publicada; denunciado el 02/10/2025 y en ultraactividad.",
+    "ambito": "Comunidad de Madrid (restauracion)",
+    "salarioMinimo": {
+      "n1_a": 1415.47,
+      "n1_b": 1366.11,
+      "n1_c": 1250.91,
+      "n2a_a": 1316.72,
+      "n2a_b": 1292.05,
+      "n2a_c": 1217.99,
+      "n2b_a": 1300.28,
+      "n2b_b": 1267.33,
+      "n2b_c": 1201.51,
+      "n3_a": 1283.83,
+      "n3_b": 1250.91,
+      "n3_c": 1160.37,
+      "n4_a": 1217.99,
+      "n4_b": 1185.05,
+      "n4_c": 1127.42,
+      "n5_a": 1152.15,
+      "n5_b": 1119.22,
+      "n5_c": 1086.31,
+      "n1_d": 1459.95,
+      "n2a_d": 1409.21,
+      "n2b_d": 1356.77,
+      "n2c_d": 1307.48,
+      "n3a_d": 1277.36,
+      "n3b_d": 1225.38,
+      "n4_d": 1196.74,
+      "n5_d": 1175.66
+    },
+    "detallesSalariales": {
+      "n1_a": {
+        "salarioBase": 1415.47,
+        "anual": 19816.58
+      },
+      "n1_b": {
+        "salarioBase": 1366.11,
+        "anual": 19125.54
+      },
+      "n1_c": {
+        "salarioBase": 1250.91,
+        "anual": 17512.74
+      },
+      "n2a_a": {
+        "salarioBase": 1316.72,
+        "anual": 18434.08
+      },
+      "n2a_b": {
+        "salarioBase": 1292.05,
+        "anual": 18088.7
+      },
+      "n2a_c": {
+        "salarioBase": 1217.99,
+        "anual": 17051.86
+      },
+      "n2b_a": {
+        "salarioBase": 1300.28,
+        "anual": 18203.92
+      },
+      "n2b_b": {
+        "salarioBase": 1267.33,
+        "anual": 17742.62
+      },
+      "n2b_c": {
+        "salarioBase": 1201.51,
+        "anual": 16821.14
+      },
+      "n3_a": {
+        "salarioBase": 1283.83,
+        "anual": 17973.62
+      },
+      "n3_b": {
+        "salarioBase": 1250.91,
+        "anual": 17512.74
+      },
+      "n3_c": {
+        "salarioBase": 1160.37,
+        "anual": 16245.18
+      },
+      "n4_a": {
+        "salarioBase": 1217.99,
+        "anual": 17051.86
+      },
+      "n4_b": {
+        "salarioBase": 1185.05,
+        "anual": 16590.7
+      },
+      "n4_c": {
+        "salarioBase": 1127.42,
+        "anual": 15783.88
+      },
+      "n5_a": {
+        "salarioBase": 1152.15,
+        "anual": 16130.1
+      },
+      "n5_b": {
+        "salarioBase": 1119.22,
+        "anual": 15669.08
+      },
+      "n5_c": {
+        "salarioBase": 1086.31,
+        "anual": 15208.34
+      },
+      "n1_d": {
+        "salarioBase": 1459.95,
+        "anual": 20439.3
+      },
+      "n2a_d": {
+        "salarioBase": 1409.21,
+        "anual": 19728.94
+      },
+      "n2b_d": {
+        "salarioBase": 1356.77,
+        "anual": 18994.78
+      },
+      "n2c_d": {
+        "salarioBase": 1307.48,
+        "anual": 18304.72
+      },
+      "n3a_d": {
+        "salarioBase": 1277.36,
+        "anual": 17883.04
+      },
+      "n3b_d": {
+        "salarioBase": 1225.38,
+        "anual": 17155.32
+      },
+      "n4_d": {
+        "salarioBase": 1196.74,
+        "anual": 16754.36
+      },
+      "n5_d": {
+        "salarioBase": 1175.66,
+        "anual": 16459.24
+      }
+    },
+    "pagas": 14,
+    "fuente": "BOCM n.º 82, de 6-abr-2024 (Resolución de 15-mar-2024, Dirección General de Trabajo). Código 28002085011981. Anexo I.C.c), tablas salariales de 2025, salarios base mensuales.",
+    "fuenteUrl": "https://www.bocm.es/boletin/CM_Orden_BOCM/2024/04/06/BOCM-20240406-2.PDF",
+    "categoriaPorDefecto": "n3_c",
+    "estructuraBaseMasPlus": false
+  },
+  "hosteleria_barcelona": {
+    "horasExtrasMaxMes": 80,
+    "incrementoHoraExtra": 1.75,
+    "vacaciones": 30,
+    "seguridadSocial": {
+      "contingenciasComunes": 4.7,
+      "desempleo": 1.55,
+      "formacionProfesional": 0.1
+    },
+    "nombre": "Conveni col·lectiu interprovincial del sector de la indústria d'hostaleria i turisme de Catalunya (2025-2028) - taula de Barcelona",
+    "codigoConvenio": "79000275011992",
+    "publicacion": "DOGC n.º 9630 - 23/03/2026",
+    "vigencia": {
+      "inicio": "2025-01-01",
+      "fin": "2028-12-31",
+      "ultraactividad": false,
+      "tablaAplicada": "2026"
+    },
+    "dietaMaxDiaria": 59.21,
+    "manutencion": {
+      "importe": 59.21,
+      "descripcion": "Manutencio (Annex II A.4), 59,21 EUR/mes en 2026"
+    },
+    "descripcion": "Convenio de hosteleria de Cataluna, tabla de Barcelona y Maresme (Annex II A.3), ano 2026. Salario base mensual por nivel y grupo de establecimiento. Subidas pactadas: 4% 2025, 4% 2026, 4% 2027, 3% 2028.",
+    "ambito": "Provincia de Barcelona y Maresme",
+    "salarioMinimo": {
+      "n1_a": 2121.29,
+      "n1_b": 1926.28,
+      "n1_c": 1864.51,
+      "n1_d": 1735.87,
+      "n1_e": 1926.28,
+      "n2_a": 1864.51,
+      "n2_b": 1802.82,
+      "n2_c": 1735.87,
+      "n2_d": 1669.28,
+      "n2_e": 1802.82,
+      "n3_a": 1803.05,
+      "n3_b": 1735.87,
+      "n3_c": 1705.13,
+      "n3_d": 1607.25,
+      "n3_e": 1736.39,
+      "n4_a": 1607.25,
+      "n4_b": 1607.25,
+      "n4_c": 1577.05,
+      "n4_d": 1577.05,
+      "n4_e": 1607.25,
+      "n5_a": 1577.05,
+      "n5_b": 1577.05,
+      "n5_c": 1541.14,
+      "n5_d": 1541.14,
+      "n5_e": 1577.05,
+      "n5bis_a": 1404.89,
+      "n5bis_b": 1404.89,
+      "n5bis_c": 1386.87,
+      "n5bis_d": 1386.87,
+      "n5bis_e": 1404.89,
+      "n6_a": 1232.72,
+      "n6_b": 1232.72,
+      "n6_c": 1232.72,
+      "n6_d": 1232.72,
+      "n6_e": 1232.72
+    },
+    "detallesSalariales": {
+      "n1_a": {
+        "salarioBase": 2121.29,
+        "anual": 29698.06
+      },
+      "n1_b": {
+        "salarioBase": 1926.28,
+        "anual": 26967.92
+      },
+      "n1_c": {
+        "salarioBase": 1864.51,
+        "anual": 26103.14
+      },
+      "n1_d": {
+        "salarioBase": 1735.87,
+        "anual": 24302.18
+      },
+      "n1_e": {
+        "salarioBase": 1926.28,
+        "anual": 26967.92
+      },
+      "n2_a": {
+        "salarioBase": 1864.51,
+        "anual": 26103.14
+      },
+      "n2_b": {
+        "salarioBase": 1802.82,
+        "anual": 25239.48
+      },
+      "n2_c": {
+        "salarioBase": 1735.87,
+        "anual": 24302.18
+      },
+      "n2_d": {
+        "salarioBase": 1669.28,
+        "anual": 23369.92
+      },
+      "n2_e": {
+        "salarioBase": 1802.82,
+        "anual": 25239.48
+      },
+      "n3_a": {
+        "salarioBase": 1803.05,
+        "anual": 25242.7
+      },
+      "n3_b": {
+        "salarioBase": 1735.87,
+        "anual": 24302.18
+      },
+      "n3_c": {
+        "salarioBase": 1705.13,
+        "anual": 23871.82
+      },
+      "n3_d": {
+        "salarioBase": 1607.25,
+        "anual": 22501.5
+      },
+      "n3_e": {
+        "salarioBase": 1736.39,
+        "anual": 24309.46
+      },
+      "n4_a": {
+        "salarioBase": 1607.25,
+        "anual": 22501.5
+      },
+      "n4_b": {
+        "salarioBase": 1607.25,
+        "anual": 22501.5
+      },
+      "n4_c": {
+        "salarioBase": 1577.05,
+        "anual": 22078.7
+      },
+      "n4_d": {
+        "salarioBase": 1577.05,
+        "anual": 22078.7
+      },
+      "n4_e": {
+        "salarioBase": 1607.25,
+        "anual": 22501.5
+      },
+      "n5_a": {
+        "salarioBase": 1577.05,
+        "anual": 22078.7
+      },
+      "n5_b": {
+        "salarioBase": 1577.05,
+        "anual": 22078.7
+      },
+      "n5_c": {
+        "salarioBase": 1541.14,
+        "anual": 21575.96
+      },
+      "n5_d": {
+        "salarioBase": 1541.14,
+        "anual": 21575.96
+      },
+      "n5_e": {
+        "salarioBase": 1577.05,
+        "anual": 22078.7
+      },
+      "n5bis_a": {
+        "salarioBase": 1404.89,
+        "anual": 19668.46
+      },
+      "n5bis_b": {
+        "salarioBase": 1404.89,
+        "anual": 19668.46
+      },
+      "n5bis_c": {
+        "salarioBase": 1386.87,
+        "anual": 19416.18
+      },
+      "n5bis_d": {
+        "salarioBase": 1386.87,
+        "anual": 19416.18
+      },
+      "n5bis_e": {
+        "salarioBase": 1404.89,
+        "anual": 19668.46
+      },
+      "n6_a": {
+        "salarioBase": 1232.72,
+        "anual": 17258.08
+      },
+      "n6_b": {
+        "salarioBase": 1232.72,
+        "anual": 17258.08
+      },
+      "n6_c": {
+        "salarioBase": 1232.72,
+        "anual": 17258.08
+      },
+      "n6_d": {
+        "salarioBase": 1232.72,
+        "anual": 17258.08
+      },
+      "n6_e": {
+        "salarioBase": 1232.72,
+        "anual": 17258.08
+      }
+    },
+    "pagas": 14,
+    "fuente": "DOGC n.º 9630, de 23-mar-2026 (Resolució EMT/774/2026, de 6 de març; CVE-DOGC-A-26075020-2026). Código 79000275011992. Annex II A.3, taula de salaris de Barcelona, any 2026.",
+    "fuenteUrl": "https://portaldogc.gencat.cat/utilsEADOP/PDF/9630/2141955.pdf",
+    "categoriaPorDefecto": "n3_b",
+    "estructuraBaseMasPlus": false
   }
 }

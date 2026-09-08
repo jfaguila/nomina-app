@@ -125,29 +125,35 @@ function schemaConvenios() {
 
 const CONVENIOS = { name: 'Convenios', path: '/convenios' };
 const SECTOR_TS = { name: 'Transporte sanitario', path: '/convenios/transporte-sanitario' };
+const SECTOR_HOST = { name: 'Hostelería', path: '/convenios/hosteleria' };
 
-// Las paginas de ambulancias cuelgan del hub de sector, no directamente de /convenios:
-// son 20 URLs hermanas y la miga tiene que decirle al buscador que forman un grupo.
-function esTransporteSanitario(c) {
-  return typeof c.slug === 'string' && c.slug.startsWith('transporte-sanitario-');
+// Las paginas de un sector (ambulancias, hosteleria) cuelgan del hub de sector, no
+// directamente de /convenios: son URLs hermanas y la miga tiene que decirle al
+// buscador que forman un grupo.
+function migaSector(c) {
+  if (typeof c.slug !== 'string') return null;
+  if (c.slug.startsWith('transporte-sanitario-')) return SECTOR_TS;
+  if (c.slug.startsWith('hosteleria-')) return SECTOR_HOST;
+  return null;
 }
 
 function schemaConvenio(c) {
-  const ruta = esTransporteSanitario(c)
-    ? [INICIO, CONVENIOS, SECTOR_TS, { name: c.nombre, path: `/convenio/${c.slug}` }]
+  const sector = migaSector(c);
+  const ruta = sector
+    ? [INICIO, CONVENIOS, sector, { name: c.nombre, path: `/convenio/${c.slug}` }]
     : [INICIO, CONVENIOS, { name: c.nombre, path: `/convenio/${c.slug}` }];
   return [faqPage(c.faq), breadcrumb(ruta), ORGANIZATION];
 }
 
-// Hub del sector: la miga y el listado de las paginas que agrupa.
-function schemaTransporteSanitario(convenios, faq) {
+// Hub de un sector: la miga y el listado de las paginas que agrupa.
+function schemaSector(miga, nombreLista, convenios, faq) {
   return [
     faqPage(faq || []),
-    breadcrumb([INICIO, CONVENIOS, SECTOR_TS]),
+    breadcrumb([INICIO, CONVENIOS, miga]),
     {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
-      name: 'Convenios de transporte sanitario y ambulancias en España',
+      name: nombreLista,
       itemListElement: convenios.map((c, i) => ({
         '@type': 'ListItem',
         position: i + 1,
@@ -157,6 +163,14 @@ function schemaTransporteSanitario(convenios, faq) {
     },
     ORGANIZATION,
   ];
+}
+
+function schemaTransporteSanitario(convenios, faq) {
+  return schemaSector(SECTOR_TS, 'Convenios de transporte sanitario y ambulancias en España', convenios, faq);
+}
+
+function schemaHosteleria(convenios, faq) {
+  return schemaSector(SECTOR_HOST, 'Convenios de hostelería en España por provincia', convenios, faq);
 }
 
 // Paginas legales: solo miga y organizacion.
@@ -173,5 +187,6 @@ module.exports = {
   schemaConvenios,
   schemaConvenio,
   schemaTransporteSanitario,
+  schemaHosteleria,
   schemaPagina,
 };

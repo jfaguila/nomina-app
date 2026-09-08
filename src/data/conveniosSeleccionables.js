@@ -13,6 +13,8 @@ const CONVENIOS_SELECCIONABLES = [
   'transporte_sanitario_andalucia',
   'transporte_sanitario_valenciana',
   'transporte_sanitario_murcia',
+  'hosteleria_madrid',
+  'hosteleria_barcelona',
   'mercadona',
   'grandes_almacenes',
   'leroy_merlin',

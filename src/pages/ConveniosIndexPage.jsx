@@ -66,6 +66,25 @@ export default function ConveniosIndexPage() {
           ))}
         </div>
 
+        <h2 className="text-2xl font-bold mb-3">Hostelería por provincias</h2>
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          El sector con más trabajadores no tiene tabla estatal: el ALEH fija la estructura y cada
+          provincia negocia sus importes en su boletín. Publicamos la tabla solo cuando la hemos
+          leído en el boletín oficial; del resto, una ficha que dice qué falta.
+        </p>
+        <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2 mb-4 text-sm">
+          {[...CONVENIOS_PUBLICOS, ...CONVENIOS_FICHA].filter((c) => c.slug.startsWith('hosteleria-')).map((c) => (
+            <li key={c.slug}>
+              <Link to={`/convenio/${c.slug}`} className="text-blue-600 hover:underline">{c.nombre}</Link>
+            </li>
+          ))}
+        </ul>
+        <p className="mb-14">
+          <Link to="/convenios/hosteleria" className="font-semibold text-blue-600 hover:underline">
+            Ver el índice de convenios de hostelería por provincia →
+          </Link>
+        </p>
+
         <h2 className="text-2xl font-bold mb-3">Transporte sanitario y ambulancias</h2>
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           Es el sector con más convenios distintos de España: uno por comunidad autónoma, porque el

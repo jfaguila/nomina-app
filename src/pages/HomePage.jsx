@@ -17,6 +17,7 @@ import { schemaHome } from '../data/seoSchema';
 import { cabecerasAcceso, tienePlan, setEmail as guardarEmail, guardarUltimoAnalisis, leerUltimoAnalisis, olvidarUltimoAnalisis } from '../lib/acceso';
 import SiteFooter from '../components/SiteFooter';
 import { esSeleccionable } from '../data/conveniosSeleccionables';
+import { CATEGORIAS_HOSTELERIA, CATEGORIA_DEFECTO_HOSTELERIA } from '../data/conveniosHosteleria';
 
 const CATEGORIAS_GENERICAS = [
     { value: 'empleado', label: 'Empleado' },
@@ -34,6 +35,9 @@ const GA_CATS = [
 ];
 
 const CATEGORIAS_POR_CONVENIO = {
+    // Hosteleria por provincias: nivel x clase de establecimiento, de la misma matriz
+    // que publica la pagina del convenio (src/data/conveniosHosteleria.js).
+    ...CATEGORIAS_HOSTELERIA,
     // Grupos del convenio propio de Mercadona (BOE-A-2024-3851, anexo 2)
     mercadona: [
         { value: 'gerente_a_menos3', label: 'Gerente A · Cajas/Reposición/Venta (menos de 3 años)' },
@@ -125,6 +129,12 @@ const CATEGORIAS_POR_CONVENIO = {
     ],
 };
 
+// Categoria con la que se abre el selector al elegir un convenio: la que el propio
+// convenio marca como mas comun si la tiene, y si no la primera de su lista.
+const categoriaInicial = (convenio) =>
+    CATEGORIA_DEFECTO_HOSTELERIA[convenio] ||
+    (CATEGORIAS_POR_CONVENIO[convenio] ? CATEGORIAS_POR_CONVENIO[convenio][0].value : 'empleado');
+
 const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Baleares','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','A Coruña','Cuenca','Girona','Granada','Guadalajara','Gipuzkoa','Huelva','Huesca','Jaén','León','Lleida','Lugo','Madrid','Málaga','Murcia','Navarra','Ourense','Palencia','Las Palmas','Pontevedra','La Rioja','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Bizkaia','Zamora','Zaragoza','Ceuta','Melilla'];
 
 const HomePage = () => {
@@ -169,7 +179,7 @@ const HomePage = () => {
         return {
             provincia: '',
             convenio,
-            categoria: CATEGORIAS_POR_CONVENIO[convenio][0].value
+            categoria: categoriaInicial(convenio)
         };
     });
 
@@ -574,14 +584,15 @@ const HomePage = () => {
                                                     value={uploadData.convenio}
                                                     onChange={(e) => {
                                                         const nuevo = e.target.value;
-                                                        const catPorDefecto = CATEGORIAS_POR_CONVENIO[nuevo] ? CATEGORIAS_POR_CONVENIO[nuevo][0].value : 'empleado';
-                                                        setUploadData({ ...uploadData, convenio: nuevo, categoria: catPorDefecto });
+                                                        setUploadData({ ...uploadData, convenio: nuevo, categoria: categoriaInicial(nuevo) });
                                                     }}
                                                     className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
                                                     <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
                                                     <option value="transporte_sanitario_valenciana">Transporte Sanitario Comunitat Valenciana (tabla 2026)</option>
                                                     <option value="transporte_sanitario_murcia">Transporte Sanitario Región de Murcia (tabla 2026)</option>
+                                                    <option value="hosteleria_madrid">Hostelería Madrid · bares y restaurantes (tabla 2025)</option>
+                                                    <option value="hosteleria_barcelona">Hostelería Barcelona · convenio de Cataluña (tabla 2026)</option>
                                                     <option value="mercadona">Mercadona</option>
                                                     <option value="grandes_almacenes">Grandes Almacenes (convenio estatal)</option>
                                                     <option value="leroy_merlin">Leroy Merlin</option>
