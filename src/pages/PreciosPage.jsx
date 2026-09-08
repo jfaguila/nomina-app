@@ -13,7 +13,7 @@ const PLANS = [
   {
     id: 'gratis', name: 'Gratis', price: '0', period: '',
     desc: 'Descubre si hay un problema', cta: 'Probar gratis', highlight: false, free: true,
-    features: ['Veredicto al instante: ¿te pagan bien o no?', 'En qué conceptos falla tu nómina', 'Detección automática del convenio', 'Nóminas ilimitadas al mes', 'Solo pedimos un correo para enviártelo'],
+    features: ['Veredicto al instante: ¿te pagan bien o no?', 'En qué conceptos falla tu nómina', 'Detección automática del convenio', 'Nóminas ilimitadas al mes', 'Sin registro: el veredicto se ve sin dejar el correo'],
   },
   {
     id: 'trabajador', name: 'Trabajador', price: '4,99', period: '/mes',

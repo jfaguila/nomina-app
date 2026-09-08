@@ -6,8 +6,8 @@ export const translations = {
       badge: 'Convenios oficiales · tablas vigentes',
       // Es el H1 de la portada (heroA + heroB): tiene que decir lo mismo que el
       // <h1> estatico de public/index.html.
-      heroA: '¿Te pagan lo que marca tu convenio?',
-      heroB: 'Compruébalo gratis.',
+      heroA: '¿Te deben dinero en la nómina?',
+      heroB: 'Compruébalo gratis en 10 segundos.',
       leadA: 'Sube tu nómina y en',
       leadB: '10 segundos',
       leadC: 'la comparamos con tu convenio colectivo. Si te pagan de menos, lo verás claro.',
@@ -20,8 +20,10 @@ export const translations = {
       step1: 'Sube tu archivo',
       step2: 'Configuración',
       province: 'Provincia / Región',
-      analyze: 'Analizar mi nómina gratis',
-      confidential: '🔒 Tu nómina es confidencial y no se guarda.',
+      analyze: 'Comprobar mi nómina gratis',
+      // El fichero se borra en el servidor al terminar la lectura y el analisis
+      // vive en sessionStorage del navegador del usuario (muere al cerrar la pestana).
+      confidential: 'Sin registro · Sin tarjeta · Tu nómina no se guarda.',
       moreInfo: 'Más info',
       navPricing: 'Precios',
       navHowTo: 'Instrucciones',
@@ -72,17 +74,19 @@ export const translations = {
     },
 
     lead: {
-      title: 'Tu resultado está listo',
-      leadA: 'Déjanos tu email y te mostramos el veredicto. Te avisaremos si detectamos diferencias',
+      // Paso OPCIONAL, debajo del veredicto. Antes era un muro delante del resultado
+      // mientras la portada prometia "sin registro".
+      title: '¿Quieres el informe por email?',
+      leadA: 'Es opcional: tu veredicto ya está arriba. Si nos dejas el correo te lo enviamos y te avisamos si detectamos diferencias',
       leadStrong: 'a tu favor',
       emailPlaceholder: 'tu@email.com',
       namePlaceholder: 'Tu nombre (opcional)',
       consentA: 'Acepto la',
       consentLink: 'política de privacidad',
       consentB: 'y que NominIA me envíe el resultado y comunicaciones sobre el servicio. Puedo darme de baja cuando quiera.',
-      submit: 'Ver mi resultado',
+      submit: 'Enviármelo',
       loading: 'Un momento…',
-      note: '🔒 Tu nómina no se guarda · sin spam',
+      note: 'Tu nómina no se guarda · sin spam',
       errEmail: 'Introduce un email válido.',
       errConsent: 'Debes aceptar la política de privacidad para continuar.',
     },
@@ -208,8 +212,8 @@ export const translations = {
   en: {
     home: {
       badge: 'Official agreements · pay tables in force',
-      heroA: 'Are you paid what your collective agreement says?',
-      heroB: 'Check it for free.',
+      heroA: 'Is your payslip short-changing you?',
+      heroB: 'Check it for free in 10 seconds.',
       leadA: 'Upload your payslip and in',
       leadB: '10 seconds',
       leadC: "we compare it against your Spanish collective agreement. If you are being underpaid, you will see it clearly.",
@@ -223,7 +227,7 @@ export const translations = {
       step2: 'Settings',
       province: 'Province / Region',
       analyze: 'Check my payslip for free',
-      confidential: '🔒 Your payslip is confidential and is never stored.',
+      confidential: 'No sign-up · No card · Your payslip is not stored.',
       moreInfo: 'More info',
       navPricing: 'Pricing',
       navHowTo: 'How it works',
@@ -271,17 +275,17 @@ export const translations = {
     },
 
     lead: {
-      title: 'Your result is ready',
-      leadA: 'Leave us your email and we will show you the verdict. We will let you know if we find any difference',
+      title: 'Want the report by email?',
+      leadA: 'This is optional: your verdict is already above. Leave your email and we will send it to you and let you know if we find any difference',
       leadStrong: 'in your favour',
       emailPlaceholder: 'you@email.com',
       namePlaceholder: 'Your name (optional)',
       consentA: 'I accept the',
       consentLink: 'privacy policy',
       consentB: 'and that NominIA sends me the result and messages about the service. I can unsubscribe at any time.',
-      submit: 'See my result',
+      submit: 'Send it to me',
       loading: 'One moment…',
-      note: '🔒 Your payslip is never stored · no spam',
+      note: 'Your payslip is never stored · no spam',
       errEmail: 'Please enter a valid email address.',
       errConsent: 'You need to accept the privacy policy to continue.',
     },

@@ -15,6 +15,7 @@ const CONVENIOS = [
     { value: 'construccion', label: 'Construcción', sinTabla: true },
     { value: 'transporte_sanitario_andalucia', label: 'Transporte Sanitario Andalucía' },
     { value: 'transporte_sanitario_valenciana', label: 'Transporte Sanitario Comunitat Valenciana (2026)' },
+    { value: 'transporte_sanitario_murcia', label: 'Transporte Sanitario Región de Murcia (2026)' },
     { value: 'mercadona', label: 'Mercadona (2024-2028)' },
     { value: 'grandes_almacenes', label: 'Grandes Almacenes' },
     { value: 'leroy_merlin', label: 'Leroy Merlin (Grandes Almacenes)' },
@@ -89,6 +90,28 @@ const CATEGORIAS_POR_CONVENIO = {
         { value: 'telefonista', label: 'Telefonista' },
         { value: 'medico', label: 'Médico/a' },
         { value: 'ats_due', label: 'ATS/DUE Enfermería' },
+        { value: 'director_area', label: 'Director/a de Área' },
+        { value: 'director', label: 'Director/a' }
+    ],
+    // Tabla 2026 (BORM n.º 167) — claves de backend/data/convenios.json → transporte_sanitario_murcia.
+    // El backend ya comparaba contra Murcia, pero esta pantalla no lo ofrecia.
+    transporte_sanitario_murcia: [
+        { value: 'tes_conductor', label: 'Conductor/a' },
+        { value: 'tes_ayudante_camillero', label: 'Ayudante Camillero/a' },
+        { value: 'tes_camillero', label: 'Camillero/a' },
+        { value: 'limpiador_a', label: 'Limpiador/a' },
+        { value: 'jefe_equipo', label: 'Jefe de Equipo' },
+        { value: 'jefe_trafico', label: 'Jefe de Tráfico' },
+        { value: 'oficial_1_administrativo', label: 'Oficial 1ª Administrativo/a' },
+        { value: 'auxiliar_administrativo', label: 'Auxiliar Administrativo/a' },
+        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico/a' },
+        { value: 'mecanico', label: 'Mecánico/a' },
+        { value: 'chapista', label: 'Chapista' },
+        { value: 'pintor', label: 'Pintor' },
+        { value: 'jefe_taller', label: 'Jefe de Taller' },
+        { value: 'telefonista', label: 'Telefonista' },
+        { value: 'medico', label: 'Médico' },
+        { value: 'ats', label: 'ATS' },
         { value: 'director_area', label: 'Director/a de Área' },
         { value: 'director', label: 'Director/a' }
     ],

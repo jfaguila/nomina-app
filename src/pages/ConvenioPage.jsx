@@ -3,6 +3,7 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import useSeo from '../hooks/useSeo';
 import { getConvenio, esFicha, CONVENIOS_PUBLICOS, CONVENIOS_FICHA, eur } from '../data/conveniosPublicos';
+import { enlacePortada } from '../data/conveniosSeleccionables';
 import { schemaConvenio, schemaConvenios } from '../data/seoSchema';
 import SiteFooter from '../components/SiteFooter';
 
@@ -31,6 +32,10 @@ export default function ConvenioPage() {
     ? [...CONVENIOS_PUBLICOS, ...CONVENIOS_FICHA].filter((c) => esTS(c.slug) && c.slug !== convenio.slug)
     : CONVENIOS_PUBLICOS.filter((c) => c.slug !== convenio.slug);
   const otros = hermanos;
+  // El lector de la tabla de Mercadona llega a la portada con Mercadona ya elegido,
+  // no con el convenio por defecto. Las fichas sin tabla no tienen convenioId y van
+  // a la portada limpia.
+  const irAComprobar = enlacePortada(convenio.convenioId);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
@@ -76,7 +81,7 @@ export default function ConvenioPage() {
               : 'Sube tu nómina y NominIA la compara con esta misma tabla en unos segundos. El veredicto es gratis, no hace falta registrarse y la nómina no se guarda.'}
           </p>
           <Link
-            to="/"
+            to={irAComprobar}
             className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-blue-500/20 transition-all"
           >
             Comprobar mi nómina gratis
@@ -276,7 +281,7 @@ export default function ConvenioPage() {
             <Link to="/precios" className="text-blue-600 hover:underline">plan de 4,99 €/mes</Link>, sin permanencia.
           </p>
           <Link
-            to="/"
+            to={irAComprobar}
             className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-blue-500/20 transition-all"
           >
             Comprobar mi nómina gratis

@@ -16,6 +16,7 @@ import SimuladorHoras from '../components/SimuladorHoras';
 import { schemaHome } from '../data/seoSchema';
 import { cabecerasAcceso, tienePlan, setEmail as guardarEmail, guardarUltimoAnalisis, leerUltimoAnalisis, olvidarUltimoAnalisis } from '../lib/acceso';
 import SiteFooter from '../components/SiteFooter';
+import { esSeleccionable } from '../data/conveniosSeleccionables';
 
 const CATEGORIAS_GENERICAS = [
     { value: 'empleado', label: 'Empleado' },
@@ -80,6 +81,28 @@ const CATEGORIAS_POR_CONVENIO = {
         { value: 'director_area', label: 'Director/a de área' },
         { value: 'director', label: 'Director/a' },
     ],
+    // Tabla 2026 (BORM n.º 167) — claves de backend/data/convenios.json → transporte_sanitario_murcia.
+    // El convenio murciano no usa el termino TES; las etiquetas son las de su tabla.
+    transporte_sanitario_murcia: [
+        { value: 'tes_conductor', label: 'Conductor/a' },
+        { value: 'tes_ayudante_camillero', label: 'Ayudante Camillero/a' },
+        { value: 'tes_camillero', label: 'Camillero/a' },
+        { value: 'limpiador_a', label: 'Limpiador/a' },
+        { value: 'jefe_equipo', label: 'Jefe de Equipo' },
+        { value: 'jefe_trafico', label: 'Jefe de Tráfico' },
+        { value: 'oficial_1_administrativo', label: 'Oficial 1ª Administrativo/a' },
+        { value: 'auxiliar_administrativo', label: 'Auxiliar Administrativo/a' },
+        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico/a' },
+        { value: 'mecanico', label: 'Mecánico/a' },
+        { value: 'chapista', label: 'Chapista' },
+        { value: 'pintor', label: 'Pintor' },
+        { value: 'jefe_taller', label: 'Jefe de Taller' },
+        { value: 'telefonista', label: 'Telefonista' },
+        { value: 'medico', label: 'Médico' },
+        { value: 'ats', label: 'ATS' },
+        { value: 'director_area', label: 'Director/a de Área' },
+        { value: 'director', label: 'Director/a' },
+    ],
     // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
     transporte_sanitario_andalucia: [
         { value: 'tes_conductor', label: 'TES Conductor/a' },
@@ -107,7 +130,7 @@ const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila
 const HomePage = () => {
     useSeo({
         title: 'NominIA · Verifica si te pagan lo que marca tu convenio',
-        description: 'Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre gratis si te están pagando de menos: solo te pedimos un correo para enviarte el veredicto. Tu nómina no se guarda.',
+        description: 'Sube tu nómina y NominIA la compara con tu convenio colectivo en segundos. Descubre gratis si te están pagando de menos. 100% privado, sin registro.',
         path: '/',
         jsonLd: schemaHome(),
     });
@@ -133,11 +156,21 @@ const HomePage = () => {
         try { return parseInt(localStorage.getItem('nominia_usos') || '0', 10) || 0; } catch (e) { return 0; }
     });
 
-    // Pre-analysis options (Initial selection)
-    const [uploadData, setUploadData] = useState({
-        provincia: '',
-        convenio: 'transporte_sanitario_andalucia',
-        categoria: 'tes_conductor'
+    // Pre-analysis options (Initial selection).
+    // Quien llega desde una tabla salarial (/convenio/mercadona → /?convenio=mercadona)
+    // encuentra SU convenio ya elegido: antes todos aterrizaban con ambulancias de
+    // Andalucía preseleccionado, viniesen de donde viniesen.
+    const [uploadData, setUploadData] = useState(() => {
+        let convenio = 'transporte_sanitario_andalucia';
+        try {
+            const pedido = new URLSearchParams(window.location.search).get('convenio');
+            if (esSeleccionable(pedido) && CATEGORIAS_POR_CONVENIO[pedido]) convenio = pedido;
+        } catch (e) { /* sin window (prerender) o URL rara: se queda el valor por defecto */ }
+        return {
+            provincia: '',
+            convenio,
+            categoria: CATEGORIAS_POR_CONVENIO[convenio][0].value
+        };
     });
 
     const handleFileSelect = (file) => {
@@ -548,7 +581,9 @@ const HomePage = () => {
                                                 >
                                                     <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
                                                     <option value="transporte_sanitario_valenciana">Transporte Sanitario Comunitat Valenciana (tabla 2026)</option>
+                                                    <option value="transporte_sanitario_murcia">Transporte Sanitario Región de Murcia (tabla 2026)</option>
                                                     <option value="mercadona">Mercadona</option>
+                                                    <option value="grandes_almacenes">Grandes Almacenes (convenio estatal)</option>
                                                     <option value="leroy_merlin">Leroy Merlin</option>
                                                     <option value="el_corte_ingles">El Corte Inglés</option>
                                                     <option value="ikea">Ikea</option>
@@ -634,7 +669,32 @@ const HomePage = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="space-y-8"
                         >
-                            {!leadCaptured ? (
+                            {/* El veredicto gratis se ve SIN dar el correo: la portada promete "sin
+                                registro" y hasta hoy aqui habia un formulario delante del resultado.
+                                El email pasa a ser un paso opcional debajo, y el muro de pago
+                                (dentro de ResultsDisplay) no cambia. */}
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div>
+                                    <h2 className="text-3xl font-bold tracking-tight">{t('ui.reportTitle')}</h2>
+                                    <p className="text-gray-600 dark:text-gray-400 mt-1">{t('ui.reportLead')}</p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setStep(1);
+                                        setResults(null);
+                                        setSelectedFile(null);
+                                        setLeadCaptured(tienePlan());
+                                    }}
+                                    className="px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 font-bold transition-all flex items-center gap-2"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    Nueva verificación
+                                </button>
+                            </div>
+                            <ResultsDisplay results={results} usos={usos} />
+                            {!leadCaptured && (
                                 <LeadForm
                                     apiUrl={getApiUrl()}
                                     defaults={{
@@ -644,32 +704,8 @@ const HomePage = () => {
                                     }}
                                     onCaptured={(datos) => { if (datos && datos.email) guardarEmail(datos.email); setLeadCaptured(true); }}
                                 />
-                            ) : (
-                                <>
-                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                        <div>
-                                            <h2 className="text-3xl font-bold tracking-tight">{t('ui.reportTitle')}</h2>
-                                            <p className="text-gray-600 dark:text-gray-400 mt-1">{t('ui.reportLead')}</p>
-                                        </div>
-                                        <button
-                                            onClick={() => {
-                                                setStep(1);
-                                                setResults(null);
-                                                setSelectedFile(null);
-                                                setLeadCaptured(false);
-                                            }}
-                                            className="px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 font-bold transition-all flex items-center gap-2"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                            </svg>
-                                            Nueva verificación
-                                        </button>
-                                    </div>
-                                    <ResultsDisplay results={results} usos={usos} />
-                                    <SimuladorHoras results={results} />
-                                </>
                             )}
+                            <SimuladorHoras results={results} />
                         </motion.div>
                     )}
                 </AnimatePresence>

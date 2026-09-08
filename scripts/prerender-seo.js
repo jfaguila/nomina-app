@@ -17,6 +17,7 @@ const {
   SECTOR_TRANSPORTE_SANITARIO: SECTOR,
   eur,
 } = require('../src/data/conveniosPublicos');
+const { enlacePortada } = require('../src/data/conveniosSeleccionables');
 const {
   schemaHome,
   schemaPrecios,
@@ -206,7 +207,8 @@ const RUTAS_CONVENIO = [
     notasYFaqHtml(c, ficha) +
     enlacesHermanosHtml(c),
   cta: 'Comprobar mi nómina gratis',
-  ctaHref: `${BASE}/`,
+  // Mismo destino que el boton de la pagina React: la portada con ese convenio elegido.
+  ctaHref: `${BASE}${enlacePortada(c.convenioId)}`,
   align: 'left',
   ancho: 900,
 }));
