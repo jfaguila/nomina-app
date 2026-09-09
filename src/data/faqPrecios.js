@@ -14,8 +14,8 @@ const FAQ_PRECIOS = [
     r: 'Porque es la cuenta de Stripe desde la que NominIA gestiona sus cobros. Es correcto: en el extracto del banco verás «asistencia.io» y no «NominIA». El propio checkout de Stripe te lo avisa antes de pagar.',
   },
   {
-    p: '¿Cómo cancelo? ¿Hay permanencia?',
-    r: 'No hay permanencia. Puedes cancelar cuando quieras desde el enlace del correo de confirmación de Stripe o escribiendo a hola@nominia.app; el acceso sigue activo hasta el final del mes ya pagado y no se renueva. Un solo mes basta para revisar todas las nóminas que quieras.',
+    p: '¿Se renueva? ¿Hay permanencia?',
+    r: 'El plan Trabajador es un pago único de 4,99 €: no se renueva ni hay nada que cancelar. Te da 30 días de acceso al desglose, para revisar todas las nóminas que quieras en ese plazo. El plan de asesoría (39 €/mes) sí es mensual y se cancela cuando quieras desde el correo de Stripe o escribiendo a hola@nominia.app, sin permanencia.',
   },
   {
     p: '¿Qué pasa si mi convenio no está en la lista?',

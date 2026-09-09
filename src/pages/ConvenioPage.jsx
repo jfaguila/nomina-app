@@ -278,7 +278,7 @@ export default function ConvenioPage() {
               ? 'NominIA lee tu nómina, ordena los conceptos y señala lo que suele fallar: antigüedad ausente, nocturnidad sin recargo o pagas extra mal prorrateadas. El veredicto de importe contra la tabla de este convenio llegará cuando podamos verificarla en su boletín.'
               : 'NominIA lee tu nómina, detecta el convenio y te dice en segundos si el importe cuadra.'}
             {' '}El desglose línea por línea y el informe para reclamar están en el{' '}
-            <Link to="/precios" className="text-blue-600 hover:underline">plan de 4,99 €/mes</Link>, sin permanencia.
+            <Link to="/precios" className="text-blue-600 hover:underline">plan de 4,99 €</Link>, un solo pago sin renovación.
           </p>
           <Link
             to={irAComprobar}

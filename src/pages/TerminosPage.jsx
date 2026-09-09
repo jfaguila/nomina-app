@@ -8,7 +8,7 @@ import SiteFooter from '../components/SiteFooter';
 export default function TerminosPage() {
   useSeo({
     title: 'Condiciones de contratación · NominIA',
-    description: 'Planes, precios, forma de pago, cancelación y derecho de desistimiento de las suscripciones de NominIA.',
+    description: 'Planes, precios, forma de pago, cancelación y derecho de desistimiento de los planes de NominIA.',
     path: '/terminos',
     jsonLd: schemaPagina('Condiciones de contratación', '/terminos'),
   });
@@ -34,10 +34,10 @@ export default function TerminosPage() {
           <h2 className="text-xl font-bold">2. Planes y precios</h2>
           <ul className="list-disc pl-6 space-y-1">
             <li><strong>Gratis</strong> — 0 €. Veredicto sobre si la nómina cuadra con el convenio, sin registro.</li>
-            <li><strong>Trabajador</strong> — 4,99 €/mes. Desglose línea por línea, importe reclamable, informe PDF e historial.</li>
+            <li><strong>Trabajador</strong> — 4,99 €, pago único. 30 días de acceso al desglose línea por línea, importe reclamable e informe PDF; no se renueva.</li>
             <li><strong>Asesoría / Gestoría</strong> — 39 €/mes. Desgloses ilimitados de clientes e informes con marca propia.</li>
           </ul>
-          <p>Los precios están expresados en euros con los impuestos aplicables incluidos. Las suscripciones se renuevan automáticamente cada mes hasta que las canceles, <strong>sin permanencia</strong>.</p>
+          <p>Los precios están expresados en euros con los impuestos aplicables incluidos. El plan Trabajador es un pago único que no se renueva. La suscripción de Asesoría / Gestoría se renueva automáticamente cada mes hasta que la canceles, <strong>sin permanencia</strong>.</p>
 
           <h2 className="text-xl font-bold">3. Pago</h2>
           <p>El cobro lo procesa <strong>Stripe Payments Europe</strong>. NominIA no almacena en ningún momento los datos de tu tarjeta. El servicio queda disponible en cuanto Stripe confirma el pago.</p>

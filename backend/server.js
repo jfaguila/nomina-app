@@ -57,7 +57,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
     if (event.type === 'checkout.session.completed') {
         const s = event.data.object;
         const emailCliente = s.customer_details?.email || s.customer_email || '';
-        console.log('✅ SUSCRIPCIÓN NominIA:', s.metadata?.plan, '| email:', emailCliente, '| sub:', s.subscription);
+        console.log('✅ PAGO NominIA:', s.metadata?.plan, '| modo:', s.mode, '| email:', emailCliente, '| sub:', s.subscription || '-');
         // El correo es el unico recibo que le llega al cliente y, sobre todo, su
         // enlace de vuelta: si cierra la pestana antes de que /gracias canjee la
         // sesion, sin este correo se queda pagando y sin producto.
@@ -292,13 +292,16 @@ app.post('/api/checkout', async (req, res) => {
         if (!stripe) return res.status(503).json({ error: 'Pagos no configurados todavía' });
         const { plan, email } = req.body || {};
         const planes = {
-            trabajador: { amount: 499, name: 'NominIA — Plan Trabajador' },
+            trabajador: { amount: 499, name: 'NominIA — Informe de tu nómina (30 días de acceso, pago único)', unico: true },
             asesoria:   { amount: 3900, name: 'NominIA — Plan Asesoría' }
         };
         if (!planes[plan]) return res.status(400).json({ error: 'Plan no válido' });
         const emailValido = typeof email === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) ? email : null;
+        // 9-sep-2026 (orden de Jorge): el plan Trabajador pasa a PAGO ÚNICO. Una necesidad puntual no
+        // se vende como suscripción. El token de acceso ya caduca solo a los 31 días (services/acceso.js).
+        const unico = !!planes[plan].unico;
         const session = await stripe.checkout.sessions.create({
-            mode: 'subscription',
+            mode: unico ? 'payment' : 'subscription',
             // Si ya dio su correo para ver el veredicto, no se lo pedimos otra vez.
             ...(emailValido ? { customer_email: emailValido } : {}),
             line_items: [{
@@ -306,7 +309,7 @@ app.post('/api/checkout', async (req, res) => {
                     currency: 'eur',
                     product_data: { name: planes[plan].name },
                     unit_amount: planes[plan].amount,
-                    recurring: { interval: 'month' }
+                    ...(unico ? {} : { recurring: { interval: 'month' } })
                 },
                 quantity: 1
             }],
@@ -320,7 +323,7 @@ app.post('/api/checkout', async (req, res) => {
             // el cliente que llega desde NominIA cree que está pagando a otra empresa y abandona.
             custom_text: {
                 submit: {
-                    message: 'Compra segura. El cargo aparecerá a nombre de asistencia.io, que es la cuenta desde la que NominIA gestiona sus cobros: es correcto. Sin permanencia.'
+                    message: unico ? 'Pago único de 4,99 €: no se renueva. El cargo aparecerá a nombre de asistencia.io, que es la cuenta desde la que NominIA gestiona sus cobros: es correcto.' : 'Compra segura. El cargo aparecerá a nombre de asistencia.io, que es la cuenta desde la que NominIA gestiona sus cobros: es correcto. Sin permanencia.'
                 }
             },
             metadata: { plan, producto: 'nominia' }
@@ -409,10 +412,10 @@ async function enviarEmailDia0(email, nombre, resultado) {
 async function enviarEmailSuscripcion(email, plan, sessionId) {
     if (!BREVO_KEY) { console.warn('suscripción sin email: BREVO_API_KEY no configurada'); return; }
     const enlace = `${FRONTEND}/gracias?session_id=${encodeURIComponent(sessionId)}`;
-    const nombrePlan = plan === 'asesoria' ? 'Asesoría / Gestoría (39 €/mes)' : 'Trabajador (4,99 €/mes)';
+    const nombrePlan = plan === 'asesoria' ? 'Asesoría / Gestoría (39 €/mes)' : 'Trabajador (4,99 €, pago único, 30 días de acceso)';
     const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#0E1A2B">
       <h2 style="color:#0E2438">Ya tienes el desglose desbloqueado</h2>
-      <p>Gracias por suscribirte al plan <strong>${nombrePlan}</strong> de NominIA.</p>
+      <p>Gracias por tu compra: plan <strong>${nombrePlan}</strong> de NominIA.</p>
       <p>A partir de ahora, cada nómina que subas te dirá <strong>el importe exacto en euros</strong> de cada diferencia frente a tu convenio, y podrás descargarte el informe para reclamarlo.</p>
       <p style="text-align:center;margin:28px 0">
         <a href="${enlace}" style="background:#84CC16;color:#0A1A2B;font-weight:bold;padding:14px 28px;border-radius:14px;text-decoration:none">Abrir mi desglose</a>
@@ -423,7 +426,7 @@ async function enviarEmailSuscripcion(email, plan, sessionId) {
     const r = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: { 'api-key': BREVO_KEY, 'Content-Type': 'application/json', 'accept': 'application/json' },
-        body: JSON.stringify({ sender: SENDER, to: [{ email }], subject: 'Tu suscripción a NominIA está activa', htmlContent: html })
+        body: JSON.stringify({ sender: SENDER, to: [{ email }], subject: plan === 'asesoria' ? 'Tu suscripción a NominIA está activa' : 'Tu acceso a NominIA está activo (pago único)', htmlContent: html })
     });
     if (!r.ok) console.warn('Brevo suscripción status', r.status, (await r.text()).slice(0, 160));
 }

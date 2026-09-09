@@ -110,13 +110,13 @@ const ResultsDisplay = ({ results, usos = 0 }) => {
                             </div>
                         )}
                         <p className="text-gray-600 dark:text-gray-400 mt-4 max-w-md mx-auto">
-                            Ya sabes <strong>qué</strong> conceptos fallan. Por 4,99 €/mes ves <strong>cuántos euros exactos</strong> te faltan
+                            Ya sabes <strong>qué</strong> conceptos fallan. Por 4,99 €, un solo pago, ves <strong>cuántos euros exactos</strong> te faltan
                             en cada uno, la tabla comparativa frente a tu convenio y el informe con la cita del boletín oficial para reclamarlo.
                         </p>
                         <Link to="/precios" className="inline-flex items-center gap-2 mt-6 px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 transition-all">
                             {isValid ? 'Ver el desglose — 4,99 €' : 'Ver cuánto me deben — 4,99 €'}
                         </Link>
-                        <p className="text-xs text-gray-400 mt-3">Sin permanencia · Cancela cuando quieras</p>
+                        <p className="text-xs text-gray-400 mt-3">Pago único · Sin renovación · 30 días de acceso</p>
                     </div>
                 </motion.div>
             )}

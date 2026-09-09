@@ -28,8 +28,8 @@ export default function GraciasPage() {
   const [hayAnalisis, setHayAnalisis] = useState(false);
 
   useSeo({
-    title: 'Suscripción activada · NominIA',
-    description: 'Tu suscripción a NominIA está activa: ya puedes ver el desglose exacto de tu nómina.',
+    title: 'Pago confirmado · NominIA',
+    description: 'Tu pago está confirmado: ya puedes ver el desglose exacto de tu nómina.',
     path: '/gracias',
     // Es una pagina privada de post-pago: no tiene nada que hacer en Google.
     robots: 'noindex, nofollow',

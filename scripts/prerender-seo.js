@@ -293,15 +293,15 @@ const ROUTES = [
   ...RUTAS_CONVENIO,
   {
     dir: 'precios',
-    title: 'Precios de NominIA · Gratis, 4,99 €/mes o 39 €/mes para asesorías',
+    title: 'Precios de NominIA · Gratis, 4,99 € pago único o 39 €/mes para asesorías',
     description:
-      'Comprueba gratis si te pagan de menos. Por 4,99 €/mes desbloqueas el desglose línea por línea y el informe PDF para reclamar. Plan de asesoría 39 €/mes. Sin permanencia.',
+      'Comprueba gratis si te pagan de menos. Por 4,99 €, un solo pago sin renovación, desbloqueas el desglose línea por línea y el informe PDF para reclamar. Plan de asesoría 39 €/mes. Sin permanencia.',
     // Mismo texto que el <h1> de src/pages/PreciosPage.jsx.
-    h1: 'Precios de NominIA: gratis, 4,99 €/mes o 39 €/mes para asesorías',
+    h1: 'Precios de NominIA: gratis, 4,99 € pago único o 39 €/mes para asesorías',
     jsonLd: schemaPrecios(),
     // Las mismas 5 preguntas que la pagina React y que el FAQPage del JSON-LD.
     bodyHtml:
-      '<p style="font-size:18px;color:#334155;">Empieza gratis: el veredicto de si te pagan bien no cuesta nada y no requiere registro. El plan Trabajador (4,99 €/mes) añade el desglose exacto línea por línea, el importe que te deben y el informe PDF para reclamar. El plan Asesoría / Gestoría (39 €/mes) da desgloses ilimitados de tus clientes e informes con tu marca. Sin permanencia.</p>' +
+      '<p style="font-size:18px;color:#334155;">Empieza gratis: el veredicto de si te pagan bien no cuesta nada y no requiere registro. El plan Trabajador (4,99 €, pago único, 30 días de acceso sin renovación) añade el desglose exacto línea por línea, el importe que te deben y el informe PDF para reclamar. El plan Asesoría / Gestoría (39 €/mes) da desgloses ilimitados de tus clientes e informes con tu marca. Sin permanencia.</p>' +
       '<h2 style="font-size:22px;">Preguntas frecuentes</h2>' +
       FAQ_PRECIOS.map(
         (f) =>

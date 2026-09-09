@@ -17,9 +17,9 @@ const PLANS = [
     features: ['Veredicto al instante: ¿te pagan bien o no?', 'En qué conceptos falla tu nómina', 'Detección automática del convenio', 'Nóminas ilimitadas al mes', 'Sin registro: el veredicto se ve sin dejar el correo'],
   },
   {
-    id: 'trabajador', name: 'Trabajador', price: '4,99', period: '/mes',
-    desc: 'Descubre cuánto te deben', cta: 'Desbloquear desglose', highlight: true,
-    features: ['Todo lo del plan gratis', 'El importe exacto en euros de cada diferencia', 'Tabla comparativa: lo que cobras vs. lo que marca tu convenio', 'Informe descargable con la cita del boletín, para reclamar', 'Nóminas ilimitadas al mes', 'Soporte por email'],
+    id: 'trabajador', name: 'Trabajador', price: '4,99', period: ' una vez',
+    desc: 'Descubre cuánto te deben. Pago único, sin renovación', cta: 'Ver cuánto me deben — 4,99 €', highlight: true,
+    features: ['Todo lo del plan gratis', 'El importe exacto en euros de cada diferencia', 'Tabla comparativa: lo que cobras vs. lo que marca tu convenio', 'Informe descargable con la cita del boletín, para reclamar', '30 días de acceso: todas las nóminas que quieras', 'Un solo pago: no se renueva', 'Soporte por email'],
   },
   {
     id: 'asesoria', name: 'Asesoría / Gestoría', price: '39', period: '/mes',
@@ -32,8 +32,8 @@ export default function PreciosPage() {
   const [loading, setLoading] = useState(null);
 
   useSeo({
-    title: 'Precios de NominIA · Gratis, 4,99 €/mes o 39 €/mes para asesorías',
-    description: 'Comprueba gratis si te pagan de menos. Por 4,99 €/mes desbloqueas el desglose línea por línea y el informe PDF para reclamar. Plan de asesoría 39 €/mes. Sin permanencia.',
+    title: 'Precios de NominIA · Gratis, 4,99 € pago único o 39 €/mes para asesorías',
+    description: 'Comprueba gratis si te pagan de menos. Por 4,99 €, un solo pago sin renovación, desbloqueas el desglose línea por línea y el informe PDF para reclamar. Plan de asesoría 39 €/mes. Sin permanencia.',
     path: '/precios',
     jsonLd: schemaPrecios(),
   });
@@ -69,16 +69,16 @@ export default function PreciosPage() {
 
       <section className="max-w-6xl mx-auto px-6 pt-8 pb-20 text-center">
         {/* Mismo texto que ROUTES[precios].h1 en scripts/prerender-seo.js. */}
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">Precios de NominIA: gratis, 4,99 €/mes o 39 €/mes para asesorías</h1>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">Precios de NominIA: gratis, 4,99 € pago único o 39 €/mes para asesorías</h1>
         {/* La frase que define la frontera. Si el usuario no sabe que compra, no compra. */}
         <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           Gratis te decimos <strong>si</strong> te pagan de menos y en qué conceptos.
-          Por 4,99 €/mes te decimos <strong>cuántos euros exactos</strong> te faltan cada mes
+          Por 4,99 €, un solo pago y sin renovación, te decimos <strong>cuántos euros exactos</strong> te faltan cada mes
           y te damos el informe, con la cita del boletín oficial, para reclamárselos a tu empresa.
         </p>
         {tienePlan() && (
           <p className="mt-6 inline-block rounded-2xl bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 px-5 py-3 text-sm font-semibold">
-            Ya tienes una suscripción activa en este navegador. No hace falta que vuelvas a pagar:{' '}
+            Ya tienes el acceso activo en este navegador. No hace falta que vuelvas a pagar:{' '}
             <Link to="/" className="underline">vuelve a analizar tu nómina</Link>.
           </p>
         )}

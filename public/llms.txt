@@ -4,7 +4,7 @@
 
 ## Producto
 - [Inicio](https://nominia.app/): sube tu nómina y comprueba gratis si te pagan según convenio.
-- [Precios](https://nominia.app/precios): Gratis (veredicto al instante, nóminas ilimitadas, sin registro) · Trabajador 4,99 €/mes sin permanencia (desglose exacto, importe que te deben, informe PDF para reclamar) · Asesoría/Gestoría 39 €/mes (nóminas de todos tus clientes e informes con tu marca).
+- [Precios](https://nominia.app/precios): Gratis (veredicto al instante, nóminas ilimitadas, sin registro) · Trabajador 4,99 € pago único, 30 días de acceso sin renovación (desglose exacto, importe que te deben, informe PDF para reclamar) · Asesoría/Gestoría 39 €/mes (nóminas de todos tus clientes e informes con tu marca).
 
 ## Tablas salariales de convenio (con fuente oficial citada)
 - [Convenios colectivos](https://nominia.app/convenios): índice de las tablas salariales publicadas.
