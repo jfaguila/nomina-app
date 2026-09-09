@@ -315,9 +315,21 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
     // comparar la nómina contra importes sin fuente.
     const convenioSinTabla = CONVENIOS.some(c => c.value === formData.convenio && c.sinTabla);
 
+    // 9-sep-2026: con una FOTO de la nómina el OCR puede no leer el salario base; antes se
+    // enviaba vacío, el motor comparaba contra 0 y dictaba «te deben dinero» sin base real
+    // (falso positivo verificado con una nómina de prueba de Mercadona). Sin salario base
+    // no hay veredicto: se pide el dato y se lleva el foco al campo.
+    const [faltaBase, setFaltaBase] = useState(false);
     const handleSubmit = (e) => {
         e.preventDefault();
         if (convenioSinTabla) return;
+        if (num(formData.salarioBase) <= 0) {
+            setFaltaBase(true);
+            const el = document.querySelector('[name="salarioBase"]');
+            if (el) { el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            return;
+        }
+        setFaltaBase(false);
         onSubmit(formData);
     };
 
@@ -417,11 +429,18 @@ const ManualInput = ({ onSubmit, onBack, initialData = null, disabled = false })
                                     value={formData.salarioBase || ''}
                                     onChange={handleChange}
                                     placeholder="0.00"
-                                    className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${detectedFields.salarioBase
+                                    className={`w-full bg-white dark:bg-gray-800 border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm ${faltaBase && num(formData.salarioBase) <= 0
+                                        ? 'border-red-400 ring-2 ring-red-200 dark:ring-red-900/40'
+                                        : detectedFields.salarioBase
                                         ? 'border-green-200 dark:border-green-700 bg-green-50/30 dark:bg-green-900/10'
                                         : 'border-gray-200 dark:border-gray-700'
                                         }`}
                                 />
+                                {faltaBase && num(formData.salarioBase) <= 0 && (
+                                    <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400 font-medium">
+                                        No hemos podido leer el salario base de tu nómina. Escríbelo aquí (es la primera línea de «Devengos») para poder compararlo con tu convenio.
+                                    </p>
+                                )}
                                 {detectedFields.salarioBase && (
                                     <button
                                         type="button"
