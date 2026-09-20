@@ -57,7 +57,7 @@ export default function PrivacidadPage() {
 
           <h2 id="cookies" className="text-xl font-bold">7. Política de cookies</h2>
           <p><strong>Cookies técnicas (siempre activas).</strong> Son imprescindibles y no requieren consentimiento: recordar tu preferencia de modo oscuro, tu idioma y si ya has respondido al aviso de cookies (<code>nominia_consent</code>).</p>
-          <p><strong>Cookies de publicidad y medición (solo si las aceptas).</strong> Usamos <strong>Google Ads</strong> (identificador AW-18208622022) y el <strong>píxel de Meta</strong> (identificador 910915878380906, para Facebook e Instagram) para saber qué anuncios traen visitas. Están <strong>bloqueadas por defecto</strong> mediante Google Consent Mode v2: hasta que pulsas «Aceptar» no se instala ninguna. Si pulsas «Rechazar» no se activan y la web funciona igual.</p>
+          <p><strong>Cookies de publicidad y medición (solo si las aceptas).</strong> Usamos <strong>Google Ads</strong> (identificador AW-18221826294) y el <strong>píxel de Meta</strong> (identificador 910915878380906, para Facebook e Instagram) para saber qué anuncios traen visitas. Están <strong>bloqueadas por defecto</strong> mediante Google Consent Mode v2: hasta que pulsas «Aceptar» no se instala ninguna. Si pulsas «Rechazar» no se activan y la web funciona igual.</p>
           <p>Puedes cambiar de opinión cuando quieras borrando los datos de este sitio desde la configuración de privacidad de tu navegador: volverá a aparecer el aviso para que elijas de nuevo.</p>
 
           <h2 className="text-xl font-bold">8. Aviso importante</h2>
