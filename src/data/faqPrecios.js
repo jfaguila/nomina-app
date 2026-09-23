@@ -10,8 +10,8 @@
  */
 const FAQ_PRECIOS = [
   {
-    p: '¿Por qué el cargo aparece a nombre de asistencia.io?',
-    r: 'Porque es la cuenta de Stripe desde la que NominIA gestiona sus cobros. Es correcto: en el extracto del banco verás «asistencia.io» y no «NominIA». El propio checkout de Stripe te lo avisa antes de pagar.',
+    p: '¿Por qué el cargo aparece a nombre de AI LAB?',
+    r: 'Porque AI LAB es la empresa que gestiona los cobros de NominIA. Es correcto: en el extracto del banco verás «AI LAB» y no «NominIA». El propio checkout de Stripe te lo avisa antes de pagar.',
   },
   {
     p: '¿Se renueva? ¿Hay permanencia?',

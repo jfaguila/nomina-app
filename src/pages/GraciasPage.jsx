@@ -115,8 +115,8 @@ export default function GraciasPage() {
               {hayAnalisis ? 'Ver el desglose de mi nómina' : 'Analizar mi nómina'}
             </Link>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-6">
-              El cargo aparece en tu banco a nombre de <strong>asistencia.io</strong>, la cuenta desde la que NominIA
-              gestiona sus cobros. Para cancelar, escribe a <a href="mailto:hola@nominia.app" className="text-blue-600 hover:underline">hola@nominia.app</a>.
+              El cargo aparece en tu banco a nombre de <strong>AI LAB</strong>, la empresa que gestiona los cobros de NominIA.
+              Para cancelar, escribe a <a href="mailto:hola@nominia.app" className="text-blue-600 hover:underline">hola@nominia.app</a>.
             </p>
           </>
         )}

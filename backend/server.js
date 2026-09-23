@@ -323,7 +323,7 @@ app.post('/api/checkout', async (req, res) => {
             // el cliente que llega desde NominIA cree que está pagando a otra empresa y abandona.
             custom_text: {
                 submit: {
-                    message: unico ? 'Pago único de 4,99 €: no se renueva. El cargo aparecerá a nombre de asistencia.io, que es la cuenta desde la que NominIA gestiona sus cobros: es correcto.' : 'Compra segura. El cargo aparecerá a nombre de asistencia.io, que es la cuenta desde la que NominIA gestiona sus cobros: es correcto. Sin permanencia.'
+                    message: unico ? 'Pago único de 4,99 €: no se renueva. El cargo aparecerá a nombre de AI LAB, la empresa que gestiona los cobros de NominIA: es correcto.' : 'Compra segura. El cargo aparecerá a nombre de AI LAB, la empresa que gestiona los cobros de NominIA: es correcto. Sin permanencia.'
                 }
             },
             metadata: { plan, producto: 'nominia' }
@@ -421,7 +421,7 @@ async function enviarEmailSuscripcion(email, plan, sessionId) {
         <a href="${enlace}" style="background:#84CC16;color:#0A1A2B;font-weight:bold;padding:14px 28px;border-radius:14px;text-decoration:none">Abrir mi desglose</a>
       </p>
       <p style="font-size:13px;color:#64748b">Guarda este correo: este enlace es tu llave de acceso, no hay contraseña que recordar.</p>
-      <p style="font-size:12px;color:#64748b">El cargo aparece en tu banco a nombre de <strong>asistencia.io</strong>, que es la cuenta desde la que NominIA gestiona sus cobros. Sin permanencia: puedes cancelar cuando quieras escribiendo a hola@nominia.app.</p>
+      <p style="font-size:12px;color:#64748b">El cargo aparece en tu banco a nombre de <strong>AI LAB</strong>, la empresa que gestiona los cobros de NominIA. Sin permanencia: puedes cancelar cuando quieras escribiendo a hola@nominia.app.</p>
     </div>`;
     const r = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
