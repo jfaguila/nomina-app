@@ -17,113 +17,11 @@ import { schemaHome } from '../data/seoSchema';
 import { cabecerasAcceso, tienePlan, setEmail as guardarEmail, guardarUltimoAnalisis, leerUltimoAnalisis, olvidarUltimoAnalisis } from '../lib/acceso';
 import SiteFooter from '../components/SiteFooter';
 import { esSeleccionable } from '../data/conveniosSeleccionables';
+import { CATEGORIAS_POR_CONVENIO, CATEGORIAS_GENERICAS } from '../data/categoriasPorConvenio';
+import SinNominaForm from '../components/SinNominaForm';
+import { prepararArchivo } from '../lib/comprimirImagen';
 
-const CATEGORIAS_GENERICAS = [
-    { value: 'empleado', label: 'Empleado' },
-    { value: 'tecnico', label: 'Técnico' },
-    { value: 'mando_intermedio', label: 'Mando Intermedio' },
-    { value: 'directivo', label: 'Directivo' },
-];
-
-// Categorías milimétricas por convenio (deben coincidir con backend/data/convenios.json → detallesSalariales)
-const GA_CATS = [
-    { value: 'base', label: 'Grupo Base · cajas, reposición, ventas, almacén…' },
-    { value: 'profesional', label: 'Grupo Profesional' },
-    { value: 'coordinador', label: 'Coordinador/a' },
-    { value: 'tecnicos', label: 'Técnicos/as' },
-];
-
-const CATEGORIAS_POR_CONVENIO = {
-    // Grupos del convenio propio de Mercadona (BOE-A-2024-3851, anexo 2)
-    mercadona: [
-        { value: 'gerente_a_menos3', label: 'Gerente A · Cajas/Reposición/Venta (menos de 3 años)' },
-        { value: 'gerente_a_mas3', label: 'Gerente A · Cajas/Reposición/Venta (3 o más años)' },
-        { value: 'gerente_b', label: 'Gerente B · Ayte coordinación / Chofer / Admin' },
-        { value: 'gerente_c', label: 'Gerente C y Coordinadores' },
-    ],
-    grandes_almacenes: GA_CATS,
-    leroy_merlin: GA_CATS,
-    el_corte_ingles: GA_CATS,
-    ikea: GA_CATS,
-    obramat: GA_CATS,
-    hipercor: GA_CATS,
-    bricomart: GA_CATS,
-    makro: GA_CATS,
-    decathlon: GA_CATS,
-    // Tabla 2026 (DOGV n.º 10196) — 28 categorías del convenio valenciano de ambulancias
-    transporte_sanitario_valenciana: [
-        { value: 'tes_conductor', label: 'TES-conductor/a' },
-        { value: 'tes_ayudante_camillero', label: 'TES-ayudante conductor/a' },
-        { value: 'tes_camillero', label: 'TES-camillero/a' },
-        { value: 'jefe_equipo', label: 'Jefe/a de equipo' },
-        { value: 'jefe_trafico', label: 'Jefe/a de tráfico' },
-        { value: 'jefe_taller', label: 'Jefe/a de taller' },
-        { value: 'mecanico', label: 'Mecánico/a' },
-        { value: 'ayudante_mecanico', label: 'Ayudante mecánico/a' },
-        { value: 'chapista', label: 'Chapista' },
-        { value: 'pintor', label: 'Pintor/a' },
-        { value: 'medico', label: 'Médico/a' },
-        { value: 'ats_due', label: 'DUE Enfermería' },
-        { value: 'tecnico_superior', label: 'Técnico/a superior' },
-        { value: 'tecnico_medio', label: 'Técnico/a medio' },
-        { value: 'diplomado', label: 'Diplomado/a' },
-        { value: 'jefe_admin', label: 'Jefe/a administrativo/a' },
-        { value: 'oficial_admin', label: 'Oficial/a 1.ª administrativo/a' },
-        { value: 'auxiliar_admin', label: 'Auxiliar administrativo/a' },
-        { value: 'aspirante_admin', label: 'Aspirante administrativo/a' },
-        { value: 'analista_sistemas', label: 'Analista de sistemas' },
-        { value: 'programador', label: 'Programador/a' },
-        { value: 'operador', label: 'Operador/a' },
-        { value: 'telefonista', label: 'Telefonista' },
-        { value: 'ordenanza', label: 'Ordenanza' },
-        { value: 'personal_limpieza', label: 'Personal de limpieza' },
-        { value: 'trabajador_formacion', label: 'Persona trabajadora en formación' },
-        { value: 'director_area', label: 'Director/a de área' },
-        { value: 'director', label: 'Director/a' },
-    ],
-    // Tabla 2026 (BORM n.º 167) — claves de backend/data/convenios.json → transporte_sanitario_murcia.
-    // El convenio murciano no usa el termino TES; las etiquetas son las de su tabla.
-    transporte_sanitario_murcia: [
-        { value: 'tes_conductor', label: 'Conductor/a' },
-        { value: 'tes_ayudante_camillero', label: 'Ayudante Camillero/a' },
-        { value: 'tes_camillero', label: 'Camillero/a' },
-        { value: 'limpiador_a', label: 'Limpiador/a' },
-        { value: 'jefe_equipo', label: 'Jefe de Equipo' },
-        { value: 'jefe_trafico', label: 'Jefe de Tráfico' },
-        { value: 'oficial_1_administrativo', label: 'Oficial 1ª Administrativo/a' },
-        { value: 'auxiliar_administrativo', label: 'Auxiliar Administrativo/a' },
-        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico/a' },
-        { value: 'mecanico', label: 'Mecánico/a' },
-        { value: 'chapista', label: 'Chapista' },
-        { value: 'pintor', label: 'Pintor' },
-        { value: 'jefe_taller', label: 'Jefe de Taller' },
-        { value: 'telefonista', label: 'Telefonista' },
-        { value: 'medico', label: 'Médico' },
-        { value: 'ats', label: 'ATS' },
-        { value: 'director_area', label: 'Director/a de Área' },
-        { value: 'director', label: 'Director/a' },
-    ],
-    // Tabla oficial 2025 (BOJA nº241) — 17 categorías reales del IV Convenio
-    transporte_sanitario_andalucia: [
-        { value: 'tes_conductor', label: 'TES Conductor/a' },
-        { value: 'tes_ayudante_camillero', label: 'TES Ayudante/Camillero' },
-        { value: 'tes_camillero', label: 'TES Camillero/a' },
-        { value: 'jefe_equipo', label: 'Jefe/a de Equipo' },
-        { value: 'jefe_trafico', label: 'Jefe/a de Tráfico' },
-        { value: 'oficial_admin', label: 'Oficial 1ª Administrativo' },
-        { value: 'auxiliar_admin', label: 'Auxiliar Administrativo' },
-        { value: 'ayudante_mecanico', label: 'Ayudante Mecánico' },
-        { value: 'mecanico', label: 'Mecánico/a' },
-        { value: 'chapista', label: 'Chapista' },
-        { value: 'pintor', label: 'Pintor/a' },
-        { value: 'jefe_taller', label: 'Jefe/a de Taller' },
-        { value: 'telefonista', label: 'Telefonista' },
-        { value: 'medico', label: 'Médico/a' },
-        { value: 'ats_due', label: 'ATS/DUE Enfermería' },
-        { value: 'director_area', label: 'Director/a de Área' },
-        { value: 'director', label: 'Director/a' },
-    ],
-};
+// Las categorías por convenio viven en src/data/categoriasPorConvenio.js (las usa también la ruta sin nómina).
 
 const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Baleares','Barcelona','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ciudad Real','Córdoba','A Coruña','Cuenca','Girona','Granada','Guadalajara','Gipuzkoa','Huelva','Huesca','Jaén','León','Lleida','Lugo','Madrid','Málaga','Murcia','Navarra','Ourense','Palencia','Las Palmas','Pontevedra','La Rioja','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Bizkaia','Zamora','Zaragoza','Ceuta','Melilla'];
 
@@ -144,6 +42,8 @@ const HomePage = () => {
     const [loadingProgress, setLoadingProgress] = useState(null);
     const [announcement, setAnnouncement] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
+    // 'archivo' (foto/PDF) o 'sin_nomina' (cuatro datos a mano). 23-sep-2026.
+    const [modo, setModo] = useState('archivo');
 
     // State for the Wizard steps: 1 (Upload), 2 (Review), 3 (Results)
     const [step, setStep] = useState(1);
@@ -232,33 +132,6 @@ const HomePage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Helper function to safely extract numeric values - DEBUG VERSION
-    const safeNumericValue = (value) => {
-        console.log(`🔢 safeNumericValue: entrada="${value}" (${typeof value})`);
-
-        if (value === null || value === undefined || value === '') {
-            console.log(`🔢 safeNumericValue: vacío -> 0`);
-            return '';
-        }
-
-        // Si ya es string, devolverlo tal cual
-        if (typeof value === 'string') {
-            console.log(`🔢 safeNumericValue: string -> "${value}"`);
-            return value;
-        }
-
-        // Si es número, convertir a string exacto
-        if (typeof value === 'number') {
-            const result = value.toString();
-            console.log(`🔢 safeNumericValue: número -> "${result}"`);
-            return result;
-        }
-
-        const parsed = parseFloat(value);
-        const result = isNaN(parsed) ? '' : parsed.toString();
-        console.log(`🔢 safeNumericValue: procesado -> "${result}"`);
-        return result;
-    };
 
 
     // Step 1 -> Step 2: Upload and initial OCR
@@ -273,7 +146,9 @@ const HomePage = () => {
         try {
             // El backend maneja PDFs directamente (pdf-parse + Tesseract OCR)
             const formDataToSend = new FormData();
-            formDataToSend.append('nomina', selectedFile);
+            // Foto grande de móvil → JPEG de ≤2.500 px antes de subir (menos datos, mismo OCR).
+            const archivo = await prepararArchivo(selectedFile);
+            formDataToSend.append('nomina', archivo, archivo.name || selectedFile.name);
             formDataToSend.append('data', JSON.stringify(uploadData));
 
             setLoadingMessage(t('uploading'));
@@ -404,8 +279,34 @@ const HomePage = () => {
     };
 
 
+    // Ruta sin nómina: el veredicto ya viene calculado por /api/validate-data.
+    const handleResultadoSinNomina = (data, manualData) => {
+        const nuevoUpload = { ...uploadData, convenio: manualData.convenio, categoria: manualData.categoria };
+        setUploadData(nuevoUpload);
+        setExtractedText('');
+        setReviewData(manualData);
+        setResults(data);
+        // Igual que tras el OCR: si paga, al volver se rehace con el token y sale desbloqueado.
+        guardarUltimoAnalisis({ extractedText: '', finalData: manualData, uploadData: nuevoUpload });
+        try {
+            const nuevo = (parseInt(localStorage.getItem('nominia_usos') || '0', 10) || 0) + 1;
+            localStorage.setItem('nominia_usos', String(nuevo));
+            setUsos(nuevo);
+        } catch (e) { /* ignore */ }
+        setStep(3);
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { /* ignore */ }
+    };
+
+    const onInputFile = (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (f) handleFileSelect(f);
+        e.target.value = '';
+    };
+
     const handleError = (err) => {
         console.error('Error completo:', err);
+        // El aviso se pinta arriba, junto al botón de subir: que se vea.
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { /* ignore */ }
 
         // Reset all states to prevent inconsistent UI
         setReviewData(null);
@@ -435,6 +336,87 @@ const HomePage = () => {
         setStep(1); // Reset to first step on error
     };
 
+    const configuracion = (
+        <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('home.province')}</label>
+                <select
+                    value={uploadData.provincia}
+                    onChange={(e) => setUploadData({ ...uploadData, provincia: e.target.value })}
+                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                    <option value="">{t('ui.selectProvince')}</option>
+                    {PROVINCIAS.map((p) => <option key={p} value={p}>{p}</option>)}
+                </select>
+            </div>
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('ui.agreement')}</label>
+                <select
+                    value={uploadData.convenio}
+                    onChange={(e) => {
+                        const nuevo = e.target.value;
+                        const catPorDefecto = CATEGORIAS_POR_CONVENIO[nuevo] ? CATEGORIAS_POR_CONVENIO[nuevo][0].value : 'empleado';
+                        setUploadData({ ...uploadData, convenio: nuevo, categoria: catPorDefecto });
+                    }}
+                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                    <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
+                    <option value="transporte_sanitario_valenciana">Transporte Sanitario Comunitat Valenciana (tabla 2026)</option>
+                    <option value="transporte_sanitario_murcia">Transporte Sanitario Región de Murcia (tabla 2026)</option>
+                    <option value="mercadona">Mercadona</option>
+                    <option value="grandes_almacenes">Grandes Almacenes (convenio estatal)</option>
+                    <option value="leroy_merlin">Leroy Merlin</option>
+                    <option value="el_corte_ingles">El Corte Inglés</option>
+                    <option value="ikea">Ikea</option>
+                    <option value="obramat">Obramat</option>
+                    <option value="hipercor">Hipercor</option>
+                    <option value="bricomart">Bricomart</option>
+                    <option value="makro">Makro</option>
+                    <option value="decathlon">Decathlon</option>
+                    <option value="hosteleria" disabled>{t('conventions.hosteleria')} ({t('ui.inPrep')})</option>
+                    <option value="comercio" disabled>{t('conventions.comercio')} ({t('ui.inPrep')})</option>
+                    <option value="construccion" disabled>{t('conventions.construccion')} ({t('ui.inPrep')})</option>
+                    <option value="general" disabled>{t('ui.otherAgreements')} ({t('ui.inPrep')})</option>
+                </select>
+            </div>
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('ui.category')}</label>
+                <select
+                    value={uploadData.categoria}
+                    onChange={(e) => setUploadData({ ...uploadData, categoria: e.target.value })}
+                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                    {(CATEGORIAS_POR_CONVENIO[uploadData.convenio] || CATEGORIAS_GENERICAS).map((c) => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                </select>
+                {CATEGORIAS_POR_CONVENIO[uploadData.convenio] && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        {t('ui.categoryNote')}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+
+    const botonComprobar = (
+        <>
+            <button
+                onClick={handleAnalyze}
+                disabled={!selectedFile || loading}
+                className="w-full py-4 px-6 rounded-2xl bg-lime-400 hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed text-[#0A1A2B] font-extrabold text-lg shadow-lg shadow-lime-500/20 transition-all flex items-center justify-center gap-3"
+            >
+                <span>{t('home.analyze')}</span>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </button>
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
+                {t('home.confidential')} <Link to="/privacidad" className="text-blue-600 hover:underline">{t('home.moreInfo')}</Link>
+            </p>
+        </>
+    );
+
     return (
         <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500 font-sans text-gray-900 dark:text-gray-100 selection:bg-blue-100 dark:selection:bg-blue-900/40">
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -444,22 +426,23 @@ const HomePage = () => {
 
             <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} />
 
-            <div className="relative max-w-6xl mx-auto px-4 py-8 md:py-12">
-                <nav className="flex justify-between items-center mb-12 animate-fade-in">
-                    <div className="flex items-center gap-3">
-                        <img src="/logo.svg" alt="NominIA" className="w-12 h-12 rounded-2xl shadow-lg shadow-[#0E2438]/20" />
-                        <div>
+            <div className="relative max-w-6xl mx-auto px-4 py-4 md:py-12">
+                <nav className="flex justify-between items-center gap-2 mb-5 md:mb-12 animate-fade-in">
+                    {/* 23-sep-2026: en 390 px el selector de idioma pisaba el nombre y el icono de ayuda se salia. */}
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <img src="/logo.svg" alt="NominIA" className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-2xl shadow-lg shadow-[#0E2438]/20" />
+                        <div className="min-w-0">
                             {/* El logo no es el H1: el H1 de la portada es la propuesta de valor del hero. */}
-                            <div className="text-2xl font-extrabold tracking-tight leading-none">NominIA<span className="text-lime-500">.app</span></div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{t('home.tagline')}</p>
+                            <div className="text-xl sm:text-2xl font-extrabold tracking-tight leading-none truncate">NominIA<span className="text-lime-500 hidden sm:inline">.app</span></div>
+                            <p className="hidden sm:block text-xs text-gray-500 dark:text-gray-400">{t('home.tagline')}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                         <LanguageSelector />
-                        <Link to="/precios" className="px-4 py-2 rounded-full bg-[#0E2438] text-white text-sm font-bold hover:bg-[#0A1A2B] transition-colors">{t('home.navPricing')}</Link>
+                        <Link to="/precios" className="px-3 sm:px-4 py-2 rounded-full bg-[#0E2438] text-white text-sm font-bold hover:bg-[#0A1A2B] transition-colors">{t('home.navPricing')}</Link>
                         <button
                             onClick={() => setShowInstructions(true)}
-                            className="p-2 text-gray-500 hover:text-blue-600 transition-colors"
+                            className="hidden sm:inline-flex p-2 text-gray-500 hover:text-blue-600 transition-colors"
                             title={t('home.navHowTo')}
                             aria-label={t('home.navHowTo')}
                         >
@@ -492,9 +475,9 @@ const HomePage = () => {
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.98 }}
-                            className="space-y-12"
+                            className="space-y-6 md:space-y-12"
                         >
-                            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0E2438] via-[#0c2033] to-[#0A1A2B] px-7 py-14 md:px-16 md:py-20 text-white shadow-2xl shadow-[#0E2438]/40 ring-1 ring-white/5">
+                            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0E2438] via-[#0c2033] to-[#0A1A2B] px-6 py-7 md:px-16 md:py-20 text-white shadow-2xl shadow-[#0E2438]/40 ring-1 ring-white/5">
                                 <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-lime-400/12 blur-3xl animate-pulse-slow" aria-hidden="true"></div>
                                 <div className="absolute -left-20 bottom-0 w-64 h-64 rounded-full bg-cyan-400/[0.06] blur-3xl" aria-hidden="true"></div>
                                 <div className="relative max-w-3xl">
@@ -503,18 +486,72 @@ const HomePage = () => {
                                         {t('home.badge')}
                                     </span>
                                     {/* Mismo texto que el <h1> de respaldo de public/index.html: lo que ve el rastreador y lo que ve el usuario tienen que coincidir. */}
-                                    <h1 className="mt-6 text-[2.6rem] leading-[1.02] md:text-[4.6rem] md:leading-[0.98] font-extrabold tracking-tight">
+                                    <h1 className="mt-4 md:mt-6 text-[2.05rem] leading-[1.05] md:text-[4.6rem] md:leading-[0.98] font-extrabold tracking-tight">
                                         {t('home.heroA')} <span className="text-lime-400 italic font-serif font-normal">{t('home.heroB')}</span>
                                     </h1>
-                                    <p className="mt-6 text-lg md:text-xl text-slate-300/90 max-w-xl leading-relaxed">
+                                    <p className="mt-4 md:mt-6 text-base md:text-xl text-slate-300/90 max-w-xl leading-relaxed">
                                         {t('home.leadA')} <b className="text-white font-semibold">{t('home.leadB')}</b> {t('home.leadC')}
                                     </p>
-                                    <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm text-slate-300">
+                                    <div className="mt-8 hidden md:flex flex-wrap gap-x-7 gap-y-3 text-sm text-slate-300">
                                         <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> {t('home.bullet1')}</span>
                                         <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> {t('home.bullet2')}</span>
                                         <span className="flex items-center gap-2"><span className="text-lime-400 font-bold">✓</span> {t('home.bullet3')}</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* 23-sep-2026: en móvil (92 % de los clics de la campaña) la zona de subir caía
+                                1,3 pantallas más abajo y el botón, apagado, 2,3 pantallas más abajo. Ahora lo
+                                primero tras el titular es un botón grande que abre la cámara o los archivos,
+                                y una ruta sin archivo para quien no tiene la nómina a mano. */}
+                            <div id="comprobar" className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl shadow-blue-500/5 p-5 md:p-8 border border-gray-100 dark:border-gray-800">
+                                {modo === 'sin_nomina' ? (
+                                    <SinNominaForm
+                                        apiUrl={getApiUrl()}
+                                        convenioInicial={uploadData.convenio}
+                                        onVolver={() => setModo('archivo')}
+                                        onResultado={handleResultadoSinNomina}
+                                    />
+                                ) : !selectedFile ? (
+                                    <div className="space-y-4">
+                                        <h2 className="text-2xl font-extrabold tracking-tight">{t('home.ctaTitulo')}</h2>
+                                        <label className="md:hidden flex items-center justify-center gap-3 w-full py-4 px-6 rounded-2xl bg-lime-400 hover:bg-lime-300 active:bg-lime-500 text-[#0A1A2B] font-extrabold text-lg shadow-lg shadow-lime-500/20 cursor-pointer">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <span>{t('home.ctaFoto')}</span>
+                                            <input type="file" accept="application/pdf,image/*" capture="environment" className="sr-only" onChange={onInputFile} aria-label={t('home.ctaFoto')} />
+                                        </label>
+                                        <label className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-2xl bg-[#0E2438] hover:bg-[#0A1A2B] text-white md:bg-lime-400 md:hover:bg-lime-300 md:text-[#0A1A2B] font-extrabold text-lg shadow-lg cursor-pointer">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                            </svg>
+                                            <span>{t('home.ctaSubir')}</span>
+                                            <input type="file" accept="application/pdf,image/*,.pdf,.jpg,.jpeg,.png,.heic,.heif,.webp" className="sr-only" onChange={onInputFile} aria-label={t('home.ctaSubir')} />
+                                        </label>
+                                        <p className="text-xs text-center text-gray-500 dark:text-gray-400">{t('home.ctaNota')}</p>
+                                        <div className="text-center pt-1">
+                                            <button type="button" onClick={() => setModo('sin_nomina')} className="text-blue-600 font-semibold underline underline-offset-4">
+                                                {t('home.ctaSinNomina')}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-5">
+                                        <div className="flex items-center justify-between gap-3 rounded-2xl border-2 border-green-500 bg-green-50/60 dark:bg-green-900/10 p-4">
+                                            <div className="min-w-0">
+                                                <p className="font-bold truncate">✅ {selectedFile.name}</p>
+                                                <p className="text-xs text-green-700 dark:text-green-400">{t('home.archivoListo')}</p>
+                                            </div>
+                                            <button type="button" onClick={() => { setSelectedFile(null); setError(null); }} className="flex-none text-sm font-bold text-red-600 hover:underline">
+                                                {t('upload.remove')}
+                                            </button>
+                                        </div>
+                                        {configuracion}
+                                        {botonComprobar}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center text-xs font-mono uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
@@ -540,6 +577,7 @@ const HomePage = () => {
                                 </motion.div>
                             )}
 
+                            {modo === 'archivo' && !selectedFile && (
                             <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl shadow-blue-500/5 p-8 border border-gray-100 dark:border-gray-800">
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                                     <div className="space-y-6">
@@ -556,83 +594,12 @@ const HomePage = () => {
                                             {t('home.step2')}
                                         </h3>
 
-                                        <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
-                                            <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('home.province')}</label>
-                                                <select
-                                                    value={uploadData.provincia}
-                                                    onChange={(e) => setUploadData({ ...uploadData, provincia: e.target.value })}
-                                                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                                >
-                                                    <option value="">{t('ui.selectProvince')}</option>
-                                                    {PROVINCIAS.map((p) => <option key={p} value={p}>{p}</option>)}
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('ui.agreement')}</label>
-                                                <select
-                                                    value={uploadData.convenio}
-                                                    onChange={(e) => {
-                                                        const nuevo = e.target.value;
-                                                        const catPorDefecto = CATEGORIAS_POR_CONVENIO[nuevo] ? CATEGORIAS_POR_CONVENIO[nuevo][0].value : 'empleado';
-                                                        setUploadData({ ...uploadData, convenio: nuevo, categoria: catPorDefecto });
-                                                    }}
-                                                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                                >
-                                                    <option value="transporte_sanitario_andalucia">Transporte Sanitario Andalucía (IV Convenio, tabla 2025)</option>
-                                                    <option value="transporte_sanitario_valenciana">Transporte Sanitario Comunitat Valenciana (tabla 2026)</option>
-                                                    <option value="transporte_sanitario_murcia">Transporte Sanitario Región de Murcia (tabla 2026)</option>
-                                                    <option value="mercadona">Mercadona</option>
-                                                    <option value="grandes_almacenes">Grandes Almacenes (convenio estatal)</option>
-                                                    <option value="leroy_merlin">Leroy Merlin</option>
-                                                    <option value="el_corte_ingles">El Corte Inglés</option>
-                                                    <option value="ikea">Ikea</option>
-                                                    <option value="obramat">Obramat</option>
-                                                    <option value="hipercor">Hipercor</option>
-                                                    <option value="bricomart">Bricomart</option>
-                                                    <option value="makro">Makro</option>
-                                                    <option value="decathlon">Decathlon</option>
-                                                    <option value="hosteleria" disabled>{t('conventions.hosteleria')} ({t('ui.inPrep')})</option>
-                                                    <option value="comercio" disabled>{t('conventions.comercio')} ({t('ui.inPrep')})</option>
-                                                    <option value="construccion" disabled>{t('conventions.construccion')} ({t('ui.inPrep')})</option>
-                                                    <option value="general" disabled>{t('ui.otherAgreements')} ({t('ui.inPrep')})</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('ui.category')}</label>
-                                                <select
-                                                    value={uploadData.categoria}
-                                                    onChange={(e) => setUploadData({ ...uploadData, categoria: e.target.value })}
-                                                    className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                                >
-                                                    {(CATEGORIAS_POR_CONVENIO[uploadData.convenio] || CATEGORIAS_GENERICAS).map((c) => (
-                                                        <option key={c.value} value={c.value}>{c.label}</option>
-                                                    ))}
-                                                </select>
-                                                {CATEGORIAS_POR_CONVENIO[uploadData.convenio] && (
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        {t('ui.categoryNote')}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            onClick={handleAnalyze}
-                                            disabled={!selectedFile || loading}
-                                            className="w-full py-4 px-6 rounded-2xl bg-lime-400 hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed text-[#0A1A2B] font-extrabold text-lg shadow-lg shadow-lime-500/20 transition-all flex items-center justify-center gap-3"
-                                        >
-                                            <span>{t('home.analyze')}</span>
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                            </svg>
-                                        </button>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                                            {t('home.confidential')} <Link to="/privacidad" className="text-blue-600 hover:underline">{t('home.moreInfo')}</Link>
-                                        </p>
+                                        {configuracion}
+                                        {botonComprobar}
                                     </div>
                                 </div>
                             </div>
+                            )}
                         </motion.div>
                     ) : step === 2 ? (
                         <motion.div
@@ -683,6 +650,7 @@ const HomePage = () => {
                                         setStep(1);
                                         setResults(null);
                                         setSelectedFile(null);
+                                        setModo('archivo');
                                         setLeadCaptured(tienePlan());
                                     }}
                                     className="px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 font-bold transition-all flex items-center gap-2"

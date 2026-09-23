@@ -37,3 +37,6 @@ backend/.env
 
 # Datos de Tesseract descargados en tiempo de ejecución (no versionar)
 *.traineddata
+
+# capturas de diagnostico (llevan nominas reales)
+diagnostico/

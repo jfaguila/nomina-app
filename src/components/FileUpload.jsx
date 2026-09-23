@@ -29,7 +29,8 @@ const FileUpload = ({ onFileSelect }) => {
         onDrop,
         accept: {
             'application/pdf': ['.pdf'],
-            'image/*': ['.png', '.jpg', '.jpeg']
+            // 23-sep-2026: la foto de iPhone llega como HEIC; el servidor la convierte.
+            'image/*': ['.png', '.jpg', '.jpeg', '.heic', '.heif', '.webp']
         },
         maxFiles: 1
     });

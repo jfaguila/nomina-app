@@ -33,11 +33,13 @@ try {
     console.error('🔥 CRITICAL: Error loading services:', loadError);
 }
 
-// Heartbeat log every 10 seconds to prove liveness
+// Heartbeat log to prove liveness. 23-sep-2026: cada 10 s eran 8.640 lineas al dia y
+// `railway logs --lines 4000` solo alcanzaba 6 horas: no se podia saber si alguien habia
+// subido una nomina ayer. Cada 10 min basta para ver que el proceso vive.
 setInterval(() => {
     const memUsage = process.memoryUsage();
     console.log(`❤️ Heartbeat: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB used. Uptime: ${process.uptime().toFixed(0)}s`);
-}, 10000);
+}, 10 * 60 * 1000);
 
 const app = express();
 const PORT = process.env.PORT || 5987;
@@ -88,10 +90,15 @@ const upload = multer({
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
     fileFilter: (req, file, cb) => {
         if (!req.file && req.body.manualText) return cb(null, true);
-        if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('image/')) {
+        // Algunos navegadores de movil mandan la foto HEIC como application/octet-stream:
+        // se mira tambien la extension.
+        const porNombre = /\.(pdf|jpe?g|png|webp|heic|heif|gif|bmp|tiff?)$/i.test(file.originalname || '');
+        if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('image/') || porNombre) {
             cb(null, true);
         } else {
-            cb(new Error('Formato no soportado. Sube PDF o imágenes.'), false);
+            const err = new Error('Formato no soportado. Sube un PDF o una foto (JPG, PNG, HEIC).');
+            err.code = 'INVALID_FILE_TYPE';
+            cb(err, false);
         }
     }
 });
@@ -141,13 +148,14 @@ app.post('/api/verify-nomina', upload.single('nomina'), async (req, res) => {
         const filePath = req.file.path;
         const manualData = JSON.parse(req.body.data || '{}');
 
-        console.log('Procesando archivo:', req.file.originalname);
+        const t0 = Date.now();
+        console.log('Procesando archivo:', req.file.originalname, '|', req.file.mimetype, '|', req.file.size, 'bytes');
         console.log('Datos manuales:', manualData);
 
         // Extraer texto con OCR
         try {
             extractedText = await ocrService.extractText(filePath, req.file.mimetype);
-            console.log('Texto extraído:', extractedText.substring(0, 200) + '...');
+            console.log(`Texto extraído (${extractedText.length} caracteres, ${Date.now() - t0} ms):`, extractedText.substring(0, 200) + '...');
 
             // DEBUG: Si el OCR no extrae nada, usar texto de ejemplo
             if (!extractedText || extractedText.trim().length < 50) {
@@ -162,8 +170,11 @@ Líquido a percibir: 1.150,50`;
             }
         } catch (ocrError) {
             console.error('Error en OCR:', ocrError);
-            return res.status(500).json({
-                error: 'Error al procesar el archivo con OCR',
+            try { fs.unlinkSync(filePath); } catch (e) { /* ya no esta */ }
+            // Mensaje para la persona, no para el programador: la web lo pinta tal cual.
+            return res.status(422).json({
+                error: 'No hemos podido leer la nómina en ese archivo. Prueba con una foto más nítida y con luz, con el PDF que te da la empresa, o rellena los datos a mano.',
+                code: 'OCR_FAILED',
                 details: ocrError.message
             });
         }
@@ -264,6 +275,10 @@ app.use((error, req, res, next) => {
                 code: 'FILE_TOO_LARGE'
             });
         }
+    }
+
+    if (error && error.code === 'INVALID_FILE_TYPE') {
+        return res.status(400).json({ error: error.message, code: 'INVALID_FILE_TYPE' });
     }
 
     if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
@@ -440,9 +455,11 @@ app.post('/api/lead', async (req, res) => {
         if (!consent) {
             return res.status(400).json({ error: 'Debes aceptar la política de privacidad' });
         }
+        // 23-sep-2026: antes esto devolvia ok:true con stored:false y la web decia "enviado"
+        // y contaba la conversion de Google Ads; un lead que no se guardo NO es un lead.
         if (!BREVO_KEY) {
-            console.warn('lead recibido pero BREVO_API_KEY no configurada:', email);
-            return res.json({ ok: true, stored: false });
+            console.error('LEAD PERDIDO: BREVO_API_KEY no configurada. email=', email, 'convenio=', convenio);
+            return res.status(503).json({ error: 'No hemos podido guardar tu correo. Escríbenos a hola@nominia.app.', code: 'LEAD_NOT_STORED', stored: false });
         }
         const r = await fetch('https://api.brevo.com/v3/contacts', {
             method: 'POST',
@@ -465,12 +482,11 @@ app.post('/api/lead', async (req, res) => {
             return res.json({ ok: true, stored: true });
         }
         const body = await r.text();
-        console.error('Brevo lead error:', r.status, body);
-        // si el contacto ya existe Brevo da 400 duplicate_parameter pero con updateEnabled no debería; devolvemos ok para no romper UX
-        return res.json({ ok: true, stored: false });
+        console.error('LEAD PERDIDO: Brevo respondió', r.status, body.slice(0, 300), '| email=', email);
+        return res.status(502).json({ error: 'No hemos podido guardar tu correo. Escríbenos a hola@nominia.app.', code: 'LEAD_NOT_STORED', stored: false });
     } catch (e) {
-        console.error('lead error:', e.message);
-        return res.status(500).json({ error: 'No se pudo registrar el email' });
+        console.error('LEAD PERDIDO: excepción', e.message);
+        return res.status(500).json({ error: 'No hemos podido guardar tu correo. Escríbenos a hola@nominia.app.', code: 'LEAD_NOT_STORED', stored: false });
     }
 });
 

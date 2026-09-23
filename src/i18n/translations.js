@@ -28,6 +28,38 @@ export const translations = {
       navPricing: 'Precios',
       navHowTo: 'Instrucciones',
       tagline: 'Verificador de nóminas',
+      // 23-sep-2026: el 92 % del trafico de la campana llega desde el movil y en la primera
+      // pantalla no habia NADA que pulsar: la zona de subir estaba 1,3 pantallas mas abajo
+      // y el boton de comprobar, 2,3 pantallas mas abajo y apagado.
+      ctaFoto: 'Hacer una foto a mi nómina',
+      ctaSubir: 'Subir PDF o foto',
+      ctaSinNomina: 'No tengo la nómina a mano →',
+      ctaNota: 'Foto o PDF · sin registro · se borra al terminar',
+      archivoListo: 'Nómina lista. Elige tu convenio y pulsa «Comprobar».',
+      ctaTitulo: 'Comprueba tu nómina',
+      ctaError: 'No hemos podido leer ese archivo.',
+    },
+
+    // Ruta sin nomina: 4 datos del ultimo recibo y veredicto con las tablas publicadas.
+    manual: {
+      titulo: 'Sin la nómina a mano',
+      lead: 'Con cuatro datos de tu último recibo te decimos si estás por debajo de la tabla de tu convenio.',
+      convenio: 'Tu convenio',
+      categoria: 'Tu categoría',
+      salarioBase: 'Salario base del último recibo (€/mes)',
+      salarioBaseAyuda: 'La línea «Salario base» de la nómina, sin pagas extra prorrateadas.',
+      plusConvenio: 'Plus de convenio (€/mes)',
+      plusConvenioAyuda: 'Si tu recibo no lo trae, déjalo en 0.',
+      complementos: 'Complemento de puesto o salarial (€/mes)',
+      complementosAyuda: 'Suma de los complementos fijos del recibo (puesto, salarial, voluntario). Si no hay, 0.',
+      comprobar: 'Ver mi veredicto gratis',
+      volver: '← Prefiero subir la nómina',
+      errBase: 'Escribe el salario base: sin él no hay veredicto.',
+      pagas: '¿Cuántas pagas cobras al año?',
+      pagasAyuda: 'Si tus pagas extra vienen prorrateadas en la nómina, elige 12.',
+      tabla: 'Tabla publicada para esta categoría',
+      tablaPagas: 'pagas',
+      errRed: 'No hemos podido calcular el veredicto. Inténtalo de nuevo en un momento.',
     },
 
     // Resto de la web: pie legal, aviso de cookies, formulario, modal de
@@ -89,13 +121,14 @@ export const translations = {
       note: 'Tu nómina no se guarda · sin spam',
       errEmail: 'Introduce un email válido.',
       errConsent: 'Debes aceptar la política de privacidad para continuar.',
+      errGuardar: 'No hemos podido guardar tu correo. Escríbenos a hola@nominia.app.',
     },
 
     upload: {
       dropActive: '¡Suelta el archivo aquí!',
       drop: 'Arrastra tu nómina aquí',
       click: 'o haz clic para seleccionar',
-      formats: 'Formatos: PDF, JPG, PNG',
+      formats: 'Formatos: PDF, JPG, PNG, HEIC (foto de iPhone)',
       ready: 'Archivo listo para analizar',
       remove: '❌ Quitar',
       ariaZone: 'Subir archivo de nómina',
@@ -187,7 +220,7 @@ export const translations = {
     // Error Messages
     errorMessages: {
       fileTooLarge: 'El archivo es demasiado grande. Máximo 10MB.',
-      invalidFileType: 'Solo se permiten archivos PDF, JPG y PNG.',
+      invalidFileType: 'Solo se permiten archivos PDF o fotos (JPG, PNG, HEIC).',
       tooManyFiles: 'Solo puedes subir un archivo a la vez.',
       invalidJSON: 'Error en el formato de los datos.',
       connectionError: 'No se puede conectar con el servidor. Verifica tu conexión o intenta más tarde.',
@@ -232,6 +265,34 @@ export const translations = {
       navPricing: 'Pricing',
       navHowTo: 'How it works',
       tagline: 'Payslip checker',
+      ctaFoto: 'Take a photo of my payslip',
+      ctaSubir: 'Upload PDF or photo',
+      ctaSinNomina: "I don't have my payslip with me →",
+      ctaNota: 'Photo or PDF · no sign-up · deleted when done',
+      archivoListo: 'Payslip ready. Pick your agreement and press "Check".',
+      ctaTitulo: 'Check your payslip',
+      ctaError: 'We could not read that file.',
+    },
+
+    manual: {
+      titulo: 'Without your payslip',
+      lead: 'With four figures from your last payslip we tell you whether you are below your agreement pay table.',
+      convenio: 'Your agreement',
+      categoria: 'Your job category',
+      salarioBase: 'Base salary on your last payslip (€/month)',
+      salarioBaseAyuda: 'The "Salario base" line, without prorated extra payments.',
+      plusConvenio: 'Agreement bonus (€/month)',
+      plusConvenioAyuda: 'If your payslip has none, leave 0.',
+      complementos: 'Job or salary supplement (€/month)',
+      complementosAyuda: 'Sum of the fixed supplements on the payslip. If none, 0.',
+      comprobar: 'See my free verdict',
+      volver: '← I would rather upload the payslip',
+      errBase: 'Enter the base salary: without it there is no verdict.',
+      pagas: 'How many payments a year do you get?',
+      pagasAyuda: 'If your extra payments are prorated on the payslip, choose 12.',
+      tabla: 'Published table for this category',
+      tablaPagas: 'payments',
+      errRed: 'We could not compute the verdict. Please try again in a moment.',
     },
 
     ui: {
@@ -288,13 +349,14 @@ export const translations = {
       note: 'Your payslip is never stored · no spam',
       errEmail: 'Please enter a valid email address.',
       errConsent: 'You need to accept the privacy policy to continue.',
+      errGuardar: 'We could not save your email. Write to hola@nominia.app.',
     },
 
     upload: {
       dropActive: 'Drop the file here',
       drop: 'Drag your payslip here',
       click: 'or click to select',
-      formats: 'Formats: PDF, JPG, PNG',
+      formats: 'Formats: PDF, JPG, PNG, HEIC (iPhone photo)',
       ready: 'File ready to analyse',
       remove: '❌ Remove',
       ariaZone: 'Upload payslip file',

@@ -8,7 +8,7 @@ export default function LeadForm({ apiUrl, defaults = {}, onCaptured }) {
     const { t } = useLanguage();
     const [email, setEmail] = useState('');
     const [nombre, setNombre] = useState('');
-    const [provincia, setProvincia] = useState(defaults.provincia || '');
+    const [provincia] = useState(defaults.provincia || '');
     const [consent, setConsent] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -26,15 +26,20 @@ export default function LeadForm({ apiUrl, defaults = {}, onCaptured }) {
                 resultado: defaults.resultado || '',
                 consent: true
             });
-        } catch (_) { /* no bloqueamos el veredicto si el guardado falla */ }
-        finally {
-            try { if (window.gtag) window.gtag('event', 'conversion', { send_to: 'AW-18221826294/pjMLCPq3xP4cEPaB7PBD' }); } catch (e) {}
-            // Meta: fbq solo existe si el usuario acepto cookies. Se manda el evento
-            // Lead SIN datos personales: ni correo ni nombre, ni siquiera hasheados.
-            try { if (window.fbq) window.fbq('track', 'Lead'); } catch (e) {}
+        } catch (err) {
+            // 23-sep-2026: antes esto se tragaba el fallo, decia "enviado" y contaba la
+            // conversion de Google Ads. Un correo que no se guardo no es un lead.
+            const msg = (err && err.response && err.response.data && err.response.data.error) || t('lead.errGuardar');
+            setError(msg);
             setLoading(false);
-            onCaptured && onCaptured({ email, nombre, provincia });
+            return;
         }
+        try { if (window.gtag) window.gtag('event', 'conversion', { send_to: 'AW-18221826294/pjMLCPq3xP4cEPaB7PBD' }); } catch (e) {}
+        // Meta: fbq solo existe si el usuario acepto cookies. Se manda el evento
+        // Lead SIN datos personales: ni correo ni nombre, ni siquiera hasheados.
+        try { if (window.fbq) window.fbq('track', 'Lead'); } catch (e) {}
+        setLoading(false);
+        onCaptured && onCaptured({ email, nombre, provincia });
     }
 
     return (

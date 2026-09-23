@@ -44,9 +44,11 @@ export default function CookieBanner() {
   };
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 p-4" role="dialog" aria-label={t('cookies.label')}>
-      <div className="max-w-3xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4">
-        <p className="text-sm text-gray-600 dark:text-gray-300 flex-1">
+    // 23-sep-2026: en un iPhone (390x844) este aviso ocupaba 200 px fijos, un cuarto de la
+    // pantalla, y tapaba el boton de comprobar cuando el usuario bajaba hasta el. Mas compacto en movil.
+    <div className="fixed bottom-0 inset-x-0 z-50 p-2 sm:p-4" role="dialog" aria-label={t('cookies.label')}>
+      <div className="max-w-3xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-2xl rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 flex-1">
           {t('cookies.text')} <strong>{t('cookies.textStrong')}</strong>,{' '}
           {t('cookies.text2')}{' '}
           <Link to="/privacidad#cookies" className="text-blue-600 hover:underline">{t('cookies.more')}</Link>.

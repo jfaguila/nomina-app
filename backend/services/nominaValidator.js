@@ -61,7 +61,16 @@ class NominaValidator {
         // --- CÁLCULOS TEÓRICOS VS REALES ---
 
         // 1. SALARIO BASE
-        const salarioBaseReal = parseFloat(nominaData.salarioBase) || 0;
+        let salarioBaseReal = parseFloat(nominaData.salarioBase) || 0;
+        // 23-sep-2026 (ruta "sin nomina"): si cobra en distinto numero de pagas que la tabla
+        // (p. ej. 12 con prorrateo frente a una tabla en 16), el importe mensual no es comparable.
+        // Se pasa al numero de pagas de la tabla: mismo salario anual, misma base de comparacion.
+        const numPagas = parseInt(nominaData.numPagas, 10);
+        if (salarioBaseReal > 0 && numPagas > 0 && convenio.pagas && numPagas !== convenio.pagas) {
+            const ajustado = Math.round(salarioBaseReal * numPagas / convenio.pagas * 100) / 100;
+            warnings.push(`Cobras ${numPagas} pagas y la tabla del convenio está en ${convenio.pagas}: tu salario base se ha pasado a ${convenio.pagas} pagas (${ajustado.toFixed(2)} €/mes) para compararlo con la tabla.`);
+            salarioBaseReal = ajustado;
+        }
         // Convenios con estructura base + complementos fijos (Mercadona, Grandes Almacenes):
         // la nómina parte el sueldo en "Salario Base" + "Complemento de puesto/salarial", así que comparar
         // SOLO la línea base contra el grupo da falsos. Comparamos el SALARIO FIJO TOTAL (base + complementos).

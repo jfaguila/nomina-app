@@ -11,17 +11,45 @@ class OCRService {
      */
     async extractText(filePath, mimeType) {
         try {
-            if (mimeType === 'application/pdf') {
+            const esPdf = mimeType === 'application/pdf' || /\.pdf$/i.test(filePath);
+            if (esPdf) {
                 return await this.extractFromPDF(filePath);
-            } else if (mimeType.startsWith('image/')) {
-                return await this.extractFromImage(filePath);
-            } else {
-                throw new Error('Tipo de archivo no soportado');
             }
+            // 23-sep-2026: una foto de iPhone llega como HEIC (image/heic). Ni sharp (sin
+            // HEVC en el binario precompilado) ni Tesseract la abren: el servidor moria con
+            // "Error attempting to read image" y el movil veia un 500 sin explicacion.
+            // Se convierte a JPEG antes de tocar nada.
+            const esHeic = /image\/hei[cf]/i.test(mimeType || '') || /\.hei[cf]$/i.test(filePath);
+            if (esHeic) {
+                const jpegPath = await this.convertirHeic(filePath);
+                try {
+                    return await this.extractFromImage(jpegPath);
+                } finally {
+                    try { fs.unlinkSync(jpegPath); } catch (e) { /* ignore */ }
+                }
+            }
+            if ((mimeType || '').startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|tiff?)$/i.test(filePath)) {
+                return await this.extractFromImage(filePath);
+            }
+            throw new Error('Tipo de archivo no soportado');
         } catch (error) {
             console.error('Error en extractText:', error);
             throw error;
         }
+    }
+
+    /**
+     * HEIC/HEIF (fotos de iPhone) → JPEG en disco. heic-convert es JS/wasm puro: no
+     * depende de que la imagen de Railway lleve libheif con HEVC.
+     */
+    async convertirHeic(filePath) {
+        const convert = require('heic-convert');
+        const t0 = Date.now();
+        const salida = await convert({ buffer: fs.readFileSync(filePath), format: 'JPEG', quality: 0.9 });
+        const jpegPath = filePath + '.jpg';
+        fs.writeFileSync(jpegPath, salida);
+        console.log(`📱 HEIC convertido a JPEG (${salida.length} bytes, ${Date.now() - t0} ms)`);
+        return jpegPath;
     }
 
     /**
@@ -144,7 +172,9 @@ class OCRService {
 
         } catch (error) {
             console.error('🔥 Error CRÍTICO en OCR:', error);
-            throw new Error(`Error al procesar la imagen con OCR: ${error.message}`);
+            // Tesseract lanza a veces un string, no un Error: antes el mensaje salia "undefined".
+            const motivo = (error && error.message) || String(error);
+            throw new Error(`Error al procesar la imagen con OCR: ${motivo}`);
         } finally {
             if (preprocessedPath && preprocessedPath !== filePath) {
                 try { fs.unlinkSync(preprocessedPath); } catch (e) { /* ignore */ }

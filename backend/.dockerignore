@@ -1,0 +1,10 @@
+# 23-sep-2026: sin este fichero, `COPY . .` metia en la imagen los node_modules del Mac
+# (sharp compilado para darwin-arm64) y en Railway sharp no cargaba: las fotos se
+# procesaban sin preprocesar y el OCR leia basura (confianza 43 %).
+node_modules
+uploads
+tests
+coverage
+*.log
+.env
+.env.*
