@@ -58,6 +58,13 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
     }
     if (event.type === 'checkout.session.completed') {
         const s = event.data.object;
+        // La cuenta de Stripe es COMPARTIDA (MEC, FincaHub, QCA, Test Nacionalidad...). Del 4 al
+        // 24-sep-2026 este webhook mandaba «Tu acceso a NominIA está activo» a los 4 compradores
+        // del curso de MEC. Solo las sesiones creadas por /api/checkout de NominIA llevan este metadata.
+        if (s.metadata?.producto !== 'nominia') {
+            console.log('Ignorado checkout.session.completed ajeno a NominIA:', s.id, '| app:', s.metadata?.app || s.payment_link || '-');
+            return res.json({ received: true, ignored: true });
+        }
         const emailCliente = s.customer_details?.email || s.customer_email || '';
         console.log('✅ PAGO NominIA:', s.metadata?.plan, '| modo:', s.mode, '| email:', emailCliente, '| sub:', s.subscription || '-');
         // El correo es el unico recibo que le llega al cliente y, sobre todo, su
