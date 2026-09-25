@@ -7,6 +7,7 @@ import { schemaPrecios } from '../data/seoSchema';
 import { getEmail, tienePlan } from '../lib/acceso';
 import SiteFooter from '../components/SiteFooter';
 import { FAQ_PRECIOS } from '../data/faqPrecios';
+import { COBRO_ACTIVO } from '../lib/cobro';
 
 const getApiUrl =() => process.env.REACT_APP_API_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5987' : 'https://nomina-backend-production-57d2.up.railway.app');
 
@@ -105,6 +106,12 @@ export default function PreciosPage() {
               {p.free ? (
                 <Link to="/" className="block text-center w-full py-3 rounded-2xl font-bold border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">{p.cta}</Link>
               ) : (
+                !COBRO_ACTIVO ? (
+                <button type="button" disabled aria-disabled="true"
+                  className="w-full py-3 rounded-2xl font-bold bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 cursor-not-allowed">
+                  Próximamente
+                </button>
+                ) :
                 <button onClick={() => suscribir(p.id)} disabled={loading === p.id}
                   className={`w-full py-3 rounded-2xl font-bold transition-all disabled:opacity-50 ${p.highlight ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20' : 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:opacity-90'}`}>
                   {loading === p.id ? 'Redirigiendo…' : p.cta}
@@ -120,7 +127,7 @@ export default function PreciosPage() {
           créditos que se agoten.
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-          Pago seguro con Stripe. Tus datos están protegidos — <Link to="/privacidad" className="text-blue-600 hover:underline">política de privacidad</Link>.
+          {COBRO_ACTIVO ? 'Pago seguro con Stripe.' : 'Los planes de pago abren próximamente; el análisis gratis funciona ya.'} Tus datos están protegidos — <Link to="/privacidad" className="text-blue-600 hover:underline">política de privacidad</Link>.
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
           ¿Quieres ver primero contra qué se compara tu nómina? Consulta las{' '}

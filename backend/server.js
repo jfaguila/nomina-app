@@ -311,6 +311,9 @@ const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STR
 const FRONTEND = process.env.FRONTEND_URL || 'https://nomina-app-chi.vercel.app';
 app.post('/api/checkout', async (req, res) => {
     try {
+        // 25-sep-2026 (orden de Jorge): cobros pausados hasta el alta de autónomo. Solo se cobra
+        // con COBRO_ACTIVO=true en Railway; sin la variable, nadie puede pasar a pago.
+        if (process.env.COBRO_ACTIVO !== 'true') return res.status(503).json({ error: 'Próximamente: los planes de pago abren pronto. El análisis gratis sigue funcionando.', code: 'COBRO_PAUSADO' });
         if (!stripe) return res.status(503).json({ error: 'Pagos no configurados todavía' });
         const { plan, email } = req.body || {};
         const planes = {

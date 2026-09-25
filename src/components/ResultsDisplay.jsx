@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import ExportResults from './ExportResults';
 import { useLanguage } from '../i18n/LanguageProvider';
+import { COBRO_ACTIVO } from '../lib/cobro';
 
 const ResultsDisplay = ({ results, usos = 0 }) => {
     const { t } = useLanguage();
@@ -114,9 +115,9 @@ const ResultsDisplay = ({ results, usos = 0 }) => {
                             en cada uno, la tabla comparativa frente a tu convenio y el informe con la cita del boletín oficial para reclamarlo.
                         </p>
                         <Link to="/precios" className="inline-flex items-center gap-2 mt-6 px-7 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 transition-all">
-                            {isValid ? 'Ver el desglose — 4,99 €' : 'Ver cuánto me deben — 4,99 €'}
+                            {!COBRO_ACTIVO ? 'Desglose en euros: próximamente' : isValid ? 'Ver el desglose — 4,99 €' : 'Ver cuánto me deben — 4,99 €'}
                         </Link>
-                        <p className="text-xs text-gray-400 mt-3">Pago único · Sin renovación · 30 días de acceso</p>
+                        <p className="text-xs text-gray-400 mt-3">{COBRO_ACTIVO ? 'Pago único · Sin renovación · 30 días de acceso' : 'Todavía no se puede comprar: el análisis gratis sigue funcionando'}</p>
                     </div>
                 </motion.div>
             )}
